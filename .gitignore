@@ -12,9 +12,6 @@ __pycache__/
 .idea/
 *.sublime-workspace
 
-# Ignore environment variables and secrets
-.env
-*.env
 
 # Ignore log and database files
 *.log

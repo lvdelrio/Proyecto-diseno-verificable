@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Cursos</title>
+</head>
+<body class="bg-gray-100 p-10">
+    <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow-lg">
+        <h1 class="text-2xl font-bold text-blue-600 mb-4">Lista de Cursos</h1>
+        <ul class="mb-6">
+            {% for curso in cursos %}
+                <li class="bg-gray-200 p-3 rounded mt-2 flex justify-between">
+                    {{ curso.name }} - {{ curso.description }}
+                    <button onclick="deleteCurso( curso.id )" class="bg-red-500 text-white px-2 py-1 rounded">Eliminar</button>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <h2 class="text-xl font-bold mt-6">Agregar Curso</h2>
+        <form action="/agregar_curso" method="POST" class="mt-4">
+            <input type="text" name="name" placeholder="Nombre del curso" class="border p-2 rounded w-full mb-2" required>
+            <input type="text" name="description" placeholder="Descripción (opcional)" class="border p-2 rounded w-full mb-2">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Agregar</button>
+        </form>
+    </div>
+
+    <script>
+        function deleteCurso(id) {
+            fetch(`/cursos/${id}`, { method: 'DELETE' })
+                .then(response => location.reload());
+        }
+    </script>
+</body>
+</html>

@@ -24,7 +24,7 @@ def home():
 
 @app.route('/cursos', methods=['GET'])
 def get_cursos():
-    cursos = Course.query.all()  # Fetch all courses
+    cursos = Course.query.all()
     return render_template("cursos.html", cursos=cursos)
 
 @app.route('/agregar_curso', methods=['POST'])

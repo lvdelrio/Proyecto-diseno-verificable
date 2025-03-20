@@ -10,14 +10,16 @@
         <ul class="mb-6">
             {% for curso in cursos %}
                 <li class="bg-gray-200 p-3 rounded mt-2 flex justify-between">
-                    {{ curso.name }} - {{ curso.description }}
-                    <button onclick="deleteCurso( curso.id )" class="bg-red-500 text-white px-2 py-1 rounded">Eliminar</button>
+                    <a href="{{ url_for('view_curso', curso_id=curso.id) }}" class="text-blue-500">{{ curso.name }}</a>
+                    <form method="POST" action="{{ url_for('delete_curso', curso_id=curso.id) }}" class="bg-red-500 text-white px-2 py-1 rounded">
+                        <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded">Eliminar</button>
+                    </form>
                 </li>
             {% endfor %}
         </ul>
 
         <h2 class="text-xl font-bold mt-6">Agregar Curso</h2>
-        <form action="/agregar_curso" method="POST" class="mt-4">
+        <form action="{{ url_for('add_curso') }}" method="POST" class="mt-4">
             <input type="text" name="name" placeholder="Nombre del curso" class="border p-2 rounded w-full mb-2" required>
             <input type="text" name="description" placeholder="Descripción (opcional)" class="border p-2 rounded w-full mb-2">
             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Agregar</button>
@@ -26,9 +28,21 @@
 
     <script>
         function deleteCurso(id) {
-            fetch(`/cursos/${id}`, { method: 'DELETE' })
-                .then(response => location.reload());
-        }
+    fetch(`/borrar_curso/${id}`, { method: 'POST' })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+            location.reload();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
     </script>
 </body>
 </html>

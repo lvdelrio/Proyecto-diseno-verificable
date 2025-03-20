@@ -9,6 +9,8 @@ services:
       - .env #configuraciones estan en .env
     environment:
       - hPYTHONUNBUFFERED=1
+      - FLASK_ENV=development
+      - PYTHONPATH=/app
     volumes:
       - .:/app
     depends_on:

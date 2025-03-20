@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 from db import db, init_db, Course
+import routes.userRoutes as userRoutes
 
 # Load environment variables from .env
 load_dotenv()
@@ -12,6 +13,8 @@ CORS(app, resources={r"/*": {"origins": ["http://localhost:5000"]}})
 
 # Initialize the database
 init_db(app)
+
+app.add_url_rule("/add_user/<name>/<email>", "add_user", userRoutes.add_user)
 
 #iniciar base de datos a  lo maldito
 @app.before_request

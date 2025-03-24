@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>{{ curso.name }}</title>
+</head>
+<body class="bg-gray-100 p-10">
+    <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow-lg">
+        <h1 class="text-2xl font-bold text-blue-600 mb-4">Detalles del Curso</h1>
+        
+        <form method="POST" action="{{ url_for('edit_curso', curso_id=curso.id) }}">
+            <label class="block text-gray-700">Nombre del Curso:</label>
+            <input type="text" name="name" value="{{ curso.name }}" class="border p-2 rounded w-full mb-2" required>
+            
+            <label class="block text-gray-700">Descripción:</label>
+            <textarea name="description" class="border p-2 rounded w-full mb-2">{{ curso.description }}</textarea>
+
+            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">Guardar Cambios</button>
+        </form>
+
+        <form method="POST" action="{{ url_for('delete_curso', curso_id=curso.id) }}" class="mt-4">
+            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700">Eliminar Curso</button>
+        </form>
+
+        <a href="{{ url_for('get_cursos') }}" class="block mt-4 text-blue-500">Volver a la lista</a>
+    </div>
+</body>
+</html>

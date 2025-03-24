@@ -3,6 +3,7 @@
 <head>
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Cursos</title>
+    <script src="{{ url_for('static', filename='js/cursoScript.js') }}"></script>
 </head>
 <body class="bg-gray-100 p-10">
     <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow-lg">
@@ -26,23 +27,6 @@
         </form>
     </div>
 
-    <script>
-        function deleteCurso(id) {
-    fetch(`/borrar_curso/${id}`, { method: 'POST' })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Success:', data);
-            location.reload();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-}
-    </script>
+    
 </body>
 </html>

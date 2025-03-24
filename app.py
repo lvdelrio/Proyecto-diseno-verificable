@@ -21,7 +21,6 @@ def create_tables():
 
 @app.route('/')
 def home():
-    print("Aqui tamo en el home hermano")
     return render_template("index.html")
 
 @app.route('/cursos', methods=['GET'])

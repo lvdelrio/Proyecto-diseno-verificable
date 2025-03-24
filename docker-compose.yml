@@ -10,6 +10,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - FLASK_ENV=development
+      - FLASK_DEBUG=1
       - PYTHONPATH=/app
     volumes:
       - .:/app

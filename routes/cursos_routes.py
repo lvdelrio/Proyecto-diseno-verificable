@@ -16,8 +16,8 @@ def view_curso(curso_id):
 
 @course_route_blueprint.route('/agregar_curso', methods=['POST'])
 def add_curso():
-    name = request.form.get("name")
-    description = request.form.get("description", "")
+    name = request.form.get("nombre")
+    description = request.form.get("descripcion", "")
     course = crear_curso(config.session, name, description)
 
     return redirect(url_for("Courses.view_curso", curso_id=course.id))

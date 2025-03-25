@@ -32,6 +32,12 @@ def create_tables():
 def home():
     return render_template("index.html")
 
+@app.route('/testing', methods = ['GET'])
+def testing():
+    from db.test_sql import test_sql
+    test_sql()
+    return "Testing"
+
 
 if __name__ == "__main__":
     app.run(debug=True)

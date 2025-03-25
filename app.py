@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from db import db, init_db
 
 from routes.cursos_routes import course_route_blueprint
+from routes.profesores_routes import profesor_route_blueprint
 
 # Load environment variables from .env
 load_dotenv()
@@ -13,6 +14,7 @@ app = Flask(__name__)
 
 # Add routes for api
 app.register_blueprint(course_route_blueprint, url_prefix="")
+app.register_blueprint(profesor_route_blueprint, url_prefix="")
 
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5000"]}})
 

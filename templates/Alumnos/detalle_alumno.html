@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>{{ alumno.nombre }}</title>
+</head>
+<body class="bg-gray-100 p-10">
+    <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow-lg">
+        <h1 class="text-2xl font-bold text-blue-600 mb-6">Detalles del Alumno</h1>
+        
+        <form method="POST" action="{{ url_for('Alumnos.edit_alumno', alumno_id=alumno.id) }}">
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-1">Nombre:</label>
+                <input type="text" name="nombre" value="{{ alumno.nombre }}" class="border p-2 rounded w-full" required>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-1">Email:</label>
+                <input type="email" name="email" value="{{ alumno.email }}" class="border p-2 rounded w-full" required>
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-gray-700 mb-1">Fecha de Ingreso:</label>
+                <input type="date" name="fecha_ingreso" 
+                       value="{% if alumno.fecha_ingreso %}{{ alumno.fecha_ingreso.strftime('%Y-%m-%d') }}{% endif %}" 
+                       class="border p-2 rounded w-full">
+            </div>
+
+            <div class="flex justify-between">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    Guardar Cambios
+                </button>
+                
+                <form method="POST" action="{{ url_for('Alumnos.delete_alumno', alumno_id=alumno.id) }}">
+                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                        Eliminar Alumno
+                    </button>
+                </form>
+            </div>
+        </form>
+
+        <a href="{{ url_for('Alumnos.get_alumnos') }}" class="inline-block mt-6 text-blue-500 hover:underline">
+            ← Volver a la lista de alumnos
+        </a>
+    </div>
+</body>
+</html>

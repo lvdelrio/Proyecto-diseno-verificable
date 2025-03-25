@@ -21,8 +21,8 @@
 
         <h2 class="text-xl font-bold mt-6">Agregar Curso</h2>
         <form action="{{ url_for('Courses.add_curso') }}" method="POST" class="mt-4">
-            <input type="text" name="name" placeholder="Nombre del curso" class="border p-2 rounded w-full mb-2" required>
-            <input type="text" name="description" placeholder="Descripción (opcional)" class="border p-2 rounded w-full mb-2">
+            <input type="text" name="nombre" placeholder="Nombre del curso" class="border p-2 rounded w-full mb-2" required>
+            <input type="text" name="descripcion" placeholder="Descripción (opcional)" class="border p-2 rounded w-full mb-2">
             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Agregar</button>
         </form>
     </div>

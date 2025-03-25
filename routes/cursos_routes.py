@@ -24,8 +24,8 @@ def add_curso():
 
 @course_route_blueprint.route('/editar_curso/<int:curso_id>', methods=['POST'])
 def edit_curso(curso_id):
-    name = request.form["name"]
-    description = request.form["description"]
+    name = request.form["nombre"]
+    description = request.form["descripcion"]
     curso = edit_curso_by_id(config.session, curso_id, name, description)
     
     return redirect(url_for("Courses.get_cursos"))

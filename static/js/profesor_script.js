@@ -1,6 +1,6 @@
 
-function delete_curso(id) {
-    fetch(`/borrar_curso/${id}`, { method: 'POST' })
+function delete_profesor(id) {
+    fetch(`/borrar_profesor/${id}`, { method: 'POST' })
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

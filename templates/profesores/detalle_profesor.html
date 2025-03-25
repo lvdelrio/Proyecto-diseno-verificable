@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>{{ profesor.nombre }}</title>
+</head>
+<body class="bg-gray-100 p-10">
+    <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow-lg">
+        <h1 class="text-2xl font-bold text-blue-600 mb-4">Detalles del Profesor</h1>
+        
+        <form method="POST" action="{{ url_for('Profesores.edit_profesor', profesor_id=profesor.id) }}">
+            <label class="block text-gray-700">Nombre del Profesor:</label>
+            <input type="text" name="nombre" value="{{ profesor.nombre }}" class="border p-2 rounded w-full mb-2" required>
+            
+            <label class="block text-gray-700">Email:</label>
+            <textarea name="email" class="border p-2 rounded w-full mb-2">{{ profesor.email }}</textarea>
+
+            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">Guardar Cambios</button>
+        </form>
+
+        <form method="POST" action="{{ url_for('Profesores.delete_profesor', profesor_id=profesor.id) }}" class="mt-4">
+            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700">Eliminar Profesor</button>
+        </form>
+
+        <a href="{{ url_for('Profesores.get_profesores') }}" class="block mt-4 text-blue-500">Volver a la lista</a>
+    </div>
+</body>
+</html>

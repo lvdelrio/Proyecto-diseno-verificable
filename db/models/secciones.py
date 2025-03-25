@@ -10,4 +10,4 @@ class Seccion(db.Model):
     curso_id = db.Column(Integer, ForeignKey("cursos.id"))
 
     curso: Mapped["Curso"] = relationship( back_populates="secciones")
-    evaluacion: Mapped["Evaluacion"] = relationship("Evaluacion" ,back_populates="seccion")
+    evaluacion: Mapped[list["Evaluacion"]] = relationship("Evaluacion" ,back_populates="seccion")

@@ -10,7 +10,7 @@ class Evaluacion(db.Model):
     tipo = db.Column(Integer, index=True)
     ponderacion = db.Column(Float, index=True)
     opcional = db.Column(Integer, index=True)
-    seccion_id = db.Column(Integer, ForeignKey("secciones.id"))
+    seccion_id = db.Column(Integer, ForeignKey("secciones.id"), nullable = True)
 
     seccion: Mapped["Seccion"] = relationship(
         "Seccion", back_populates="evaluacion")

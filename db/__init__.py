@@ -1,5 +1,5 @@
 from .config import db, init_db
-from .models.user import User
-from .models.course import Course
+from .models.alumno import Alumno
+from .models.curso import Curso
 
-__all__ = ['db', 'init_db', 'Course', 'User']
+__all__ = ['db', 'init_db', 'Curso', 'Alumno']

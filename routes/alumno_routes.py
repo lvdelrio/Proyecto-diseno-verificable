@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template, redirect, url_for
 from db.config import db as config
 from db.controller.alumno_controller import (
     get_all_alumnos,
-    crear_alumno,
+    create_alumno,
     get_alumno_by_id,
     edit_alumno_by_id,
     delete_alumno_by_id
@@ -26,7 +26,7 @@ def add_alumno():
     email = request.form.get("email")
     fecha_ingreso = request.form.get("fecha_ingreso")
     
-    alumno = crear_alumno(config.session, nombre, email, fecha_ingreso)
+    alumno = create_alumno(config.session, nombre, email, fecha_ingreso)
     return redirect(url_for("Alumnos.view_alumno", alumno_id=alumno.id))
 
 @alumno_route_blueprint.route('/editar_alumno/<int:alumno_id>', methods=['POST'])

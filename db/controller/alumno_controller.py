@@ -2,7 +2,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from ..models.alumno import Alumno
 
-def crear_alumno(db: Session, name: str, email: str, fecha_ingreso: str = None):
+def create_alumno(db: Session, name: str, email: str, fecha_ingreso: str = None):
     fecha_ingreso_dt = datetime.strptime(fecha_ingreso, '%Y-%m-%d').date() if fecha_ingreso else None
     
     new_user = Alumno(
@@ -26,7 +26,6 @@ def edit_alumno_by_id(db: Session, user_id: int, name: str, email: str, fecha_in
     if user:
         user.nombre = name
         user.email = email
-        # Update date if provided
         if fecha_ingreso:
             user.fecha_ingreso = datetime.strptime(fecha_ingreso, '%Y-%m-%d').date()
         db.commit()

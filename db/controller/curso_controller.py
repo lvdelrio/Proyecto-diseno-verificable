@@ -15,7 +15,7 @@ def get_all_cursos(db: Session):
     return db.query(Curso).all()
 
 
-def editar_curso_by_id(db: Session, course_id: int, name: str, description: str):
+def edit_curso_by_id(db: Session, course_id: int, name: str, description: str):
     curso = db.query(Curso).filter(Curso.id == course_id).first()
     if curso:
         curso.nombre = name
@@ -25,7 +25,7 @@ def editar_curso_by_id(db: Session, course_id: int, name: str, description: str)
         return curso
     return None
 
-def eliminar_curso_by_id(db: Session, course_id: int):
+def delete_curso_by_id(db: Session, course_id: int):
     curso = db.query(Curso).filter(Curso.id == course_id).first()
     if curso:
         db.delete(curso)

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Alumnos</title>
+</head>
+<body class="bg-gray-100 p-10">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow-lg">
+        <h1 class="text-2xl font-bold text-blue-600 mb-4">Lista de Alumnos</h1>
+        
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white">
+                <thead>
+                    <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                        <th class="py-3 px-6 text-left">Nombre</th>
+                        <th class="py-3 px-6 text-left">Email</th>
+                        <th class="py-3 px-6 text-left">Fecha de Ingreso</th>
+                        <th class="py-3 px-6 text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-600 text-sm">
+                    {% for alumno in alumnos %}
+                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="py-3 px-6 text-left">
+                            <a href="{{ url_for('Alumnos.view_alumno', alumno_id=alumno.id) }}" class="text-blue-500 hover:underline">
+                                {{ alumno.nombre }}
+                            </a>
+                        </td>
+                        <td class="py-3 px-6 text-left">{{ alumno.email }}</td>
+                        <td class="py-3 px-6 text-left">
+                            {% if alumno.fecha_ingreso %}
+                                {{ alumno.fecha_ingreso.strftime('%Y-%m-%d') }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-6 text-center">
+                            <div class="flex justify-center">
+                                <a href="{{ url_for('Alumnos.view_alumno', alumno_id=alumno.id) }}" class="bg-blue-500 text-white px-3 py-1 rounded mr-2 hover:bg-blue-600">
+                                    Editar
+                                </a>
+                                <form method="POST" action="{{ url_for('Alumnos.delete_alumno', alumno_id=alumno.id) }}" class="inline">
+                                    <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="text-xl font-bold mt-8 mb-4">Agregar Nuevo Alumno</h2>
+        <form action="{{ url_for('Alumnos.add_alumno') }}" method="POST" class="bg-gray-50 p-4 rounded">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-gray-700 mb-1">Nombre:</label>
+                    <input type="text" name="nombre" class="border p-2 rounded w-full" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-1">Email:</label>
+                    <input type="email" name="email" class="border p-2 rounded w-full" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-1">Fecha de Ingreso:</label>
+                    <input type="date" name="fecha_ingreso" class="border p-2 rounded w-full">
+                </div>
+            </div>
+            <button type="submit" class="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                Agregar Alumno
+            </button>
+        </form>
+    </div>
+</body>
+</html>

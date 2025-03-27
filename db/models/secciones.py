@@ -7,7 +7,7 @@ class Seccion(db.Model):
 
     id = db.Column(Integer, primary_key=True, index=True)
     nombre = db.Column(String(50))
-    curso_id = db.Column(Integer, ForeignKey("cursos.id"))
+    curso_id = db.Column(Integer, ForeignKey("cursos.id"), nullable=True)
 
     curso: Mapped["Curso"] = relationship( back_populates="secciones")
     evaluacion: Mapped[list["Evaluacion"]] = relationship("Evaluacion" ,back_populates="seccion")

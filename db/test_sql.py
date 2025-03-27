@@ -12,7 +12,7 @@ def test_sql():
     print("Alumno:", alumno)
     print("Evaluacion:", evaluacion)
 
-    nota = Notas(nota=6.5, alumno=alumno)
+    nota = Notas(nota=6.5, alumno=alumno, evaluacion=evaluacion)
 
     session.add(nota)
     session.commit()
@@ -24,8 +24,26 @@ def test_sql():
         print(f" - Nota ID: {n.id}, Valor: {n.nota}, ")
         
     evaluacion = session.query(Evaluacion).filter(Evaluacion.id == 1).first()
-    print("Notas del evalauciones pito chico:")
+    print("Notas del evalauciones:")
     for n in evaluacion.notas:
         print(f"Evaluación tiene nota {n.id}, valor {n.nota}")
+
+    #secciones test para ver si funcionan las relaciones con evalauciones
+    #y sus parametros y las notas
+    from db.models.secciones import Seccion
+    seccion = session.query(Seccion).filter(Seccion.id == 1).first()
+    #sino encuentra crear uno
+    if not seccion:
+        seccion = Seccion(id=1, nombre="Seccion 1", evaluacion=[evaluacion])
+        session.add(seccion)
+        session.commit()
+    print(f"Seccion: {seccion.id}, Nombre: {seccion.nombre}, Evaluaciones: {seccion.evaluacion}")
+
+    for e in seccion.evaluacion:
+        print(f"Evaluacion: {e.id}, Tipo: {e.tipo}, Ponderacion: {e.ponderacion}, Opcional: {e.opcional}")
+
+    for n in seccion.evaluacion[0].notas:
+        print(f"Nota: {n.id}, Valor: {n.nota}")
+
 
     session.close()

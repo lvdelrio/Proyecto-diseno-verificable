@@ -13,4 +13,4 @@ class NotasFinales(db.Model):
     alumno: Mapped["Alumno"] = relationship("Alumno", back_populates="notas_finales")
 
     def __repr__(self):
-        return f"<Curso(id={self.id}, nombre='{self.nombre}')>"
+        return f"<notas_finales(id={self.id}, nota_final='{self.nota_final}')>"

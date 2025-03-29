@@ -3,7 +3,6 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from db.config import db as config
 from db import db, init_db
-from db.controller.seccion_controller import crear_seccion
 
 from routes.cursos_routes import course_route_blueprint
 from routes.profesores_routes import profesor_route_blueprint
@@ -40,7 +39,6 @@ def home():
 def testing():
     from db.test_sql import test_sql
     test_sql()
-    crear_seccion(config.session, 1, "Seccion 1")
     return "Testing"
 
 

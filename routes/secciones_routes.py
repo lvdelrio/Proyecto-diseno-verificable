@@ -26,9 +26,9 @@ def view_seccion(seccion_id):
 
 @seccion_route_blueprint.route('/editar_seccion/<int:seccion_id>', methods=['POST'])
 def edit_seccion(seccion_id):
-    name = request.form["nombre"]
+    nombre = request.form["nombre"]
     curso_id = curso_from_seccion_id(seccion_id)
-    seccion = edit_seccion_by_id(config.session, seccion_id, name)
+    seccion = edit_seccion_by_id(config.session, seccion_id, nombre)
     
     return redirect(url_for("Cursos.view_curso", curso_id=curso_id))
 

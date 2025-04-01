@@ -11,16 +11,13 @@
 <body class="bg-gray-100 p-10">
     <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
 
-        <!-- Back Button -->
         <a href="{{ url_for('Cursos.get_cursos') }}" class="inline-block mb-4 text-blue-500 hover:underline">
             Volver a lista
         </a>
 
-        <!-- Course Title -->
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-blue-600">{{ curso.nombre }}</h1>
 
-            <!-- Delete Course Button (Always Visible) -->
             <form method="POST" action="{{ url_for('Cursos.delete_curso', curso_id=curso.id) }}">
                 <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
                     Eliminar Curso
@@ -28,7 +25,6 @@
             </form>
         </div>
 
-        <!-- TABS -->
         <div x-data="{ tab: new URLSearchParams(window.location.search).get('tab') || 'info' }" x-cloak>
             <div class="flex border-b mb-4">
                 <button @click="tab='info'" class="px-4 py-2" :class="tab === 'info' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Información</button>
@@ -38,7 +34,6 @@
                 <button @click="tab='tests'" class="px-4 py-2" :class="tab === 'tests' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Evaluaciones</button>
             </div>
 
-            <!-- Tab: Course Info -->
             <div x-show="tab === 'info'">
                 <form method="POST" action="{{ url_for('Cursos.edit_curso', curso_id=curso.id) }}">
                     <div class="mb-4">
@@ -55,7 +50,6 @@
                 </form>
             </div>
 
-            <!-- Tab: Secciones -->
             <div x-show="tab === 'secciones'">
                 <h2 class="text-xl font-bold text-gray-800 mb-3">Secciones</h2>
                 <ul class="space-y-2">
@@ -79,7 +73,6 @@
                 </form>
             </div>
 
-            <!-- Tab: Estudiantes -->
             <div x-show="tab === 'estudiantes'">
                 <h2 class="text-xl font-bold text-gray-800 mb-3">Estudiantes</h2>
                 <ul class="space-y-2">
@@ -91,7 +84,6 @@
                 </ul>
             </div>
 
-            <!-- Tab: Profesores -->
             <div x-show="tab === 'profesores'">
                 <h2 class="text-xl font-bold text-gray-800 mb-3">Profesores</h2>
                 <ul class="space-y-2">
@@ -103,7 +95,6 @@
                 </ul>
             </div>
 
-            <!-- Tab: Tests / Evaluaciones -->
             <div x-show="tab === 'tests'">
                 <h2 class="text-xl font-bold text-gray-800 mb-3">Evaluaciones</h2>
                 <ul class="space-y-2">

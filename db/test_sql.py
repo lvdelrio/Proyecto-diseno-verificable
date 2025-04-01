@@ -60,5 +60,34 @@ def test_sql():
 
     print(f"Curso: {curso.nombre}, Requisitos: {[r.curso_requisito.nombre for r in curso.requisitos]}")
     #print(f"Requisito: {requisito.nombre}, Cursos: {[c.curso.nombre for c in requisito.cursos]}")
+    #alumno con notas finales y cursos
+    from db.models.curso import Curso
+    from db.models.notas_finales import NotasFinales
+    from db.controller.notas_finales_controller import create_nota_final
+    from db.controller.curso_controller import crear_curso
+
+    curso = session.query(Curso).filter(Curso.id == 1).first()
+    if not curso:
+        curso = crear_curso(session, "Curso de prueba", "Descripcion del curso")
+        session.commit()
+    print(f"Curso: {curso.id}, Nombre: {curso.nombre}, Descripcion: {curso.descripcion}")
+
+    notas_finales = session.query(NotasFinales).filter(NotasFinales.id == 1).first()
+    if not notas_finales:
+        notas_finales = NotasFinales(nota_final=4.5, alumno=alumno, curso=curso)
+        session.add(notas_finales)
+        session.commit()
+    
+    print(f"Nota final: {notas_finales.id}, Valor: {notas_finales.nota_final}")
+    print(f"Alumno: {notas_finales.alumno.nombre}, Curso: {notas_finales.curso.nombre}")
+    #mostrar todas las notas finales de los distintos cursos de un solo alumno
+
+    print("Notas finales del alumno:")
+    for n in alumno.notas_finales:
+        print(f" - Nota ID: {n.id}, Valor: {n.nota_final}, Curso: {n.curso.nombre}")
+    print(f"Notas finales del alumno: {alumno.notas_finales}")
+    # Verificar si la relación entre alumno y notas finales funciona
+
+
 
     session.close()

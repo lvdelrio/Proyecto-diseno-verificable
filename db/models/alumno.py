@@ -12,6 +12,7 @@ class Alumno(db.Model):
     fecha_ingreso: Mapped[DateTime] = mapped_column(DateTime)
 
     notas: Mapped[list["Notas"]] = relationship("Notas", back_populates="alumno")
+    notas_finales: Mapped[list["NotasFinales"]] = relationship("NotasFinales", back_populates="alumno")
 
     def __repr__(self):
         return f"<Alumno(id={self.id}, nombre='{self.nombre}')>"

@@ -45,5 +45,20 @@ def test_sql():
     for n in seccion.evaluacion[0].notas:
         print(f"Nota: {n.id}, Valor: {n.nota}")
 
+    #testear cursos y sus cursos requisitos
+    from db.models.requisitos import CursoRequisito
+    from db.models.curso import Curso
+    
+    curso = Curso(nombre="Física II", descripcion="Curso de Física II")
+    requisito = Curso(nombre="Física I", descripcion="Curso de Física I")
+    db.session.add_all([curso, requisito])
+    db.session.commit()
+
+    curso_requisito = CursoRequisito(curso_id=curso.id, curso_requisito_id=requisito.id)
+    db.session.add(curso_requisito)
+    db.session.commit()
+
+    print(f"Curso: {curso.nombre}, Requisitos: {[r.curso_requisito.nombre for r in curso.requisitos]}")
+    #print(f"Requisito: {requisito.nombre}, Cursos: {[c.curso.nombre for c in requisito.cursos]}")
 
     session.close()

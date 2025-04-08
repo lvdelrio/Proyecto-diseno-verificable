@@ -1,28 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
     <title>{{ curso.nombre }}</title>
 </head>
 <body class="bg-gray-100 p-10">
-    <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow-lg">
-        <h1 class="text-2xl font-bold text-blue-600 mb-4">Detalles del Curso</h1>
-        
-        <form method="POST" action="{{ url_for('Courses.edit_curso', curso_id=curso.id) }}">
-            <label class="block text-gray-700">Nombre del Curso:</label>
-            <input type="text" name="nombre" value="{{ curso.nombre }}" class="border p-2 rounded w-full mb-2" required>
-            
-            <label class="block text-gray-700">Descripción:</label>
-            <textarea name="descripcion" class="border p-2 rounded w-full mb-2">{{ curso.descripcion }}</textarea>
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
 
-            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">Guardar Cambios</button>
-        </form>
+        <a href="{{ url_for('Cursos.get_cursos') }}" class="inline-block mb-4 text-blue-500 hover:underline">
+            Volver a lista
+        </a>
 
-        <form method="POST" action="{{ url_for('Courses.delete_curso', curso_id=curso.id) }}" class="mt-4">
-            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700">Eliminar Curso</button>
-        </form>
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-blue-600">{{ curso.nombre }}</h1>
 
-        <a href="{{ url_for('Courses.get_cursos') }}" class="block mt-4 text-blue-500">Volver a la lista</a>
+            <form method="POST" action="{{ url_for('Cursos.delete_curso', curso_id=curso.id) }}">
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                    Eliminar Curso
+                </button>
+            </form>
+        </div>
+
+        <div x-data="{ tab: new URLSearchParams(window.location.search).get('tab') || 'info' }" x-cloak>
+            <div class="flex border-b mb-4">
+                <button @click="tab='info'" class="px-4 py-2" :class="tab === 'info' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Información</button>
+                <button @click="tab='secciones'" class="px-4 py-2" :class="tab === 'secciones' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Secciones</button>
+                <button @click="tab='estudiantes'" class="px-4 py-2" :class="tab === 'estudiantes' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Estudiantes</button>
+                <button @click="tab='profesores'" class="px-4 py-2" :class="tab === 'profesores' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Profesores</button>
+                <button @click="tab='tests'" class="px-4 py-2" :class="tab === 'tests' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Evaluaciones</button>
+            </div>
+
+            <div x-show="tab === 'info'">
+                <form method="POST" action="{{ url_for('Cursos.edit_curso', curso_id=curso.id) }}">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-1">Nombre del Curso:</label>
+                        <input type="text" name="nombre" value="{{ curso.nombre }}" class="border p-2 rounded w-full" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-1">Descripción:</label>
+                        <textarea name="descripcion" class="border p-2 rounded w-full" rows="3">{{ curso.descripcion }}</textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                        Guardar Cambios
+                    </button>
+                </form>
+            </div>
+
+            <div x-show="tab === 'secciones'">
+                <h2 class="text-xl font-bold text-gray-800 mb-3">Secciones</h2>
+                <ul class="space-y-2">
+                    {% for seccion in curso.secciones %}
+                        <li class="flex items-center justify-between bg-gray-200 p-3 rounded">
+                            <span class="text-gray-800">{{ seccion.nombre }}</span>
+                            <form method="POST" action="{{ url_for('Secciones.delete_seccion', seccion_id=seccion.id) }}">
+                                <button type="submit" class="text-red-600 hover:underline">Eliminar</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <p class="text-gray-500">No hay secciones aún.</p>
+                    {% endfor %}
+                </ul>
+                <form method="POST" action="{{ url_for('Secciones.add_seccion', curso_id=curso.id) }}" class="bg-gray-50 p-4 rounded-lg mt-4">
+                    <h2 class="text-lg font-bold text-gray-800 mb-3">Agregar Sección</h2>
+                    <input type="text" name="nombre_seccion" class="border p-2 rounded w-full mb-3" placeholder="Nombre de la sección" required>
+                    <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        Agregar Sección
+                    </button>
+                </form>
+            </div>
+
+            <div x-show="tab === 'estudiantes'">
+                <h2 class="text-xl font-bold text-gray-800 mb-3">Estudiantes</h2>
+                <ul class="space-y-2">
+                    {% for estudiante in curso.estudiantes %}
+                        <li class="bg-gray-200 p-3 rounded">{{ estudiante.nombre }}</li>
+                    {% else %}
+                        <p class="text-gray-500">No hay estudiantes aún.</p>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div x-show="tab === 'profesores'">
+                <h2 class="text-xl font-bold text-gray-800 mb-3">Profesores</h2>
+                <ul class="space-y-2">
+                    {% for profesor in curso.profesores %}
+                        <li class="bg-gray-200 p-3 rounded">{{ profesor.nombre }}</li>
+                    {% else %}
+                        <p class="text-gray-500">No hay profesores aún.</p>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div x-show="tab === 'tests'">
+                <h2 class="text-xl font-bold text-gray-800 mb-3">Evaluaciones</h2>
+                <ul class="space-y-2">
+                    {% for test in curso.evaluaciones %}
+                        <li class="bg-gray-200 p-3 rounded">{{ test.titulo }}</li>
+                    {% else %}
+                        <p class="text-gray-500">No hay evaluaciones aún.</p>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
     </div>
 </body>
 </html>

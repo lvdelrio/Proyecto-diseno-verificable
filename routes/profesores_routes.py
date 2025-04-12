@@ -7,12 +7,12 @@ profesor_route_blueprint = Blueprint("Profesores", __name__)
 @profesor_route_blueprint.route('/profesores', methods=['GET'])
 @profesor_route_blueprint.route('/profesores/<int:pagina>', methods=['GET'])
 def get_profesores(pagina=1):
-    profesores_por_pagina = 10
+    profesores_per_page = 2
 
     resultado_paginado = get_paginated_profesores(
         session=config.session,  
-        pagina=pagina,
-        por_pagina=profesores_por_pagina
+        page=pagina,
+        per_page=profesores_per_page
     )
     
     return render_template(

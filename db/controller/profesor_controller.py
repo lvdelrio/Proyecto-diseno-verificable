@@ -33,9 +33,9 @@ def delete_profesor_by_id(db: Session, new_profesor: int):
         return True
     return False
 
-def get_paginated_profesores(session, pagina=1, por_pagina=10):
+def get_paginated_profesores(session, page=1, per_page=10):
     return session.query(Profesor).order_by(Profesor.id).paginate(
-        page=pagina,
-        per_page=por_pagina,
+        page=page,
+        per_page=per_page,
         error_out=False
     )

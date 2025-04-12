@@ -6,7 +6,7 @@ from db import db, init_db
 
 from routes.cursos_routes import curso_route_blueprint
 from routes.profesores_routes import profesor_route_blueprint
-from routes.alumnos_routes import alumno_route_blueprint
+from routes.alumno_routes import alumno_route_blueprint
 from routes.notas_finales_routes import nota_final_route_blueprint
 from routes.secciones_routes import seccion_route_blueprint
 

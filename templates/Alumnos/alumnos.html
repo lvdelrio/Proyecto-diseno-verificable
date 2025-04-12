@@ -1,50 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Alumnos | SGA</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Alumnos</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        .slide-panel {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(100%);
+        }
+        .slide-panel.active {
+            transform: translateX(0);
+        }
+    </style>
 </head>
-<body class="bg-gray-100 p-10">
-    <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow-lg">
-        <h1 class="text-2xl font-bold text-blue-600 mb-4">Lista de Alumnos</h1>
-        
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white">
-                <thead>
-                    <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                        <th class="py-3 px-6 text-left">Nombre</th>
-                        <th class="py-3 px-6 text-left">Email</th>
-                        <th class="py-3 px-6 text-left">Fecha de Ingreso</th>
-                        <th class="py-3 px-6 text-center">Acciones</th>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('home') }}" class="text-gray-600 hover:text-blue-600" title="Volver al menú principal">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </a>
+                <h1 class="text-2xl font-bold text-gray-800">
+                    <i class="fas fa-user-graduate mr-2 text-purple-600"></i>
+                    Gestión de Alumnos
+                </h1>
+            </div>
+            <button onclick="togglePanel()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 flex items-center">
+                <i class="fas fa-plus mr-2"></i> Nuevo Alumno
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <!-- Filtros y estadísticas -->
+        <div class="mb-6 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input type="text" placeholder="Buscar alumno..." class="border p-2 pl-10 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+                <select class="border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <option>Filtrar por...</option>
+                    <option>Recientes</option>
+                    <option>Antiguos</option>
+                </select>
+            </div>
+            <span class="text-sm text-gray-600">Mostrando {{ alumnos|length }} de {{ total_alumnos }} alumnos</span>
+        </div>
+
+        <!-- Lista de Alumnos -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Ingreso</th>
+                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                     </tr>
                 </thead>
-                <tbody class="text-gray-600 text-sm">
+                <tbody class="bg-white divide-y divide-gray-200">
                     {% for alumno in alumnos %}
-                    <tr class="border-b border-gray-200 hover:bg-gray-50">
-                        <td class="py-3 px-6 text-left">
-                            <a href="{{ url_for('Alumnos.view_alumno', alumno_id=alumno.id) }}" class="text-blue-500 hover:underline">
-                                {{ alumno.nombre }}
-                            </a>
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <a href="{{ url_for('Alumnos.view_alumno', alumno_id=alumno.id) }}" class="text-sm font-medium text-purple-600 hover:text-purple-900">
+                                        {{ alumno.nombre }}
+                                    </a>
+                                </div>
+                            </div>
                         </td>
-                        <td class="py-3 px-6 text-left">{{ alumno.email }}</td>
-                        <td class="py-3 px-6 text-left">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ alumno.email }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {% if alumno.fecha_ingreso %}
-                                {{ alumno.fecha_ingreso.strftime('%Y-%m-%d') }}
+                                {{ alumno.fecha_ingreso.strftime('%d/%m/%Y') }}
                             {% else %}
                                 -
                             {% endif %}
                         </td>
-                        <td class="py-3 px-6 text-center">
-                            <div class="flex justify-center">
-                                <a href="{{ url_for('Alumnos.view_alumno', alumno_id=alumno.id) }}" class="bg-blue-500 text-white px-3 py-1 rounded mr-2 hover:bg-blue-600">
-                                    Editar
-                                </a>
-                                <form method="POST" action="{{ url_for('Alumnos.delete_alumno', alumno_id=alumno.id) }}" class="inline">
-                                    <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                                        Eliminar
-                                    </button>
-                                </form>
-                            </div>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                            <a href="{{ url_for('Alumnos.view_alumno', alumno_id=alumno.id) }}" class="text-purple-600 hover:text-purple-900 mr-3" title="Editar">
+                                <i class="fas fa-pencil-alt"></i>
+                            </a>
+                            <form method="POST" action="{{ url_for('Alumnos.delete_alumno', alumno_id=alumno.id) }}" class="inline">
+                                <button type="submit" class="text-red-600 hover:text-red-900" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar este alumno?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}
@@ -52,26 +103,85 @@
             </table>
         </div>
 
-        <h2 class="text-xl font-bold mt-8 mb-4">Agregar Nuevo Alumno</h2>
-        <form action="{{ url_for('Alumnos.add_alumno') }}" method="POST" class="bg-gray-50 p-4 rounded">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-gray-700 mb-1">Nombre:</label>
-                    <input type="text" name="nombre" class="border p-2 rounded w-full" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700 mb-1">Email:</label>
-                    <input type="email" name="email" class="border p-2 rounded w-full" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700 mb-1">Fecha de Ingreso:</label>
-                    <input type="date" name="fecha_ingreso" class="border p-2 rounded w-full">
-                </div>
+        <!-- Paginación -->
+        <div class="mt-6 flex justify-between items-center">
+            <div class="text-sm text-gray-500">
+                Mostrando página {{ pagina_actual }} de {{ total_paginas }}
             </div>
-            <button type="submit" class="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                Agregar Alumno
+            <div class="flex space-x-2">
+                {% if pagina_actual > 1 %}
+                <a href="{{ url_for('Alumnos.get_alumnos', pagina=pagina_actual-1) }}" class="px-3 py-1 border rounded-lg hover:bg-gray-100">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                {% endif %}
+                
+                {% for p in range(1, total_paginas+1) %}
+                    {% if p == pagina_actual %}
+                    <span class="px-3 py-1 bg-purple-600 text-white rounded-lg">{{ p }}</span>
+                    {% else %}
+                    <a href="{{ url_for('Alumnos.get_alumnos', pagina=p) }}" class="px-3 py-1 border rounded-lg hover:bg-gray-100">{{ p }}</a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if pagina_actual < total_paginas %}
+                <a href="{{ url_for('Alumnos.get_alumnos', pagina=pagina_actual+1) }}" class="px-3 py-1 border rounded-lg hover:bg-gray-100">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Panel Lateral para Agregar Alumno -->
+    <div id="addAlumnoPanel" class="slide-panel fixed top-0 right-0 h-full w-96 bg-white shadow-xl z-50 p-6 overflow-y-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-800">Agregar Nuevo Alumno</h2>
+            <button onclick="togglePanel()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
             </button>
+        </div>
+        
+        <form action="{{ url_for('Alumnos.add_alumno') }}" method="POST">
+            <div class="mb-4">
+                <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo*</label>
+                <input type="text" id="nombre" name="nombre" required 
+                       class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+            </div>
+            
+            <div class="mb-4">
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email*</label>
+                <input type="email" id="email" name="email" required
+                       class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+            </div>
+            
+            <div class="mb-4">
+                <label for="fecha_ingreso" class="block text-sm font-medium text-gray-700 mb-1">Fecha de Ingreso</label>
+                <input type="date" id="fecha_ingreso" name="fecha_ingreso"
+                       class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+            </div>
+            
+            <div class="flex justify-end space-x-3 mt-6">
+                <button type="button" onclick="togglePanel()" class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100">
+                    Cancelar
+                </button>
+                <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                    Guardar Alumno
+                </button>
+            </div>
         </form>
     </div>
+
+    <!-- Overlay -->
+    <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+
+    <script>
+        function togglePanel() {
+            const panel = document.getElementById('addAlumnoPanel');
+            const overlay = document.getElementById('overlay');
+            panel.classList.toggle('active');
+            overlay.classList.toggle('hidden');
+            document.body.classList.toggle('overflow-hidden');
+        }
+    </script>
 </body>
 </html>

@@ -1,32 +1,182 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Profesores | SGA</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Profesores</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="{{ url_for('static', filename='js/profesor_script.js') }}"></script>
+    <style>
+        .slide-panel {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(100%);
+        }
+        .slide-panel.active {
+            transform: translateX(0);
+        }
+    </style>
 </head>
-<body class="bg-gray-100 p-10">
-    <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow-lg">
-        <h1 class="text-2xl font-bold text-blue-600 mb-4">Lista de Profesores</h1>
-        <ul class="mb-6">
-            {% for profesor in profesores %}
-                <li class="bg-gray-200 p-3 rounded mt-2 flex justify-between">
-                    <a href="{{ url_for('Profesores.view_profesor', profesor_id=profesor.id) }}" class="text-blue-500">{{ profesor.nombre }}</a>
-                    <form method="POST" action="{{ url_for('Profesores.delete_profesor', profesor_id=profesor.id) }}" class="bg-red-500 text-white px-2 py-1 rounded">
-                        <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded">Eliminar</button>
-                    </form>
-                </li>
-            {% endfor %}
-        </ul>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('home') }}" class="text-gray-600 hover:text-blue-600" title="Volver al menú principal">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </a>
+                <h1 class="text-2xl font-bold text-gray-800">
+                    <i class="fas fa-chalkboard-teacher mr-2 text-green-600"></i>
+                    Gestión de Profesores
+                </h1>
+            </div>
+            <button onclick="togglePanel()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center">
+                <i class="fas fa-plus mr-2"></i> Nuevo Profesor
+            </button>
+        </div>
+    </header>
 
-        <h2 class="text-xl font-bold mt-6">Agregar Profesor</h2>
-        <form action="{{ url_for('Profesores.add_profesor') }}" method="POST" class="mt-4">
-            <input type="text" name="nombre" placeholder="Nombre del profesor" class="border p-2 rounded w-full mb-2" required>
-            <input type="text" name="email" placeholder="Email" class="border p-2 rounded w-full mb-2">
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Agregar</button>
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <!-- Filtros y estadísticas -->
+        <div class="mb-6 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input type="text" placeholder="Buscar profesor..." class="border p-2 pl-10 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+                <select class="border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <option>Filtrar por...</option>
+                    <option>Recientes</option>
+                    <option>Antiguos</option>
+                </select>
+            </div>
+            <span class="text-sm text-gray-600">Mostrando {{ profesores|length }} de {{ total_profesores }} profesores</span>
+        </div>
+
+        <!-- Lista de Profesores -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for profesor in profesores %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <a href="{{ url_for('Profesores.view_profesor', profesor_id=profesor.id) }}" class="text-sm font-medium text-green-600 hover:text-green-900">
+                                        {{ profesor.nombre }}
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ profesor.email or "-" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                            <a href="{{ url_for('Profesores.view_profesor', profesor_id=profesor.id) }}" class="text-green-600 hover:text-green-900 mr-3" title="Editar">
+                                <i class="fas fa-pencil-alt"></i>
+                            </a>
+                            <form method="POST" action="{{ url_for('Profesores.delete_profesor', profesor_id=profesor.id) }}" class="inline">
+                                <button type="submit" class="text-red-600 hover:text-red-900" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar este profesor?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="px-6 py-4 text-center text-gray-500">
+                            No se encontraron profesores
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        <div class="mt-6 flex justify-between items-center">
+            <div class="text-sm text-gray-500">
+                Mostrando página {{ pagina_actual }} de {{ total_paginas }}
+            </div>
+            <div class="flex space-x-2">
+                {% if pagina_actual > 1 %}
+                <a href="{{ url_for('Profesores.get_profesores', pagina=pagina_actual-1, por_pagina=por_pagina) }}" class="px-3 py-1 border rounded-lg hover:bg-gray-100">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                {% endif %}
+                
+                {% for p in range(1, total_paginas+1) %}
+                    {% if p == pagina_actual %}
+                    <span class="px-3 py-1 bg-green-600 text-white rounded-lg">{{ p }}</span>
+                    {% else %}
+                    <a href="{{ url_for('Profesores.get_profesores', pagina=p, por_pagina=por_pagina) }}" class="px-3 py-1 border rounded-lg hover:bg-gray-100">{{ p }}</a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if pagina_actual < total_paginas %}
+                <a href="{{ url_for('Profesores.get_profesores', pagina=pagina_actual+1, por_pagina=por_pagina) }}" class="px-3 py-1 border rounded-lg hover:bg-gray-100">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Panel Lateral para Agregar Profesor -->
+    <div id="addProfesorPanel" class="slide-panel fixed top-0 right-0 h-full w-96 bg-white shadow-xl z-50 p-6 overflow-y-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-800">Agregar Nuevo Profesor</h2>
+            <button onclick="togglePanel()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <form action="{{ url_for('Profesores.add_profesor') }}" method="POST">
+            <div class="mb-4">
+                <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo*</label>
+                <input type="text" id="nombre" name="nombre" required 
+                       class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+            </div>
+            
+            <div class="mb-4">
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input type="email" id="email" name="email"
+                       class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+            </div>
+            
+            <div class="flex justify-end space-x-3 mt-6">
+                <button type="button" onclick="togglePanel()" class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100">
+                    Cancelar
+                </button>
+                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                    Guardar Profesor
+                </button>
+            </div>
         </form>
     </div>
 
-    
+    <!-- Overlay -->
+    <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+
+    <script>
+        function togglePanel() {
+            const panel = document.getElementById('addProfesorPanel');
+            const overlay = document.getElementById('overlay');
+            panel.classList.toggle('active');
+            overlay.classList.toggle('hidden');
+            document.body.classList.toggle('overflow-hidden');
+        }
+    </script>
 </body>
 </html>

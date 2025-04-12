@@ -1,13 +1,27 @@
 from flask import Blueprint, request, render_template, redirect, url_for
 from db.config import db as config
-from db.controller.profesor_controller import get_all_profesores, crear_profesor, get_profesor_by_id, edit_profesor_by_id, delete_profesor_by_id
+from db.controller.profesor_controller import get_all_profesores, crear_profesor, get_profesor_by_id, edit_profesor_by_id, delete_profesor_by_id, get_paginated_profesores
 
 profesor_route_blueprint = Blueprint("Profesores", __name__)
 
 @profesor_route_blueprint.route('/profesores', methods=['GET'])
-def get_profesores():
-    profesores = get_all_profesores(config.session)
-    return render_template("Profesores/profesores.html", profesores=profesores)
+@profesor_route_blueprint.route('/profesores/<int:pagina>', methods=['GET'])
+def get_profesores(pagina=1):
+    profesores_por_pagina = 10
+
+    resultado_paginado = get_paginated_profesores(
+        session=config.session,  
+        pagina=pagina,
+        por_pagina=profesores_por_pagina
+    )
+    
+    return render_template(
+        "Profesores/profesores.html",
+        profesores=resultado_paginado.items,        
+        pagina_actual=pagina,                      
+        total_paginas=resultado_paginado.pages,    
+        total_profesores=resultado_paginado.total   
+    )
 
 @profesor_route_blueprint.route('/profesor/<int:profesor_id>')
 def view_profesor(profesor_id):

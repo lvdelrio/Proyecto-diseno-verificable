@@ -11,8 +11,8 @@
         <ul class="mb-6">
             {% for curso in cursos %}
                 <li class="bg-gray-200 p-3 rounded mt-2 flex justify-between">
-                    <a href="{{ url_for('Courses.view_curso', curso_id=curso.id) }}" class="text-blue-500">{{ curso.nombre }}</a>
-                    <form method="POST" action="{{ url_for('Courses.delete_curso', curso_id=curso.id) }}" class="bg-red-500 text-white px-2 py-1 rounded">
+                    <a href="{{ url_for('Cursos.view_curso', curso_id=curso.id) }}" class="text-blue-500">{{ curso.nombre }}</a>
+                    <form method="POST" action="{{ url_for('Cursos.delete_curso', curso_id=curso.id) }}" class="bg-red-500 text-white px-2 py-1 rounded">
                         <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded">Eliminar</button>
                     </form>
                 </li>
@@ -20,7 +20,7 @@
         </ul>
 
         <h2 class="text-xl font-bold mt-6">Agregar Curso</h2>
-        <form action="{{ url_for('Courses.add_curso') }}" method="POST" class="mt-4">
+        <form action="{{ url_for('Cursos.add_curso') }}" method="POST" class="mt-4">
             <input type="text" name="nombre" placeholder="Nombre del curso" class="border p-2 rounded w-full mb-2" required>
             <input type="text" name="descripcion" placeholder="Descripción (opcional)" class="border p-2 rounded w-full mb-2">
             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Agregar</button>

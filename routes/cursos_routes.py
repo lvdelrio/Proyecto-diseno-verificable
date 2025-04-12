@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template, redirect, url_for
 from db.config import db as config
 from db.controller.curso_controller import get_all_cursos, crear_curso, get_curso_by_id, edit_curso_by_id, delete_curso_by_id
 
-curso_route_blueprint = Blueprint("Courses", __name__)
+curso_route_blueprint = Blueprint("Cursos", __name__)
 
 @curso_route_blueprint.route('/cursos', methods=['GET'])
 def get_cursos():
@@ -20,7 +20,7 @@ def add_curso():
     description = request.form.get("descripcion", "")
     course = crear_curso(config.session, name, description)
 
-    return redirect(url_for("Courses.view_curso", curso_id=course.id))
+    return redirect(url_for("Cursos.view_curso", curso_id=course.id))
 
 @curso_route_blueprint.route('/editar_curso/<int:curso_id>', methods=['POST'])
 def edit_curso(curso_id):
@@ -28,10 +28,10 @@ def edit_curso(curso_id):
     description = request.form["descripcion"]
     curso = edit_curso_by_id(config.session, curso_id, name, description)
     
-    return redirect(url_for("Courses.get_cursos"))
+    return redirect(url_for("Cursos.get_cursos"))
 
 @curso_route_blueprint.route('/borrar_curso/<int:curso_id>', methods=['POST'])
 def delete_curso(curso_id):
     delete_curso_by_id(config.session, curso_id)
-    return redirect(url_for("Courses.get_cursos"))
+    return redirect(url_for("Cursos.get_cursos"))
 

@@ -16,7 +16,7 @@ alumno_route_blueprint = Blueprint("Alumnos", __name__)
 def get_alumnos(pagina=1):
     alumnos_per_page = 10
 
-    resultado_paginado = get_paginated_alumnos(
+    result_paging = get_paginated_alumnos(
         session=config.session,  
         page=pagina,
         per_page=alumnos_per_page
@@ -24,10 +24,10 @@ def get_alumnos(pagina=1):
     
     return render_template(
         "Alumnos/alumnos.html",
-        alumnos=resultado_paginado.items,       
+        alumnos=result_paging.items,       
         pagina_actual=pagina,                   
-        total_paginas=resultado_paginado.pages, 
-        total_alumnos=resultado_paginado.total  
+        total_paginas=result_paging.pages, 
+        total_alumnos=result_paging.total  
     )
 
 @alumno_route_blueprint.route('/alumno/<int:alumno_id>')

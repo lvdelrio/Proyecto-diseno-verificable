@@ -3,6 +3,9 @@ from db.config import db
 from db.models.alumno import Alumno
 from db.models.notas import Notas
 from db.models.evaluacion import Evaluacion
+from db.controller.categoria_controller import crear_categoria
+from db.controller.evalaucion_controller import crear_evaluacion
+from db.controller.seccion_controller import crear_seccion
 def test_sql():
     session = db.session
 
@@ -87,6 +90,25 @@ def test_sql():
         print(f" - Nota ID: {n.id}, Valor: {n.nota_final}, Curso: {n.curso.nombre}")
     print(f"Notas finales del alumno: {alumno.notas_finales}")
     # Verificar si la relación entre alumno y notas finales funciona
+
+    #crear categoria y evalaucio y llamar ambas desde ambas
+
+    categoria = crear_categoria(
+    tipo_categoria="Pruebas",
+    id_seccion=1,
+    ponderacion=0.5,
+    opcional=False
+)
+
+# Crear evaluaciones asociadas a la categoria
+evaluacion1 = crear_evaluacion(tipo=1, ponderacion=0.25, opcional=False, categoria=categoria)
+evaluacion2 = crear_evaluacion(tipo=2, ponderacion=0.25, opcional=True, categoria=categoria)
+
+# Verificando relaciones
+print("Categoría creada:", categoria)
+print("Evaluaciones asociadas a esta categoría:")
+for evaluacion in categoria.evaluaciones:
+    print(f"- Evaluacion ID: {evaluacion.id}, Tipo: {evaluacion.tipo}, Opcional: {evaluacion.opcional}")
 
 
 

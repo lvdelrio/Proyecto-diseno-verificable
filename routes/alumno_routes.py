@@ -5,15 +5,30 @@ from db.controller.alumno_controller import (
     create_alumno,
     get_alumno_by_id,
     edit_alumno_by_id,
-    delete_alumno_by_id
+    delete_alumno_by_id,
+    get_paginated_alumnos
 )
 
 alumno_route_blueprint = Blueprint("Alumnos", __name__)
 
-@alumno_route_blueprint.route('/alumnos', methods=['GET'])
-def get_alumnos():
-    alumnos = get_all_alumnos(config.session)
-    return render_template("Alumnos/alumnos.html", alumnos=alumnos)
+@alumno_route_blueprint.route('/alumnos')
+@alumno_route_blueprint.route('/alumnos/<int:pagina>')
+def get_alumnos(pagina=1):
+    alumnos_per_page = 10
+
+    result_paging = get_paginated_alumnos(
+        session=config.session,  
+        page=pagina,
+        per_page=alumnos_per_page
+    )
+    
+    return render_template(
+        "Alumnos/alumnos.html",
+        alumnos=result_paging.items,       
+        pagina_actual=pagina,                   
+        total_paginas=result_paging.pages, 
+        total_alumnos=result_paging.total  
+    )
 
 @alumno_route_blueprint.route('/alumno/<int:alumno_id>')
 def view_alumno(alumno_id):

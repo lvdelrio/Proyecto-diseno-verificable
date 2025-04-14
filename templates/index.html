@@ -1,15 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGA - Panel de Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>SGA Home</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 flex flex-col items-center justify-center h-screen">
-    <h1 class="text-3xl font-bold text-blue-600 mb-6">Sistema de Gestión Académica</h1>
-    <div class="space-x-4">
-        <a href="/cursos" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Cursos</a>
-        <a href="/profesores" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">Profesores</a>
-        <a href="/alumnos" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-700">Alumnos</a>
-    </div>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">
+                <i class="fas fa-graduation-cap mr-2 text-blue-600"></i>
+                Sistema de Gestión Académica
+            </h1>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm text-gray-600">Admin</span>
+                <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Panel de Control</h2>
+            <p class="text-gray-600">Bienvenido al sistema de gestión académica. Selecciona una categoría para administrar.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <a href="/cursos" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="p-3 bg-blue-100 rounded-full mr-4">
+                            <i class="fas fa-book text-blue-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800">Gestión de Cursos</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm">Administra cursos, secciones y requisitos académicos.</p>
+                </div>
+            </a>
+
+            <a href="/profesores" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="p-3 bg-green-100 rounded-full mr-4">
+                            <i class="fas fa-chalkboard-teacher text-green-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800">Gestión de Profesores</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm">Administra la información y asignaciones de profesores.</p>
+                </div>
+            </a>
+
+            <a href="/alumnos" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="p-3 bg-purple-100 rounded-full mr-4">
+                            <i class="fas fa-user-graduate text-purple-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800">Gestión de Alumnos</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm">Administra alumnos, notas y registros académicos.</p>
+                </div>
+            </a>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t mt-8">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+            <p>Sistema de Gestión Académica © 2025</p>
+        </div>
+    </footer>
 </body>
 </html>

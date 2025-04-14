@@ -40,3 +40,10 @@ def delete_alumno_by_id(db: Session, user_id: int):
         db.commit()
         return True
     return False
+
+def get_paginated_alumnos(session, page=1, per_page=10):
+    return session.query(Alumno).order_by(Alumno.id).paginate(
+        page=page,
+        per_page=per_page,
+        error_out=False
+    )

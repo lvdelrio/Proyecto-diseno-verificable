@@ -32,3 +32,10 @@ def delete_profesor_by_id(db: Session, new_profesor: int):
         db.commit()
         return True
     return False
+
+def get_paginated_profesores(session, page=1, per_page=10):
+    return session.query(Profesor).order_by(Profesor.id).paginate(
+        page=page,
+        per_page=per_page,
+        error_out=False
+    )

@@ -1,12 +1,15 @@
-from flask import Blueprint, request, render_template, redirect, url_for
+from flask import Blueprint, request, render_template, redirect, url_for, flash, abort
 from db.config import db as config
+from db.controller.curso_controller import get_all_cursos
+from db.controller.seccion_controller import get_all_secciones_by_curso_id
 from db.controller.alumno_controller import (
     get_all_alumnos,
     create_alumno,
     get_alumno_by_id,
     edit_alumno_by_id,
     delete_alumno_by_id,
-    get_paginated_alumnos
+    get_paginated_alumnos,
+    enroll_alumno_in_seccion
 )
 
 alumno_route_blueprint = Blueprint("Alumnos", __name__)
@@ -33,7 +36,27 @@ def get_alumnos(pagina=1):
 @alumno_route_blueprint.route('/alumno/<int:alumno_id>')
 def view_alumno(alumno_id):
     alumno = get_alumno_by_id(config.session, alumno_id)
-    return render_template("Alumnos/detalle_alumno.html", alumno=alumno)
+
+    if alumno is None:
+        abort(404, description="Alumno no encontrado.")
+
+    cursos_inscritos_ids = {seccion.curso_id for seccion in alumno.secciones}
+
+    cursos_disponibles = [
+        curso for curso in get_all_cursos(config.session)
+        if curso.id not in cursos_inscritos_ids
+    ]
+
+    cursos_con_secciones = []
+    for curso in cursos_disponibles:
+        secciones = get_all_secciones_by_curso_id(config.session, curso.id)
+        cursos_con_secciones.append((curso, secciones))
+
+    return render_template(
+        "Alumnos/detalle_alumno.html",
+        alumno=alumno,
+        cursos_con_secciones=cursos_con_secciones
+    )
 
 @alumno_route_blueprint.route('/agregar_alumno', methods=['POST'])
 def add_alumno():
@@ -57,3 +80,24 @@ def edit_alumno(alumno_id):
 def delete_alumno(alumno_id):
     delete_alumno_by_id(config.session, alumno_id)
     return redirect(url_for("Alumnos.get_alumnos"))
+
+@alumno_route_blueprint.route('/alumno/<int:alumno_id>/inscribir', methods=['POST'])
+def inscribir_alumno(alumno_id):
+    alumno = get_alumno_by_id(config.session, alumno_id)
+    cursos = get_all_cursos(config.session)
+
+    enrolled_sections = []
+    errors = []
+
+    for curso in cursos:
+        seccion_id = request.form.get(f'seccion_id_{curso.id}')
+        if seccion_id:
+            exito, mensaje = enroll_alumno_in_seccion(config.session, alumno_id, int(seccion_id))
+            if exito:
+                enrolled_sections.append(mensaje)
+            else:
+                errors.append(mensaje)
+
+ 
+
+    return redirect(url_for('Alumnos.view_alumno', alumno_id=alumno_id))

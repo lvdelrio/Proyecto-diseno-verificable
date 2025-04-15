@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from ..models.profesor import Profesor
+from ..models.seccion import Seccion
 
 def create_profesor(db: Session, nombre: str, email: str):
     new_profesor= Profesor(nombre=nombre, email=email)
@@ -41,3 +42,21 @@ def get_paginated_profesores(session, page=1, per_page=10):
         per_page=per_page,
         error_out=False
     )
+
+def enroll_profesor_in_seccion(db: Session, profesor_id: int, seccion_id: int):
+    profesor = db.query(Profesor).filter(Profesor.id == profesor_id).first()
+    if not profesor:
+        return False, "Alumno no encontrado."
+
+    seccion = db.query(Seccion).filter(Seccion.id == seccion_id).first()
+    if not seccion:
+        return False, "Sección no encontrada."
+
+    if seccion in profesor.secciones:
+        return False, "El alumno ya está inscrito en esta sección."
+
+    profesor.secciones.append(seccion)
+    db.commit()
+    db.refresh(profesor)
+
+    return True, "Alumno inscrito exitosamente."

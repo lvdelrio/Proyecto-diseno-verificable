@@ -1,6 +1,7 @@
 from datetime import datetime
 from sqlalchemy.orm import Session
 from ..models.alumno import Alumno
+from ..models.seccion import Seccion
 
 def create_alumno(db: Session, name: str, email: str, fecha_ingreso: str = None):
     fecha_ingreso_dt = datetime.strptime(fecha_ingreso, '%Y-%m-%d').date() if fecha_ingreso else None
@@ -47,3 +48,21 @@ def get_paginated_alumnos(session, page=1, per_page=10):
         per_page=per_page,
         error_out=False
     )
+
+def enroll_alumno_in_seccion(db: Session, alumno_id: int, seccion_id: int):
+    alumno = db.query(Alumno).filter(Alumno.id == alumno_id).first()
+    if not alumno:
+        return False, "Alumno no encontrado."
+
+    seccion = db.query(Seccion).filter(Seccion.id == seccion_id).first()
+    if not seccion:
+        return False, "Sección no encontrada."
+
+    if seccion in alumno.secciones:
+        return False, "El alumno ya está inscrito en esta sección."
+
+    alumno.secciones.append(seccion)
+    db.commit()
+    db.refresh(alumno)
+
+    return True, "Alumno inscrito exitosamente."

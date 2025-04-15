@@ -1,28 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
     <title>{{ profesor.nombre }}</title>
 </head>
 <body class="bg-gray-100 p-10">
-    <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow-lg">
-        <h1 class="text-2xl font-bold text-blue-600 mb-4">Detalles del Profesor</h1>
-        
-        <form method="POST" action="{{ url_for('Profesores.edit_profesor', profesor_id=profesor.id) }}">
-            <label class="block text-gray-700">Nombre del Profesor:</label>
-            <input type="text" name="nombre" value="{{ profesor.nombre }}" class="border p-2 rounded w-full mb-2" required>
-            
-            <label class="block text-gray-700">Email:</label>
-            <textarea name="email" class="border p-2 rounded w-full mb-2">{{ profesor.email }}</textarea>
+    <div class="max-w-3xl mx-auto bg-white p-6 rounded shadow-lg">
 
-            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">Guardar Cambios</button>
-        </form>
+        <a href="{{ url_for('Profesores.get_profesores') }}" class="inline-block mb-4 text-blue-500 hover:underline">
+            Volver a lista
+        </a>
 
-        <form method="POST" action="{{ url_for('Profesores.delete_profesor', profesor_id=profesor.id) }}" class="mt-4">
-            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700">Eliminar Profesor</button>
-        </form>
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-blue-600">{{ profesor.nombre }}</h1>
 
-        <a href="{{ url_for('Profesores.get_profesores') }}" class="block mt-4 text-blue-500">Volver a la lista</a>
+            <form method="POST" action="{{ url_for('Profesores.delete_profesor', profesor_id=profesor.id) }}">
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                    Eliminar Profesor
+                </button>
+            </form>
+        </div>
+
+        <div x-data="{ tab: 'info', selectedCursos: {} }" x-cloak>
+            <div class="flex border-b mb-4">
+                <button @click="tab='info'" class="px-4 py-2" :class="tab === 'info' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Información</button>
+                <button @click="tab='cursos'" class="px-4 py-2" :class="tab === 'cursos' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Cursos Disponibles</button>
+                <button @click="tab='inscritos'" class="px-4 py-2" :class="tab === 'inscritos' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Cursos Inscritos</button>
+            </div>
+
+            <div x-show="tab === 'info'">
+                <form method="POST" action="{{ url_for('Profesores.edit_profesor', profesor_id=profesor.id) }}">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-1">Nombre:</label>
+                        <input type="text" name="nombre" value="{{ profesor.nombre }}" class="border p-2 rounded w-full" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-1">Email:</label>
+                        <input type="email" name="email" value="{{ profesor.email }}" class="border p-2 rounded w-full" required>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-gray-700 mb-1">Fecha de Ingreso:</label>
+                        <input type="date" name="fecha_ingreso" 
+                               value="{% if profesor.fecha_ingreso %}{{ profesor.fecha_ingreso.strftime('%Y-%m-%d') }}{% endif %}" 
+                               class="border p-2 rounded w-full">
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        Guardar Cambios
+                    </button>
+                </form>
+            </div>
+
+            <div x-show="tab === 'cursos'">
+                <h2 class="text-xl font-bold text-gray-800 mb-3">Inscribir en Cursos</h2>
+                <form method="POST" action="{{ url_for('Profesores.inscribir_profesor', profesor_id=profesor.id) }}">
+                    {% for curso, secciones in cursos_con_secciones %}
+                        <div class="mb-2" x-data="{ open: false }">
+                            <button type="button" @click="open = !open" class="w-full text-left bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">
+                                {{ curso.nombre }}
+                            </button>
+                            <div x-show="open" class="mt-1 px-4 py-2 bg-gray-50 border rounded">
+                                <select name="seccion_id_{{ curso.id }}" class="border p-2 rounded w-full">
+                                    <option value="" disabled selected>Seleccione una sección</option>
+                                    {% for seccion in secciones %}
+                                        <option value="{{ seccion.id }}">{{ seccion.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="w-full mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                        Inscribir Profesor
+                    </button>
+                </form>
+            </div>
+
+            <div x-show="tab === 'inscritos'">
+                <h2 class="text-xl font-bold text-gray-800 mb-3">Cursos y Secciones Inscritas</h2>
+                <ul class="space-y-2">
+                    {% for seccion in profesor.secciones %}
+                        <li class="bg-gray-200 p-3 rounded">
+                           Curso: {{ seccion.curso.nombre }} - Sección: {{ seccion.nombre }} 
+                        </li>
+                    {% else %}
+                        <p class="text-gray-500">El profesor no está inscrito en ningún curso aún.</p>
+                    {% endfor %}
+                </ul>
+            </div>
+
+        </div>
     </div>
 </body>
 </html>

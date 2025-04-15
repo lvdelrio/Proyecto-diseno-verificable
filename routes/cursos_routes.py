@@ -19,7 +19,7 @@ def get_cursos():
     return render_template("Cursos/cursos.html", cursos=cursos)
 
 @curso_route_blueprint.route('/curso/<int:curso_id>')
-@curso_route_blueprint.route('/curso/<int:curso_id>')
+
 def view_curso(curso_id):
     curso = get_curso_by_id(config.session, curso_id)
     return render_template("Cursos/detalle_curso.html", curso=curso)
@@ -31,12 +31,11 @@ def edit_curso(curso_id):
     curso = edit_curso_by_id(config.session, curso_id, name, description)
     
     return redirect(url_for("Cursos.get_cursos"))
-    return redirect(url_for("Cursos.get_cursos"))
 
 @curso_route_blueprint.route('/borrar_curso/<int:curso_id>', methods=['POST'])
 @curso_route_blueprint.route('/borrar_curso/<int:curso_id>', methods=['POST'])
 def delete_curso(curso_id):
     delete_curso_by_id(config.session, curso_id)
     return redirect(url_for("Cursos.get_cursos"))
-    return redirect(url_for("Cursos.get_cursos"))
+
 

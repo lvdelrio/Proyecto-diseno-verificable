@@ -6,5 +6,7 @@ from .models.evaluacion import Evaluacion
 from .models.seccion import Seccion
 from .models.profesor import Profesor
 from .models.requisitos import CursoRequisito
+from .models.categoria import Categoria
+from .models.alumno_seccion import AlumnoSeccion
 
-__all__ = ['db', 'init_db', 'Curso', 'Alumno', 'Notas', 'Evaluacion', 'Seccion', 'Profesor', 'CursoRequisito']
+__all__ = ['db', 'init_db', 'Curso', 'Alumno', 'Notas', 'Evaluacion', 'Seccion', 'Profesor', 'CursoRequisito', 'Categoria', 'AlumnoSeccion']

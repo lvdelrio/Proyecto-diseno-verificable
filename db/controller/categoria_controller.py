@@ -1,0 +1,28 @@
+from ..config import db
+from ..models.categoria import Categoria
+
+def create_categoria(tipo_categoria, seccion, ponderacion, opcional):
+    nueva_categoria = Categoria(
+        tipo_categoria=tipo_categoria,
+        id_seccion=seccion.id,
+        ponderacion=ponderacion,
+        opcional=opcional
+    )
+    db.session.add(nueva_categoria)
+    db.session.commit()
+    return nueva_categoria
+
+def get_categoria(categoria_id):
+    return Categoria.query.get(categoria_id)
+
+def edit_categoria(categoria_id, **kwargs):
+    categoria = Categoria.query.get(categoria_id)
+    for key, value in kwargs.items():
+        setattr(categoria, key, value)
+    db.session.commit()
+    return categoria
+
+def delete_categoria(categoria_id):
+    categoria = Categoria.query.get(categoria_id)
+    db.session.delete(categoria)
+    db.session.commit()

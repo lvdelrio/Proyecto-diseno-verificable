@@ -1,4 +1,3 @@
-# routes/evaluacion_routes.py
 from flask import Blueprint, request, render_template, redirect, url_for, jsonify
 from db.config import db as config
 from db.controller.evaluacion_controller import (

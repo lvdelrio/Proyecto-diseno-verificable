@@ -56,9 +56,7 @@
                     {% for seccion in curso.secciones %}
                         <li class="flex items-center justify-between bg-gray-200 p-3 rounded">
                             <span class="text-gray-800">{{ seccion.nombre }}</span>
-                            <form method="POST" action="{{ url_for('Secciones.edit_seccion', seccion_id=seccion.id) }}">
-                                <button type="submit" class="text-red-600 hover:underline">Editar</button>
-                            </form>
+                            <a href="{{ url_for('Secciones.view_seccion', seccion_id=seccion.id) }}" class="text-blue-500">Editar</a>
                             <form method="POST" action="{{ url_for('Secciones.delete_seccion', seccion_id=seccion.id) }}">
                                 <button type="submit" class="text-red-600 hover:underline">Eliminar</button>
                             </form>

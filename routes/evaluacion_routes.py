@@ -47,3 +47,32 @@ def add_evaluacion():
         db.session.rollback()
         print(f'Error al crear evaluación: {str(e)}', 'error')
         return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
+
+@evaluacion_blueprint.route('/evaluaciones/<int:evaluacion_id>/notas')
+def view_notas_evaluacion(evaluacion_id):
+    evaluacion = get_evaluacion_by_id(db.session, evaluacion_id)
+    if not evaluacion or not evaluacion.categoria or not evaluacion.categoria.seccion:
+        return redirect(url_for('Cursos.get_cursos'))
+    
+    curso_id = evaluacion.categoria.seccion.curso_id
+    return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
+
+@evaluacion_blueprint.route('/evaluaciones/<int:evaluacion_id>/delete', methods=['POST'])
+def delete_evaluacion_route(evaluacion_id):
+    try:
+        evaluacion = get_evaluacion_by_id(db.session, evaluacion_id)
+        if not evaluacion or not evaluacion.categoria or not evaluacion.categoria.seccion:
+            return jsonify({'success': False, 'message': 'Evaluación no encontrada'}), 404
+        
+        success = delete_evaluacion(db.session, evaluacion_id)
+        if success:
+            return jsonify({
+                'success': True,
+                'message': 'Evaluación eliminada',
+                'redirect': url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones')
+            })
+        return jsonify({'success': False, 'message': 'No se pudo eliminar la evaluación'}), 400
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500

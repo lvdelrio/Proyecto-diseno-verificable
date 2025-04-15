@@ -99,7 +99,21 @@
                                    class="text-blue-600 hover:text-blue-900 mr-3">
                                     <i class="fas fa-edit"></i> Notas
                                 </a>
-                                <form method="POST" action="{{ url_for('Evaluaciones.delete_evaluacion', evaluacion_id=evaluacion.id) }}" class="inline">
+                                <form method="POST" action="{{ url_for('Evaluaciones.delete_evaluacion_route', evaluacion_id=evaluacion.id) }}" 
+                                    class="inline" @submit.prevent="fetch($event.target.action, {
+                                        method: 'POST',
+                                        headers: { 'Accept': 'application/json' },
+                                        body: new FormData($event.target)
+                                    }).then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            if (data.redirect) {
+                                                window.location.href = data.redirect;
+                                            }
+                                        } else {
+                                            alert(data.message || 'Error al eliminar evaluación');
+                                        }
+                                    })">
                                     <button type="submit" class="text-red-600 hover:text-red-900" 
                                             onclick="return confirm('¿Eliminar esta evaluación?')">
                                         <i class="fas fa-trash"></i>

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, render_template, redirect, url_for, jsonify
-from db.config import db as config
+from db.config import db 
 from db.controller.evaluacion_controller import (
     create_evaluacion,
     get_evaluacion_by_id,
@@ -13,28 +13,36 @@ evaluacion_blueprint = Blueprint("Evaluaciones", __name__)
 
 @evaluacion_blueprint.route('/evaluaciones/add', methods=['POST'])
 def add_evaluacion():
-    seccion_id = request.form.get('seccion_id')
-    #Tengo que crear categorias, pero ademas las categorias se deben llamar desde la base de datos
-    tipo = request.form.get('tipo')
-    ponderacion = float(request.form.get('ponderacion'))
-    opcional = 'opcional' in request.form
-    curso_id = request.form.get('curso_id')
+    try:
+        categoria_id = request.form.get('categoria_id')  # Cambiamos de seccion_id a categoria_id
+        tipo = request.form.get('tipo')
+        ponderacion = request.form.get('ponderacion')
+        opcional = 'opcional' in request.form
+        curso_id = request.form.get('curso_id')
+        
+        if not all([categoria_id, tipo, ponderacion, curso_id]):
+            print('Faltan campos obligatorios', 'error')
+            return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
+        
+        try:
+            ponderacion = float(ponderacion)
+        except ValueError:
+            print('La ponderación debe ser un número válido', 'error')
+            return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
+        
+        # Usamos create_evaluacion_con_notas para crear notas vacías automáticamente
+        nueva_evaluacion = create_evaluacion_con_notas(
+            db=db.session,
+            tipo=tipo,
+            ponderacion=ponderacion,
+            opcional=opcional,
+            categoria_id=categoria_id
+        )
+        
+        print('Evaluación creada exitosamente', 'success')
+        return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
     
-    nueva_evaluacion = create_evaluacion(config.session, tipo, ponderacion, opcional, seccion_id)
-    print(nueva_evaluacion)
-    return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
-
-@evaluacion_blueprint.route('/evaluaciones/<int:evaluacion_id>/delete', methods=['POST'])
-def delete_evaluacion(evaluacion_id):
-    delete_evaluacion(config.session, evaluacion_id)
-    return jsonify({'success': True})
-
-@evaluacion_blueprint.route('/evaluaciones/<int:evaluacion_id>/notas')
-def view_notas_evaluacion(evaluacion_id):
-    evaluacion = get_evaluacion_by_id(config.session, evaluacion_id)
-    notas = get_notas_by_evaluacion(config.session, evaluacion_id)
-    return render_template(
-        'Evaluaciones/notas_evaluacion.html',
-        evaluacion=evaluacion,
-        notas=notas
-    )
+    except Exception as e:
+        db.session.rollback()
+        print(f'Error al crear evaluación: {str(e)}', 'error')
+        return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))

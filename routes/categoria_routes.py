@@ -1,4 +1,4 @@
-from flask import Blueprint, request, redirect, url_for, flash
+from flask import Blueprint, request, redirect, url_for
 from db.config import db
 from db.controller.categoria_controller import (
     create_categoria,
@@ -21,7 +21,7 @@ def add_categoria():
         
         seccion = db.session.query(Seccion).get(seccion_id)
         if not seccion:
-            flash('Sección no encontrada', 'error')
+            print('Sección no encontrada', 'error')
             return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
         
         nueva_categoria = create_categoria(
@@ -31,12 +31,12 @@ def add_categoria():
             opcional=opcional
         )
         
-        flash('Categoría creada exitosamente', 'success')
+        print('Categoría creada exitosamente', 'success')
         return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
     
     except Exception as e:
         db.session.rollback()
-        flash(f'Error al crear categoría: {str(e)}', 'error')
+        print(f'Error al crear categoría: {str(e)}', 'error')
         return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
 
 @categoria_blueprint.route('/categorias/<int:categoria_id>/edit', methods=['POST'])
@@ -54,12 +54,12 @@ def edit_categoria_route(categoria_id):
             opcional=opcional
         )
         
-        flash('Categoría actualizada exitosamente', 'success')
+        print('Categoría actualizada exitosamente', 'success')
         return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
     
     except Exception as e:
         db.session.rollback()
-        flash(f'Error al actualizar categoría: {str(e)}', 'error')
+        print(f'Error al actualizar categoría: {str(e)}', 'error')
         return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
 
 @categoria_blueprint.route('/categorias/<int:categoria_id>/delete', methods=['POST'])
@@ -67,10 +67,10 @@ def delete_categoria_route(categoria_id):
     try:
         curso_id = request.form.get('curso_id')
         delete_categoria(categoria_id)
-        flash('Categoría eliminada exitosamente', 'success')
+        print('Categoría eliminada exitosamente', 'success')
         return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
     
     except Exception as e:
         db.session.rollback()
-        flash(f'Error al eliminar categoría: {str(e)}', 'error')
+        print(f'Error al eliminar categoría: {str(e)}', 'error')
         return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))

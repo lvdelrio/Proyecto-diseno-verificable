@@ -8,30 +8,30 @@ from db.models.alumno import Alumno
 from db.models.categoria import Categoria
 from db.models.alumno_seccion import AlumnoSeccion
 
-def create_evaluacion(db: Session, tipo: int, ponderacion: float, opcional: bool, seccion_id: int = None):
+def create_evaluacion(db: Session, tipo: int, ponderacion: float, opcional: bool, categoria_id: int = None):
     nueva_evaluacion = Evaluacion(
         tipo=tipo,
         ponderacion=ponderacion,
         opcional=int(opcional),
-        seccion_id=seccion_id
+        categoria_id=categoria_id
     )
     db.add(nueva_evaluacion)
     db.commit()
     db.refresh(nueva_evaluacion)
     return nueva_evaluacion
 
-def create_evaluacion_con_notas(db: Session, tipo: int, ponderacion: float, opcional: bool, seccion_id: int = None):
+def create_evaluacion_con_notas(db: Session, tipo: int, ponderacion: float, opcional: bool, categoria_id: int = None):
     nueva_evaluacion = Evaluacion(
         tipo=tipo,
         ponderacion=ponderacion,
         opcional=int(opcional),
-        seccion_id=seccion_id
+        categoria_id=categoria_id
     )
     db.add(nueva_evaluacion)
     db.commit()
     db.refresh(nueva_evaluacion)
 
-    alumnos_seccion = db.query(AlumnoSeccion).filter(AlumnoSeccion.seccion_id == seccion_id).all()
+    alumnos_seccion = db.query(AlumnoSeccion).filter(AlumnoSeccion.categoria_id == categoria_id).all()
     if not alumnos_seccion:
         raise ValueError("No hay alumnos en la sección especificada.")
 
@@ -51,8 +51,8 @@ def get_evaluacion_by_id(db: Session, evaluacion_id: int):
 def get_all_evaluaciones(db: Session):
     return db.query(Evaluacion).all()
 
-def get_evaluaciones_by_seccion(db: Session, seccion_id: int):
-    return db.query(Evaluacion).filter(Evaluacion.seccion_id == seccion_id).all()
+def get_evaluaciones_by_seccion(db: Session, categoria_id: int):
+    return db.query(Evaluacion).filter(Evaluacion.categoria_id == categoria_id).all()
 
 def edit_evaluacion(evaluacion_id, tipo=None, ponderacion=None, opcional=None, categoria_id=None):
 

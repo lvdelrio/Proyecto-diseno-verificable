@@ -50,7 +50,7 @@ def calculate_promedio_alumno(db: Session, alumno_id: int):
     if not notas:
         return None
         
-    total_ponderado = sum(nota.nota * nota.evaluacion.ponderacion for nota in notas)
-    total_ponderacion = sum(nota.evaluacion.ponderacion for nota in notas)
+    total_weighted = sum(nota.nota * nota.evaluacion.ponderacion for nota in notas)
+    total_weighing = sum(nota.evaluacion.ponderacion for nota in notas)
     
-    return total_ponderado / total_ponderacion if total_ponderacion else 0
+    return total_weighted / total_weighing if total_weighing else 0

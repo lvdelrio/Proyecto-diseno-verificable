@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from db.models.alumno import Alumno
 from db.controller.alumno_controller import get_alumno_by_id
 from db.models.notas_finales import NotasFinales
+from .notas_controller import calculate_promedio_alumno
 def create_nota_final(db: Session, alumno_id: int, nota_final: float):
     alumno = get_alumno_by_id(db, alumno_id)
     if not alumno:
@@ -51,9 +52,8 @@ def get_notas_finales_by_curso(db: Session, curso_id: int):
         NotasFinales.curso_id == curso_id
     ).all()
 
-def calcular_nota_final(db: Session, alumno_id: int, curso_id: int):
-    from .notas_controller import calcular_promedio_alumno
-    promedio = calcular_promedio_alumno(db, alumno_id)
+def calculate_nota_final(db: Session, alumno_id: int, curso_id: int):
+    promedio = calculate_promedio_alumno(db, alumno_id)
     if promedio is not None:
         return create_nota_final(db, alumno_id, curso_id, promedio)
     return None

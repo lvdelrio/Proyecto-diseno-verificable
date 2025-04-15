@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ curso.nombre }} | SGA</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+        <style>
+            [x-cloak] { display: none !important; }
+            .slide-panel {
+                transition: transform 0.3s ease-in-out;
+                transform: translateX(100%);
+            }
+            .slide-panel.active {
+                transform: translateX(0);
+            }
+        </style>
+    </head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('Cursos.get_cursos') }}" class="text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </a>
+                <h1 class="text-2xl font-bold text-gray-800">
+                    <i class="fas fa-book mr-2 text-blue-600"></i>
+                    {{ curso.nombre }}
+                </h1>
+            </div>
+            <form method="POST" action="{{ url_for('Cursos.delete_curso', curso_id=curso.id) }}">
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" 
+                        onclick="return confirm('¿Estás seguro de eliminar este curso?')">
+                    <i class="fas fa-trash mr-2"></i> Eliminar Curso
+                </button>
+            </form>
+        </div>
+    </header>
+    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div x-data="{ 
+            tab: new URLSearchParams(window.location.search).get('tab') || 'info',
+            showEvaluacionPanel: false,
+            showSeccionPanel: false
+        }" x-cloak>
+            <div class="border-b border-gray-200 mb-6">
+                <nav class="-mb-px flex space-x-8">
+                    <button @click="tab='info'" 
+                            :class="tab === 'info' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                        <i class="fas fa-info-circle mr-2"></i> Información
+                    </button>
+                    <button @click="tab='secciones'"
+                            :class="tab === 'secciones' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                        <i class="fas fa-layer-group mr-2"></i> Secciones
+                    </button>
+                    <button @click="tab='estudiantes'"
+                            :class="tab === 'estudiantes' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                        <i class="fas fa-users mr-2"></i> Estudiantes
+                    </button>
+                    <button @click="tab='profesores'"
+                            :class="tab === 'profesores' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                        <i class="fas fa-chalkboard-teacher mr-2"></i> Profesores
+                    </button>
+                    <button @click="tab='evaluacionesCurso'"
+                            :class="tab === 'evaluacionesCurso' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                        <i class="fas fa-clipboard-check mr-2"></i> Evaluaciones
+                    </button>
+                </nav>
+            </div>
+
+            <div x-show="tab === 'info'" class="bg-white shadow rounded-lg p-6">
+                <form method="POST" action="{{ url_for('Cursos.edit_curso', curso_id=curso.id) }}">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Curso</label>
+                        <input type="text" name="nombre" value="{{ curso.nombre }}" 
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                        <textarea name="descripcion" rows="3"
+                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ curso.descripcion }}</textarea>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                            <i class="fas fa-save mr-2"></i> Guardar Cambios
+                        </button>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-1">Semetre en el cual se imparte el curso:</label>
+                        <select id="semestre_impartido" name="semestre_impartido" required 
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
+                            <option value="semestre_impartido" disabled selected>{{ curso.semestre_impartido }}</option>
+                            <option value="Primer Semestre">Primer Semestre</option>
+                            <option value="Segundo Semestre">Segundo Semestre</option>
+                            <option value="Ambos">Ambos</option>
+                        </select>
+
+                    </div>
+                    <button type="submit" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                        Guardar Cambios
+                    </button>
+                </form>
+            </div>
+
+            <div x-show="tab === 'secciones'" class="bg-white shadow rounded-lg overflow-hidden">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800">Secciones del Curso</h2>
+                        <button @click="showSeccionPanel = !showSeccionPanel" 
+                                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                            <i class="fas fa-plus mr-2"></i> Agregar Sección
+                        </button>
+                    </div>
+                    
+                    <div x-show="showSeccionPanel" class="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                        <form method="POST" action="{{ url_for('Secciones.add_seccion', curso_id=curso.id) }}">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nombre de la Sección</label>
+                                <input type="text" name="nombre_seccion" 
+                                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                                       placeholder="seccion 1" required>
+                            </div>
+                            <div class="flex justify-end space-x-3">
+                                <button type="button" @click="showSeccionPanel = false" 
+                                        class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                    <i class="fas fa-save mr-2"></i> Guardar Sección
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        {% if curso.secciones %}
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for seccion in curso.secciones %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                                                <i class="fas fa-layer-group"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">{{ seccion.nombre }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="{{ url_for('Secciones.view_seccion', seccion_id=seccion.id) }}" 
+                                           class="text-blue-600 hover:text-blue-900 mr-4">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </a>
+                                        <form method="POST" action="{{ url_for('Secciones.delete_seccion', seccion_id=seccion.id) }}" class="inline">
+                                            <button type="submit" class="text-red-600 hover:text-red-900" 
+                                                    onclick="return confirm('¿Eliminar esta sección?')">
+                                                <i class="fas fa-trash"></i> Eliminar
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <div class="text-center py-4 text-gray-500">
+                            No hay secciones registradas aún
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="tab === 'estudiantes'" class="bg-white shadow rounded-lg overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6">Estudiantes Inscritos</h2>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for estudiante in curso.estudiantes %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                                                <i class="fas fa-user-graduate"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">{{ estudiante.nombre }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ estudiante.email }}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">
+                                        No hay estudiantes inscritos
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="tab === 'profesores'" class="bg-white shadow rounded-lg overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6">Profesores Asignados</h2>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for profesor in curso.profesores %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600">
+                                                <i class="fas fa-chalkboard-teacher"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">{{ profesor.nombre }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ profesor.email or '-' }}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">
+                                        No hay profesores asignados
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="tab === 'evaluacionesCurso'" class="bg-white shadow rounded-lg overflow-hidden">
+                <div class="p-6">
+                    <div class="border-b border-gray-200 mb-6">
+                        <nav class="-mb-px flex space-x-8">
+                            <button @click="evalTab='categorias'" 
+                                    :class="evalTab === 'categorias' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                <i class="fas fa-tags mr-2"></i> Categorías
+                            </button>
+                            <button @click="evalTab='evaluaciones'"
+                                    :class="evalTab === 'evaluaciones' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                <i class="fas fa-clipboard-check mr-2"></i> Evaluaciones
+                            </button>
+                        </nav>
+                    </div>
+            
+                    <div x-data="{ 
+                        evalTab: 'categorias',
+                        showCategoriaPanel: false,
+                        showEvaluacionPanel: false
+                    }">
+                        <!-- Pestaña de Categorías -->
+                        <div x-show="evalTab === 'categorias'">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-xl font-bold text-gray-800">Categorías de Evaluación</h2>
+                                <button @click="showCategoriaPanel = !showCategoriaPanel" 
+                                        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                    <i class="fas fa-plus mr-2"></i> Nueva Categoría
+                                </button>
+                            </div>
+                            
+                            <div x-show="showCategoriaPanel" class="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                                <form method="POST" action="{{ url_for('Categorias.add_categoria') }}">
+                                    <input type="hidden" name="curso_id" value="{{ curso.id }}">
+                                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Sección</label>
+                                            <select name="seccion_id" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                                {% for seccion in curso.secciones %}
+                                                <option value="{{ seccion.id }}">{{ seccion.nombre }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                                            <input type="text" name="tipo_categoria" 
+                                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                                                   placeholder="Exámenes Parciales" required>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Ponderación (%)</label>
+                                            <input type="number" name="ponderacion" min="1" max="100" 
+                                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                                        </div>
+                                        <div class="mb-4 flex items-center">
+                                            <input type="checkbox" name="opcional" id="opcional_cat" 
+                                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                            <label for="opcional_cat" class="ml-2 block text-sm text-gray-700">Categoría opcional</label>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-end space-x-3">
+                                        <button type="button" @click="showCategoriaPanel = false" 
+                                                class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                                            Cancelar
+                                        </button>
+                                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                            <i class="fas fa-save mr-2"></i> Guardar Categoría
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Lista de Categorías -->
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sección</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ponderación</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        {% for seccion in curso.secciones %}
+                                            {% for categoria in seccion.categorias %}
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
+                                                            <i class="fas fa-tag"></i>
+                                                        </div>
+                                                        <div class="ml-4">
+                                                            <div class="text-sm font-medium text-gray-900">{{ categoria.tipo_categoria }}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    {{ seccion.nombre }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    {{ categoria.ponderacion }}%
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                    <a href="#" class="text-blue-600 hover:text-blue-900 mr-3">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <form method="POST" action="{{ url_for('Categorias.delete_categoria_route', categoria_id=categoria.id) }}" class="inline">
+                                                        <input type="hidden" name="curso_id" value="{{ curso.id }}">
+                                                        <button type="submit" class="text-red-600 hover:text-red-900" 
+                                                                onclick="return confirm('¿Eliminar esta categoría?')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            {% else %}
+                                            <tr>
+                                                <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
+                                                    No hay categorías en esta sección
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+            
+                        <!-- Pestaña de Evaluaciones -->
+                        <div x-show="evalTab === 'evaluaciones'">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-xl font-bold text-gray-800">Evaluaciones</h2>
+                                <button @click="showEvaluacionPanel = !showEvaluacionPanel" 
+                                        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                    <i class="fas fa-plus mr-2"></i> Nueva Evaluación
+                                </button>
+                            </div>
+                            
+                            <div x-show="showEvaluacionPanel" class="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                                <form method="POST" action="{{ url_for('Evaluaciones.add_evaluacion') }}">
+                                    <input type="hidden" name="curso_id" value="{{ curso.id }}">
+                                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+                                            <select name="categoria_id" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                                {% for seccion in curso.secciones %}
+                                                    {% for categoria in seccion.categorias %}
+                                                    <option value="{{ categoria.id }}">{{ categoria.tipo_categoria }} ({{ seccion.nombre }})</option>
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+                                            <select name="tipo" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                                <option value="1">Examen</option>
+                                                <option value="2">Tarea</option>
+                                                <option value="3">Proyecto</option>
+                                                <option value="4">Participación</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Ponderación (%)</label>
+                                            <input type="number" name="ponderacion" min="1" max="100" 
+                                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                                        </div>
+                                        <div class="mb-4 flex items-center">
+                                            <input type="checkbox" name="opcional" id="opcional_eval" 
+                                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                            <label for="opcional_eval" class="ml-2 block text-sm text-gray-700">Evaluación opcional</label>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-end space-x-3">
+                                        <button type="button" @click="showEvaluacionPanel = false" 
+                                                class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                                            Cancelar
+                                        </button>
+                                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                            <i class="fas fa-save mr-2"></i> Guardar Evaluación
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Lista de Evaluaciones -->
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ponderación</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        {% for seccion in curso.secciones %}
+                                            {% for categoria in seccion.categorias %}
+                                                {% for evaluacion in categoria.evaluaciones %}
+                                                <tr class="hover:bg-gray-50">
+                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                        <div class="flex items-center">
+                                                            <div class="flex-shrink-0 h-10 w-10 bg-orange-100 rounded-full flex items-center justify-center text-orange-600">
+                                                                <i class="fas fa-clipboard-list"></i>
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <div class="text-sm font-medium text-gray-900">Evaluación {{ loop.index }}</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        {{ categoria.tipo_categoria }} ({{ seccion.nombre }})
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        {% if evaluacion.tipo == 1 %}Examen
+                                                        {% elif evaluacion.tipo == 2 %}Tarea
+                                                        {% elif evaluacion.tipo == 3 %}Proyecto
+                                                        {% else %}Participación{% endif %}
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        {{ evaluacion.ponderacion }}%
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                        <a href="{{ url_for('Evaluaciones.view_notas_evaluacion', evaluacion_id=evaluacion.id) }}" 
+                                                           class="text-blue-600 hover:text-blue-900 mr-3">
+                                                            <i class="fas fa-edit"></i> Notas
+                                                        </a>
+                                                        <form method="POST" action="{{ url_for('Evaluaciones.delete_evaluacion', evaluacion_id=evaluacion.id) }}" class="inline">
+                                                            <button type="submit" class="text-red-600 hover:text-red-900" 
+                                                                    onclick="return confirm('¿Eliminar esta evaluación?')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                                {% else %}
+                                                <tr>
+                                                    <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
+                                                        No hay evaluaciones en esta categoría
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+    </main>
+
+    <script src="https://unpkg.com/alpinejs@3.x/dist/cdn.min.js" defer></script>
+    <script>
+        document.addEventListener('alpine:init', () => {
+        });
+    </script>
+</body>
+</html>

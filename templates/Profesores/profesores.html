@@ -40,17 +40,6 @@
     <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <!-- Filtros y estadísticas -->
         <div class="mb-6 flex justify-between items-center">
-            <div class="flex items-center space-x-4">
-                <div class="relative">
-                    <input type="text" placeholder="Buscar profesor..." class="border p-2 pl-10 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                </div>
-                <select class="border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <option>Filtrar por...</option>
-                    <option>Recientes</option>
-                    <option>Antiguos</option>
-                </select>
-            </div>
             <span class="text-sm text-gray-600">Mostrando {{ profesores|length }} de {{ total_profesores }} profesores</span>
         </div>
 

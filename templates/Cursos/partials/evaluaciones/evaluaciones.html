@@ -1,0 +1,122 @@
+<div x-show="evalTab === 'evaluaciones'">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold text-gray-800">Evaluaciones</h2>
+        <button @click="showEvaluacionPanel = !showEvaluacionPanel" 
+                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            <i class="fas fa-plus mr-2"></i> Nueva Evaluación
+        </button>
+    </div>
+    
+    <div x-show="showEvaluacionPanel" class="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+        <form method="POST" action="{{ url_for('Evaluaciones.add_evaluacion') }}">
+            <input type="hidden" name="curso_id" value="{{ curso.id }}">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+                    <select name="categoria_id" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        {% for seccion in curso.secciones %}
+                            {% for categoria in seccion.categorias %}
+                            <option value="{{ categoria.id }}">{{ categoria.tipo_categoria }} ({{ seccion.nombre }})</option>
+                            {% endfor %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+                    <select name="tipo" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <option value="1">Examen</option>
+                        <option value="2">Tarea</option>
+                        <option value="3">Proyecto</option>
+                        <option value="4">Participación</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Ponderación (%)</label>
+                    <input type="number" name="ponderacion" min="1" max="100" 
+                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                </div>
+                <div class="mb-4 flex items-center">
+                    <input type="checkbox" name="opcional" id="opcional_eval" 
+                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <label for="opcional_eval" class="ml-2 block text-sm text-gray-700">Evaluación opcional</label>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button type="button" @click="showEvaluacionPanel = false" 
+                        class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                    Cancelar
+                </button>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    <i class="fas fa-save mr-2"></i> Guardar Evaluación
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Lista de Evaluaciones -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ponderación</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for seccion in curso.secciones %}
+                    {% for categoria in seccion.categorias %}
+                        {% for evaluacion in categoria.evaluaciones %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10 bg-orange-100 rounded-full flex items-center justify-center text-orange-600">
+                                        <i class="fas fa-clipboard-list"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">Evaluación {{ loop.index }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ categoria.tipo_categoria }} ({{ seccion.nombre }})
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {% if evaluacion.tipo == 1 %}Examen
+                                {% elif evaluacion.tipo == 2 %}Tarea
+                                {% elif evaluacion.tipo == 3 %}Proyecto
+                                {% else %}Participación{% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ evaluacion.ponderacion }}%
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <a href="{{ url_for('Evaluaciones.view_notas_evaluacion', evaluacion_id=evaluacion.id) }}" 
+                                   class="text-blue-600 hover:text-blue-900 mr-3">
+                                    <i class="fas fa-edit"></i> Notas
+                                </a>
+                                <form method="POST" action="{{ url_for('Evaluaciones.delete_evaluacion', evaluacion_id=evaluacion.id) }}" class="inline">
+                                    <button type="submit" class="text-red-600 hover:text-red-900" 
+                                            onclick="return confirm('¿Eliminar esta evaluación?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
+                                No hay evaluaciones en esta categoría
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

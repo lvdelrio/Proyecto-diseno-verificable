@@ -1,0 +1,33 @@
+<div x-show="tab === 'info'" class="bg-white shadow rounded-lg p-6">
+    <form method="POST" action="{{ url_for('Cursos.edit_curso', curso_id=curso.id) }}">
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Curso</label>
+            <input type="text" name="nombre" value="{{ curso.nombre }}" 
+                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+        </div>
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+            <textarea name="descripcion" rows="3"
+                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ curso.descripcion }}</textarea>
+        </div>
+        <div class="flex justify-end">
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                <i class="fas fa-save mr-2"></i> Guardar Cambios
+            </button>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-medium mb-1">Semetre en el cual se imparte el curso:</label>
+            <select id="semestre_impartido" name="semestre_impartido" required 
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
+                <option value="semestre_impartido" disabled selected>{{ curso.semestre_impartido }}</option>
+                <option value="Primer Semestre">Primer Semestre</option>
+                <option value="Segundo Semestre">Segundo Semestre</option>
+                <option value="Ambos">Ambos</option>
+            </select>
+
+        </div>
+        <button type="submit" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+            Guardar Cambios
+        </button>
+    </form>
+</div>

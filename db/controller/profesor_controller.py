@@ -8,8 +8,8 @@ def crear_profesor(db: Session, nombre: str, email: str):
     db.refresh(new_profesor)
     return new_profesor
 
-def get_profesor_by_id(db: Session, new_profesor: int):
-    return db.query(Profesor).filter(Profesor.id == new_profesor).first()
+def get_profesor_by_id(db: Session, profesor_id: int):
+    return db.query(Profesor).filter(Profesor.id == profesor_id).first()
 
 def get_all_profesores(db: Session):
     return db.query(Profesor).all()
@@ -25,6 +25,8 @@ def edit_profesor_by_id(db: Session, profesor_id: int, nombre: str, email: str):
         return profesor
     return None
 
+def delete_profesor_by_id(db: Session, profesor_id: int):
+    profesor = db.query(Profesor).filter(Profesor.id == profesor_id).first()
 def delete_profesor_by_id(db: Session, professor_id: int):
     profesor = db.query(Profesor).filter(Profesor.id == professor_id).first()
     if profesor:

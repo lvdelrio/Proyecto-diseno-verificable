@@ -18,7 +18,8 @@ def view_curso(curso_id):
 def add_curso():
     name = request.form.get("nombre")
     description = request.form.get("descripcion", "")
-    course = crear_curso(config.session, name, description)
+    semestre_de_ejecucion =request.form.get("semestre_de_ejecucion")
+    course = crear_curso(config.session, name, description, semestre_de_ejecucion)
 
     return redirect(url_for("Cursos.view_curso", curso_id=course.id))
 
@@ -26,7 +27,8 @@ def add_curso():
 def edit_curso(curso_id):
     name = request.form["nombre"]
     description = request.form["descripcion"]
-    curso = edit_curso_by_id(config.session, curso_id, name, description)
+    semestre_de_ejecucion = request.form["semestre_de_ejecucion"]
+    curso = edit_curso_by_id(config.session, curso_id, name, description, semestre_de_ejecucion)
     
     return redirect(url_for("Cursos.get_cursos"))
 

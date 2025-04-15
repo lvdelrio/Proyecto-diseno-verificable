@@ -69,8 +69,8 @@ def test_sql():
 
     #testear cursos y sus cursos requisitos
     
-    curso = Curso(nombre="Física II", descripcion="Curso de Física II")
-    requisito = Curso(nombre="Física I", descripcion="Curso de Física I")
+    curso = Curso(nombre="Física II", descripcion="Curso de Física II", semestre_de_ejecucion=1)
+    requisito = Curso(nombre="Física I", descripcion="Curso de Física I", semestre_de_ejecucion=2)
     db.session.add_all([curso, requisito])
     db.session.commit()
 

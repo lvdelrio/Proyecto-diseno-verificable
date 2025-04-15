@@ -9,6 +9,8 @@ class Categoria(db.Model):
     tipo_categoria: Mapped[str] = mapped_column(String(20), nullable=False)
     id_seccion: Mapped[int] = mapped_column(Integer, ForeignKey("secciones.id"), nullable=False)
     ponderacion: Mapped[float] = mapped_column(Float, nullable=False)
+    tipo_ponderado: Mapped[bool] = mapped_column(Boolean, nullable=False)
+
     opcional: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     seccion: Mapped["Seccion"] = relationship("Seccion", back_populates="categorias")

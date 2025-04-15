@@ -29,11 +29,12 @@ def create_evaluacion_con_notas(tipo, id_categoria, ponderacion, opcional):
 
     return evaluacion
 
-def create_evaluacion(tipo, ponderacion, opcional, categoria = None):
+def create_evaluacion(tipo, ponderacion, opcional, tipo_ponderado, categoria = None):
     nueva_evaluacion = Evaluacion(
         tipo=tipo,
         ponderacion=ponderacion,
         opcional=opcional,
+        tipo_ponderado = tipo_ponderado,
         categoria=categoria
     )
     db.session.add(nueva_evaluacion)
@@ -43,7 +44,7 @@ def create_evaluacion(tipo, ponderacion, opcional, categoria = None):
 def get_evaluacion(evaluacion_id):
     return Evaluacion.query.get(evaluacion_id)
 
-def edit_evaluacion(evaluacion_id, tipo=None, ponderacion=None, opcional=None, categoria_id=None):
+def edit_evaluacion(evaluacion_id, tipo_ponderado, tipo=None, ponderacion=None, opcional=None, categoria_id=None):
 
     evaluacion = Evaluacion.query.get(evaluacion_id)
     if not evaluacion:
@@ -55,6 +56,8 @@ def edit_evaluacion(evaluacion_id, tipo=None, ponderacion=None, opcional=None, c
         evaluacion.ponderacion = ponderacion
     if opcional is not None:
         evaluacion.opcional = opcional
+    if tipo_ponderado is not None:
+        evaluacion.tipo_ponderado = tipo_ponderado
     if categoria_id is not None:
         evaluacion.categoria_id = categoria_id
     

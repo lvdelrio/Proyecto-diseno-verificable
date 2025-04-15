@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template, redirect, url_for
 from db.config import db as config
-from db.controller.profesor_controller import get_all_profesores, crear_profesor, get_profesor_by_id, edit_profesor_by_id, delete_profesor_by_id, get_paginated_profesores
+from db.controller.profesor_controller import get_all_profesores, create_profesor, get_profesor_by_id, edit_profesor_by_id, delete_profesor_by_id, get_paginated_profesores
 
 profesor_route_blueprint = Blueprint("Profesores", __name__)
 
@@ -34,7 +34,7 @@ def add_profesor():
     nombre = request.form.get("nombre")
     email = request.form.get("email", "")
     print(nombre, email)
-    profesor = crear_profesor(config.session, nombre, email)
+    profesor = create_profesor(config.session, nombre, email)
 
     return redirect(url_for("Profesores.view_profesor", profesor_id=profesor.id))
 

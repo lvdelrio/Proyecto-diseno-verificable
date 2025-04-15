@@ -1,6 +1,6 @@
 from flask import Blueprint, request,  redirect, url_for, render_template
 from db.config import db as config
-from db.controller.seccion_controller import crear_seccion, get_all_secciones_by_curso_id, get_all_secciones, get_seccion_by_id, edit_seccion_by_id, delete_seccion_by_id, curso_from_seccion_id
+from db.controller.seccion_controller import create_seccion, get_all_secciones_by_curso_id, get_all_secciones, get_seccion_by_id, edit_seccion_by_id, delete_seccion_by_id, curso_from_seccion_id
 
 seccion_route_blueprint = Blueprint("Secciones", __name__)
 
@@ -8,7 +8,7 @@ seccion_route_blueprint = Blueprint("Secciones", __name__)
 def add_seccion(curso_id):
     nombre = request.form["nombre_seccion"]
 
-    nueva_seccion = crear_seccion(config.session, curso_id, nombre)
+    nueva_seccion = create_seccion(config.session, curso_id, nombre)
     print("nueva_seccion", nueva_seccion)
     print(curso_id)
 

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from ..models.profesor import Profesor
 
-def crear_profesor(db: Session, nombre: str, email: str):
+def create_profesor(db: Session, nombre: str, email: str):
     new_profesor= Profesor(nombre=nombre, email=email)
     db.add(new_profesor)
     db.commit()

@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from ..models.curso import Curso
 from ..models.seccion import Seccion
 
-def crear_seccion(db: Session, curso_id: int, nombre: str):
+def create_seccion(db: Session, curso_id: int, nombre: str):
     curso = db.query(Curso).filter(Curso.id == curso_id).first()
     if not curso:
         return None

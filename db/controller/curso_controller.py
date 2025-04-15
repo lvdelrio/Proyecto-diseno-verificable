@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from ..models.curso import Curso
 
-def crear_curso(db: Session, name: str, description: str, semestre_de_ejecucion: str):
+def create_curso(db: Session, name: str, description: str, semestre_de_ejecucion: str):
     new_curso= Curso(nombre=name, descripcion=description, semestre_de_ejecucion=semestre_de_ejecucion)
     db.add(new_curso)
     db.commit()

@@ -22,15 +22,15 @@ def get_all_alumnos(db: Session):
     return db.query(Alumno).all()
 
 def edit_alumno_by_id(db: Session, user_id: int, name: str, email: str, fecha_ingreso: str = None):
-    user = db.query(Alumno).filter(Alumno.id == user_id).first()
-    if user:
-        user.nombre = name
-        user.email = email
+    alumno = db.query(Alumno).filter(Alumno.id == user_id).first()
+    if alumno:
+        alumno.nombre = name
+        alumno.email = email
         if fecha_ingreso:
-            user.fecha_ingreso = datetime.strptime(fecha_ingreso, '%Y-%m-%d').date()
+            alumno.fecha_ingreso = datetime.strptime(fecha_ingreso, '%Y-%m-%d').date()
         db.commit()
-        db.refresh(user)
-        return user
+        db.refresh(alumno)
+        return alumno
     return None
 
 def delete_alumno_by_id(db: Session, user_id: int):

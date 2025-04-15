@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template, redirect, url_for
 from db.config import db as config
-from db.controller.curso_controller import get_all_cursos, crear_curso, get_curso_by_id, edit_curso_by_id, delete_curso_by_id
+from db.controller.curso_controller import get_all_cursos, create_curso, get_curso_by_id, edit_curso_by_id, delete_curso_by_id
 
 curso_route_blueprint = Blueprint("Cursos", __name__)
 
@@ -18,15 +18,17 @@ def view_curso(curso_id):
 def add_curso():
     name = request.form.get("nombre")
     description = request.form.get("descripcion", "")
-    course = crear_curso(config.session, name, description)
+    imparted_semester =request.form.get("semestre_impartido")
+    curso = create_curso(config.session, name, description, imparted_semester)
 
-    return redirect(url_for("Cursos.view_curso", curso_id=course.id))
+    return redirect(url_for("Cursos.view_curso", curso_id=curso.id))
 
 @curso_route_blueprint.route('/editar_curso/<int:curso_id>', methods=['POST'])
 def edit_curso(curso_id):
     name = request.form["nombre"]
     description = request.form["descripcion"]
-    curso = edit_curso_by_id(config.session, curso_id, name, description)
+    imparted_semester = request.form["semestre_impartido"]
+    curso = edit_curso_by_id(config.session, curso_id, name, description, imparted_semester)
     
     return redirect(url_for("Cursos.get_cursos"))
 

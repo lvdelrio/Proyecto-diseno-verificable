@@ -8,7 +8,7 @@ class Curso(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(20), nullable=False)
     descripcion = db.Column(db.Text, nullable=True)
-    semestre_de_ejecucion = db.Column(db.String(100), nullable=False)
+    semestre_impartido = db.Column(db.String(100), nullable=False)
     
     secciones = db.relationship("Seccion", back_populates="curso")
     requisitos = relationship(

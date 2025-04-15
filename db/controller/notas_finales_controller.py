@@ -2,7 +2,6 @@ from sqlalchemy.orm import Session
 from db.models.alumno import Alumno
 from db.controller.alumno_controller import get_alumno_by_id
 from db.models.notas_finales import NotasFinales
-#TODO: AGREGAR EL CREATE NOTA FINAL PARA EL FRONTEND
 def create_nota_final(db: Session, alumno_id: int, nota_final: float):
     alumno = get_alumno_by_id(db, alumno_id)
     if not alumno:

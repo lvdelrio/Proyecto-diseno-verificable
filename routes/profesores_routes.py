@@ -54,7 +54,7 @@ def view_profesor(profesor_id):
         cursos_con_secciones.append((curso, secciones))
 
     return render_template(
-        "Profesores/detalle_alumno.html",
+        "Profesores/detalle_profesor.html",
         profesor=profesor,
         cursos_con_secciones=cursos_con_secciones
     )

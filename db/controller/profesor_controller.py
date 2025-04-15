@@ -26,8 +26,6 @@ def edit_profesor_by_id(db: Session, profesor_id: int, nombre: str, email: str):
         return profesor
     return None
 
-def delete_profesor_by_id(db: Session, profesor_id: int):
-    profesor = db.query(Profesor).filter(Profesor.id == profesor_id).first()
 def delete_profesor_by_id(db: Session, professor_id: int):
     profesor = db.query(Profesor).filter(Profesor.id == professor_id).first()
     if profesor:

@@ -10,6 +10,10 @@ class Seccion(db.Model):
     curso_id: Mapped[int] = mapped_column(Integer, ForeignKey("cursos.id"), nullable=True)
 
     curso: Mapped["Curso"] = relationship(back_populates="secciones")
-    evaluacion: Mapped[list["Evaluacion"]] = relationship("Evaluacion", back_populates="seccion")
     categorias: Mapped[list["Categoria"]] = relationship("Categoria", back_populates="seccion")
-    alumnos_seccion: Mapped[list["AlumnoSeccion"]] = relationship("AlumnoSeccion", back_populates="seccion")
+    alumnos: Mapped[list["Alumno"]] = relationship(
+                                                "Alumno",
+                                                secondary="alumno_seccion",
+                                                back_populates="secciones"
+                                            )
+

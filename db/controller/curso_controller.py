@@ -15,8 +15,8 @@ def get_all_cursos(db: Session):
     return db.query(Curso).all()
 
 
-def edit_curso_by_id(db: Session, course_id: int, name: str, description: str, imparted_semester: str):
-    curso = db.query(Curso).filter(Curso.id == course_id).first()
+def edit_curso_by_id(db: Session, curso_id: int, name: str, description: str, imparted_semester: str):
+    curso = db.query(Curso).filter(Curso.id == curso_id).first()
     if curso:
         curso.nombre = name
         curso.descripcion = description

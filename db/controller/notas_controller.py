@@ -42,7 +42,7 @@ def delete_nota(db: Session, nota_id: int):
         return True
     return False
 
-def calcular_promedio_alumno(db: Session, alumno_id: int):
+def calculate_promedio_alumno(db: Session, alumno_id: int):
     notas = db.query(Notas).join(Evaluacion).filter(
         Notas.alumno_id == alumno_id
     ).all()

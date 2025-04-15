@@ -9,6 +9,7 @@ from routes.profesores_routes import profesor_route_blueprint
 from routes.alumnos_routes import alumno_route_blueprint
 from routes.notas_finales_routes import nota_final_route_blueprint
 from routes.secciones_routes import seccion_route_blueprint
+from routes.evaluacion_routes import evaluacion_blueprint
 
 # Load environment variables from .env
 load_dotenv()
@@ -22,6 +23,7 @@ app.register_blueprint(profesor_route_blueprint, url_prefix="")
 app.register_blueprint(alumno_route_blueprint, url_prefix="")
 app.register_blueprint(nota_final_route_blueprint, url_prefix="")
 app.register_blueprint(seccion_route_blueprint, url_prefix="")
+app.register_blueprint(evaluacion_blueprint, url_prefix="")
 
 
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5000"]}})

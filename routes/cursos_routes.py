@@ -34,4 +34,3 @@ def edit_curso(curso_id):
 def delete_curso(curso_id):
     delete_curso_by_id(config.session, curso_id)
     return redirect(url_for("Cursos.get_cursos"))
-

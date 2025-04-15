@@ -6,7 +6,7 @@
     <style>
         [x-cloak] { display: none !important; }
     </style>
-    <title>{{ curso.nombre }}</title>
+    <title>{{ seccion.nombre }}</title>
 </head>
 <body class="bg-gray-100 p-10">
     <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
@@ -16,11 +16,11 @@
         </a>
 
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-blue-600">{{ curso.nombre }}</h1>
+            <h1 class="text-3xl font-bold text-blue-600">{{ seccion.nombre }}</h1>
 
-            <form method="POST" action="{{ url_for('Cursos.delete_curso', curso_id=curso.id) }}">
+            <form method="POST" action="{{ url_for('Secciones.delete_seccion', seccion_id=seccion.id) }}">
                 <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                    Eliminar Curso
+                    Eliminar Seccion
                 </button>
             </form>
         </div>
@@ -28,21 +28,16 @@
         <div x-data="{ tab: new URLSearchParams(window.location.search).get('tab') || 'info' }" x-cloak>
             <div class="flex border-b mb-4">
                 <button @click="tab='info'" class="px-4 py-2" :class="tab === 'info' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Información</button>
-                <button @click="tab='secciones'" class="px-4 py-2" :class="tab === 'secciones' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Secciones</button>
                 <button @click="tab='estudiantes'" class="px-4 py-2" :class="tab === 'estudiantes' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Estudiantes</button>
                 <button @click="tab='profesores'" class="px-4 py-2" :class="tab === 'profesores' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Profesores</button>
                 <button @click="tab='tests'" class="px-4 py-2" :class="tab === 'tests' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Evaluaciones</button>
             </div>
 
             <div x-show="tab === 'info'">
-                <form method="POST" action="{{ url_for('Cursos.edit_curso', curso_id=curso.id) }}">
+                <form method="POST" action="{{ url_for('Secciones.edit_seccion', seccion_id=seccion.id) }}">
                     <div class="mb-4">
-                        <label class="block text-gray-700 font-medium mb-1">Nombre del Curso:</label>
-                        <input type="text" name="nombre" value="{{ curso.nombre }}" class="border p-2 rounded w-full" required>
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-medium mb-1">Descripción:</label>
-                        <textarea name="descripcion" class="border p-2 rounded w-full" rows="3">{{ curso.descripcion }}</textarea>
+                        <label class="block text-gray-700 font-medium mb-1">Nombre de la Seccion:</label>
+                        <input type="text" name="nombre" value="{{ seccion.nombre }}" class="border p-2 rounded w-full" required>
                     </div>
                     <button type="submit" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
                         Guardar Cambios
@@ -50,34 +45,10 @@
                 </form>
             </div>
 
-            <div x-show="tab === 'secciones'">
-                <h2 class="text-xl font-bold text-gray-800 mb-3">Secciones</h2>
-                <ul class="space-y-2">
-                    {% for seccion in curso.secciones %}
-                        <li class="flex items-center justify-between bg-gray-200 p-3 rounded">
-                            <span class="text-gray-800">{{ seccion.nombre }}</span>
-                            <a href="{{ url_for('Secciones.view_seccion', seccion_id=seccion.id) }}" class="text-blue-500">Editar</a>
-                            <form method="POST" action="{{ url_for('Secciones.delete_seccion', seccion_id=seccion.id) }}">
-                                <button type="submit" class="text-red-600 hover:underline">Eliminar</button>
-                            </form>
-                        </li>
-                    {% else %}
-                        <p class="text-gray-500">No hay secciones aún.</p>
-                    {% endfor %}
-                </ul>
-                <form method="POST" action="{{ url_for('Secciones.add_seccion', curso_id=curso.id) }}" class="bg-gray-50 p-4 rounded-lg mt-4">
-                    <h2 class="text-lg font-bold text-gray-800 mb-3">Agregar Sección</h2>
-                    <input type="text" name="nombre_seccion" class="border p-2 rounded w-full mb-3" placeholder="Nombre de la sección" required>
-                    <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                        Agregar Sección
-                    </button>
-                </form>
-            </div>
-
             <div x-show="tab === 'estudiantes'">
                 <h2 class="text-xl font-bold text-gray-800 mb-3">Estudiantes</h2>
                 <ul class="space-y-2">
-                    {% for estudiante in curso.estudiantes %}
+                    {% for estudiante in seccion.estudiantes %}
                         <li class="bg-gray-200 p-3 rounded">{{ estudiante.nombre }}</li>
                     {% else %}
                         <p class="text-gray-500">No hay estudiantes aún.</p>
@@ -88,7 +59,7 @@
             <div x-show="tab === 'profesores'">
                 <h2 class="text-xl font-bold text-gray-800 mb-3">Profesores</h2>
                 <ul class="space-y-2">
-                    {% for profesor in curso.profesores %}
+                    {% for profesor in seccion.profesores %}
                         <li class="bg-gray-200 p-3 rounded">{{ profesor.nombre }}</li>
                     {% else %}
                         <p class="text-gray-500">No hay profesores aún.</p>
@@ -99,7 +70,7 @@
             <div x-show="tab === 'tests'">
                 <h2 class="text-xl font-bold text-gray-800 mb-3">Evaluaciones</h2>
                 <ul class="space-y-2">
-                    {% for test in curso.evaluaciones %}
+                    {% for test in seccion.evaluaciones %}
                         <li class="bg-gray-200 p-3 rounded">{{ test.titulo }}</li>
                     {% else %}
                         <p class="text-gray-500">No hay evaluaciones aún.</p>

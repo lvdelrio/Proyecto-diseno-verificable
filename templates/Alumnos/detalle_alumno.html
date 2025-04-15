@@ -27,10 +27,12 @@
             </div>
 
             <div class="flex justify-between">
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                    Guardar Cambios
-                </button>
-                
+                <form method="POST" action="{{ url_for('Alumnos.edit_alumno', alumno_id=alumno.id) }}"></form>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        Guardar Cambios
+                    </button>
+                </form>
+
                 <form method="POST" action="{{ url_for('Alumnos.delete_alumno', alumno_id=alumno.id) }}">
                     <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
                         Eliminar Alumno

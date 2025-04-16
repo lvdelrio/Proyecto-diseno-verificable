@@ -10,7 +10,6 @@ from db.models.curso import Curso
 from db.models.requisitos import CursoRequisito
 from db.models.seccion import Seccion
 from db.models.tipo_curso import TipoCurso
-#from db.controller.notas_controller import crear_nota
 from db.controller.notas_finales_controller import create_nota_final
 from db.controller.curso_controller import create_curso
 from db.controller.alumno_controller import create_alumno

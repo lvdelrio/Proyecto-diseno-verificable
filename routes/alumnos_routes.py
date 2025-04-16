@@ -40,22 +40,22 @@ def view_alumno(alumno_id):
     if alumno is None:
         abort(404, description="Alumno no encontrado.")
 
-    cursos_inscritos_ids = {seccion.curso_id for seccion in alumno.secciones}
+    registered_cursos_ids = {seccion.curso_id for seccion in alumno.secciones}
 
-    cursos_disponibles = [
+    available_cursos = [
         curso for curso in get_all_cursos(config.session)
-        if curso.id not in cursos_inscritos_ids
+        if curso.id not in registered_cursos_ids
     ]
 
-    cursos_con_secciones = []
-    for curso in cursos_disponibles:
+    cursos_with_secciones = []
+    for curso in available_cursos:
         secciones = get_all_secciones_by_curso_id(config.session, curso.id)
-        cursos_con_secciones.append((curso, secciones))
+        cursos_with_secciones.append((curso, secciones))
 
     return render_template(
         "Alumnos/detalle_alumno.html",
         alumno=alumno,
-        cursos_con_secciones=cursos_con_secciones
+        cursos_con_secciones=cursos_with_secciones
     )
 
 @alumno_route_blueprint.route('/agregar_alumno', methods=['POST'])
@@ -82,7 +82,7 @@ def delete_alumno(alumno_id):
     return redirect(url_for("Alumnos.get_alumnos"))
 
 @alumno_route_blueprint.route('/alumno/<int:alumno_id>/inscribir', methods=['POST'])
-def inscribir_alumno(alumno_id):
+def register_alumno(alumno_id):
     alumno = get_alumno_by_id(config.session, alumno_id)
     cursos = get_all_cursos(config.session)
 

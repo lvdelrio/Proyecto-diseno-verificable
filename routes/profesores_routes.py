@@ -42,20 +42,20 @@ def view_profesor(profesor_id):
 
     profesor_seccion_ids = {seccion.id for seccion in profesor.secciones}
 
-    cursos_con_secciones = []
+    cursos_with_secciones = []
     for curso in get_all_cursos(config.session):
-        secciones_disponibles = [
+        available_secciones = [
             seccion for seccion in get_all_secciones_by_curso_id(config.session, curso.id)
             if seccion.id not in profesor_seccion_ids
         ]
 
-        if secciones_disponibles:
-            cursos_con_secciones.append((curso, secciones_disponibles))
+        if available_secciones:
+            cursos_with_secciones.append((curso, available_secciones))
 
     return render_template(
         "Profesores/detalle_profesor.html",
         profesor=profesor,
-        cursos_con_secciones=cursos_con_secciones
+        cursos_con_secciones=cursos_with_secciones
     )
 
 @profesor_route_blueprint.route('/agregar_profesor', methods=['POST'])
@@ -81,7 +81,7 @@ def delete_profesor(profesor_id):
     return redirect(url_for("Profesores.get_profesores"))
 
 @profesor_route_blueprint.route('/inscribir/<int:profesor_id>/', methods=['POST'])
-def inscribir_profesor(profesor_id):
+def register_profesor(profesor_id):
     profesor = get_profesor_by_id(config.session, profesor_id)
 
     seccion_ids = request.form.getlist("seccion_ids")

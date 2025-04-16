@@ -29,7 +29,7 @@
             <div class="flex border-b mb-4">
                 <button @click="tab='info'" class="px-4 py-2" :class="tab === 'info' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Información</button>
                 <button @click="tab='cursos'" class="px-4 py-2" :class="tab === 'cursos' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Cursos Disponibles</button>
-                <button @click="tab='inscritos'" class="px-4 py-2" :class="tab === 'inscritos' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Cursos Inscritos</button>
+                <button @click="tab='registered'" class="px-4 py-2" :class="tab === 'inscritos' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Cursos Inscritos</button>
             </div>
 
             <div x-show="tab === 'info'">
@@ -52,7 +52,7 @@
 
             <div x-show="tab === 'cursos'">
                 <h2 class="text-xl font-bold text-gray-800 mb-3">Inscribir en Cursos</h2>
-                <form method="POST" action="{{ url_for('Profesores.inscribir_profesor', profesor_id=profesor.id) }}">
+                <form method="POST" action="{{ url_for('Profesores.register_profesor', profesor_id=profesor.id) }}">
                     {% for curso, secciones in cursos_con_secciones %}
                         <div class="mb-2" x-data="{ open: false }">
                             <button type="button" @click="open = !open" class="w-full text-left bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">
@@ -74,7 +74,7 @@
                 </form>
             </div>
 
-            <div x-show="tab === 'inscritos'">
+            <div x-show="tab === 'registered'">
                 <h2 class="text-xl font-bold text-gray-800 mb-3">Cursos y Secciones Inscritas</h2>
                 <ul class="space-y-2">
                     {% set grouped = {} %}

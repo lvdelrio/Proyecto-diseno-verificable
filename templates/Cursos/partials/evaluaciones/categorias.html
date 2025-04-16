@@ -1,0 +1,160 @@
+<!-- Lista de Categorías con Evaluaciones anidadas -->
+<div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sección</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ponderación</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            {% for seccion in curso.secciones %}
+                {% for categoria in seccion.categorias %}
+                <tr class="hover:bg-gray-50" x-data="{ expanded: false, showNuevaEvaluacion: false }">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <button @click="expanded = !expanded" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas" :class="expanded ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+                        </button>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
+                                <i class="fas fa-tag"></i>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">{{ categoria.tipo_categoria }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ seccion.nombre }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ categoria.ponderacion }}% ({{ categoria.tipo_ponderacion }})
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <a href="#" class="text-blue-600 hover:text-blue-900 mr-3">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form method="POST" action="{{ url_for('Categorias.delete_categoria_route', categoria_id=categoria.id) }}" class="inline">
+                            <input type="hidden" name="curso_id" value="{{ curso.id }}">
+                            <button type="submit" class="text-red-600 hover:text-red-900" 
+                                    onclick="return confirm('¿Eliminar esta categoría y todas sus evaluaciones?')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <!-- Fila expandible para evaluaciones -->
+                <tr x-show="expanded" x-collapse>
+                    <td colspan="5" class="px-6 py-4 bg-gray-50">
+                        <div class="pl-10 pr-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-medium text-gray-800">Evaluaciones</h3>
+                                <button @click="showNuevaEvaluacion = !showNuevaEvaluacion" 
+                                        class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                                    <i class="fas fa-plus mr-1"></i> Nueva Evaluación
+                                </button>
+                            </div>
+                            <!-- Formulario para nueva evaluación -->
+                            <div x-show="showNuevaEvaluacion" class="mb-4 p-4 border border-gray-200 rounded-lg bg-white">
+                                <form method="POST" action="{{ url_for('Evaluaciones.add_evaluacion') }}">
+                                    <input type="hidden" name="curso_id" value="{{ curso.id }}">
+                                    <input type="hidden" name="categoria_id" value="{{ categoria.id }}">
+                                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                                            <input type="text" name="nombre" 
+                                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Ponderación</label>
+                                            <input type="number" name="ponderacion" min="0.01" max="100" step="0.01"
+                                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Tipo Ponderación</label>
+                                            <select name="tipo_ponderacion" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                                <option value="porcentaje">Porcentaje</option>
+                                                <option value="peso">Peso</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4 flex items-center">
+                                        <input type="checkbox" name="opcional" id="opcional_eval" 
+                                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                        <label for="opcional_eval" class="ml-2 block text-sm text-gray-700">Evaluación opcional</label>
+                                    </div>
+                                    <div class="flex justify-end space-x-3">
+                                        <button type="button" @click="showNuevaEvaluacion = false" 
+                                                class="bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-400">
+                                            Cancelar
+                                        </button>
+                                        <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                            <i class="fas fa-save mr-1"></i> Guardar Evaluación
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- Lista de evaluaciones -->
+                            {% if categoria.evaluaciones %}
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-100">
+                                        <tr>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ponderación</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        {% for evaluacion in categoria.evaluaciones %}
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                {{ evaluacion.nombre }}
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                                {{ evaluacion.ponderacion }}% ({{ evaluacion.tipo_ponderacion }})
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                                {% if evaluacion.opcional %}Opcional{% else %}Obligatoria{% endif %}
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                                                <a href="#" class="text-blue-600 hover:text-blue-900 mr-3">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form method="POST" action="{{ url_for('Evaluaciones.delete_evaluacion_route', evaluacion_id=evaluacion.id) }}" class="inline">
+                                                    <button type="submit" class="text-red-600 hover:text-red-900" 
+                                                            onclick="return confirm('¿Eliminar esta evaluación?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4 text-gray-500">
+                                No hay evaluaciones en esta categoría
+                            </div>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
+                        No hay categorías en esta sección
+                    </td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

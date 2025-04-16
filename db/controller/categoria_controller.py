@@ -33,9 +33,10 @@ def delete_categoria(categoria_id):
     return
 
 def get_last_categoria_by_seccion( seccion_id ):
-    return Categoria.query(Categoria).filter(Categoria.id_seccion == seccion_id).order_by(Categoria.id.desc()).first()
+    return Categoria.query.filter_by(id_seccion=seccion_id).order_by(Categoria.id.desc()).first()
 
 def validation_categoria(categoria, seccion_id):
-    if get_last_categoria_by_seccion(seccion_id).tipo_categoria == categoria.tipo_categoria:
-        return False
-    return True
+    last_categorie = get_last_categoria_by_seccion(seccion_id)
+    if last_categorie is None:
+        return True
+    return last_categorie.tipo_ponderacion == categoria.tipo_ponderacion

@@ -11,6 +11,7 @@ from routes.notas_finales_routes import nota_final_route_blueprint
 from routes.secciones_routes import seccion_route_blueprint
 from routes.evaluacion_routes import evaluacion_blueprint
 from routes.categoria_routes import categoria_blueprint
+from routes.tipo_cursos_routes import tipo_curso_route_blueprint
 
 load_dotenv()
 
@@ -23,6 +24,8 @@ app.register_blueprint(nota_final_route_blueprint, url_prefix="")
 app.register_blueprint(seccion_route_blueprint, url_prefix="")
 app.register_blueprint(evaluacion_blueprint, url_prefix="")
 app.register_blueprint(categoria_blueprint, url_prefix="")
+app.register_blueprint(tipo_curso_route_blueprint, url_prefix="")
+
 
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5000"]}})
 

@@ -148,9 +148,10 @@
                             {{ categoria.ponderacion }}% ({{ categoria.tipo_ponderacion }})
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <a href="#" class="text-blue-600 hover:text-blue-900 mr-3">
-                                <i class="fas fa-edit"></i>
-                            </a>
+                        <a href="{{ url_for('Categorias.edit_categoria_form', categoria_id=categoria.id) }}" 
+                            class="text-blue-600 hover:text-blue-900 mr-3">
+                             <i class="fas fa-edit"></i> Editar
+                        </a>
                             <form method="POST" action="{{ url_for('Categorias.delete_categoria_route', categoria_id=categoria.id) }}" class="inline">
                                 <input type="hidden" name="curso_id" value="{{ curso.id }}">
                                 <button type="submit" class="text-red-600 hover:text-red-900" 

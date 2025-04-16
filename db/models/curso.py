@@ -6,10 +6,8 @@ class Curso(db.Model):
     __tablename__ = 'cursos'
 
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(20), nullable=False)
-    descripcion = db.Column(db.Text, nullable=True)
+    fecha_impartida = db.Column(db.Integer, nullable=False)
     semestre_impartido = db.Column(db.String(100), nullable=False)
-    fecha_impartida =db.Column(db.Integer, nullable=False)
 
     tipo_curso_id: Mapped[int] = mapped_column(Integer, ForeignKey("tipo_cursos.id"), nullable=True)
     tipo_curso: Mapped["TipoCurso"] = relationship(back_populates="cursos")

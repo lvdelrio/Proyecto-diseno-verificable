@@ -50,6 +50,7 @@
             </div>
 
             <div x-show="tab === 'register requisitos'">
+                {% if tipo_cursos_disponibles %}
                 <h2 class="text-xl font-bold text-gray-800 mb-3">Inscribir requisitos</h2>
                 <form method="POST" action="{{ url_for('Tipo_Cursos.register_tipo_curso', tipo_curso_id=tipo_curso.id) }}">
                     {% for curso_requisito in tipo_cursos_disponibles %}
@@ -62,6 +63,11 @@
                         Inscribir Requisito
                     </button>
                 </form>
+                {% else %}
+                <div class="text-center py-4 text-gray-500">
+                    No hay cursos registrados aún.
+                </div>
+                {% endif %}
             </div>
 
             <div x-show="tab === 'requisitos'">

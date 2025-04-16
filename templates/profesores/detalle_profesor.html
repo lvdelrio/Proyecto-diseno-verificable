@@ -51,6 +51,7 @@
             </div>
 
             <div x-show="tab === 'cursos'">
+                {% if cursos_con_secciones %}
                 <h2 class="text-xl font-bold text-gray-800 mb-3">Inscribir en Cursos</h2>
                 <form method="POST" action="{{ url_for('Profesores.register_profesor', profesor_id=profesor.id) }}">
                     {% for curso, secciones in cursos_con_secciones %}
@@ -72,6 +73,11 @@
                         Inscribir Profesor
                     </button>
                 </form>
+                {% else %}
+                <div class="text-center py-4 text-gray-500">
+                    No hay secciones registradas aún.
+                </div>
+                {% endif %}
             </div>
 
             <div x-show="tab === 'registered'">

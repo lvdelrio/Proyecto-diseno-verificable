@@ -16,6 +16,10 @@ def create_evaluacion(db: Session, nombre: str, ponderacion: float, opcional: bo
         categoria_id=categoria_id,
         tipo_ponderacion=tipo_ponderacion
     )
+
+    if not validation_evaluacion(nueva_evaluacion, categoria_id):
+        abort(400, description="Error: La evaluación no es válida para la categoría.")
+        return
     db.add(nueva_evaluacion)
     db.commit()
     db.refresh(nueva_evaluacion)
@@ -87,3 +91,13 @@ def delete_evaluacion(db: Session, evaluacion_id: int):
         db.commit()
         return True
     return False
+
+def get_last_evaluation_by_category(category_id):
+    last_evaluation = Evaluacion.query.filter_by(categoria_id=category_id).order_by(Evaluacion.id.desc()).first()
+    return last_evaluation
+
+def validation_evaluacion(nueva_evaluacion, categoria_id):
+    last_evaluation = get_last_evaluation_by_category(categoria_id)
+    if last_evaluation is None:
+        return True
+    return last_evaluation.tipo_ponderacion == nueva_evaluacion.tipo_ponderacion

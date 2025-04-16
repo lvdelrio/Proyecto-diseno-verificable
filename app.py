@@ -12,13 +12,10 @@ from routes.secciones_routes import seccion_route_blueprint
 from routes.evaluacion_routes import evaluacion_blueprint
 from routes.categoria_routes import categoria_blueprint
 
-# Load environment variables from .env
 load_dotenv()
 
-# Initialize the Flask app
 app = Flask(__name__)
 
-# Add routes for api
 app.register_blueprint(curso_route_blueprint, url_prefix="")
 app.register_blueprint(profesor_route_blueprint, url_prefix="")
 app.register_blueprint(alumno_route_blueprint, url_prefix="")
@@ -29,7 +26,6 @@ app.register_blueprint(categoria_blueprint, url_prefix="")
 
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5000"]}})
 
-# Initialize the database
 init_db(app)
 
 @app.before_request

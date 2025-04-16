@@ -8,24 +8,26 @@ from db.models.alumno import Alumno
 from db.models.categoria import Categoria
 from db.models.alumno_seccion import AlumnoSeccion
 
-def create_evaluacion(db: Session, tipo: int, ponderacion: float, opcional: bool, categoria_id: int = None):
+def create_evaluacion(db: Session, nombre: str, ponderacion: float, opcional: bool, categoria_id: int = None, tipo_ponderacion: bool = False):
     nueva_evaluacion = Evaluacion(
-        tipo=tipo,
+        nombre=nombre,
         ponderacion=ponderacion,
         opcional=int(opcional),
-        categoria_id=categoria_id
+        categoria_id=categoria_id,
+        tipo_ponderacion=tipo_ponderacion
     )
     db.add(nueva_evaluacion)
     db.commit()
     db.refresh(nueva_evaluacion)
     return nueva_evaluacion
 
-def create_evaluacion_con_notas(db: Session, tipo: int, ponderacion: float, opcional: bool, categoria_id: int = None):
+def create_evaluacion_con_notas(db: Session, nombre: str, ponderacion: float, opcional: bool, categoria_id: int = None, tipo_ponderacion: bool = False):
     nueva_evaluacion = Evaluacion(
-        tipo=tipo,
+        nombre=nombre,
         ponderacion=ponderacion,
         opcional=int(opcional),
-        categoria_id=categoria_id
+        categoria_id=categoria_id,
+        tipo_ponderacion=tipo_ponderacion
     )
     db.add(nueva_evaluacion)
     db.commit()
@@ -54,21 +56,23 @@ def get_all_evaluaciones(db: Session):
 def get_evaluaciones_by_seccion(db: Session, categoria_id: int):
     return db.query(Evaluacion).filter(Evaluacion.categoria_id == categoria_id).all()
 
-def edit_evaluacion(evaluacion_id, tipo=None, ponderacion=None, opcional=None, categoria_id=None):
+def edit_evaluacion(evaluacion_id, nombre=None, ponderacion=None, opcional=None, categoria_id=None, tipo_ponderacion: bool = False):
 
     evaluacion = Evaluacion.query.get(evaluacion_id)
     if not evaluacion:
         abort(404, description="Evaluación no encontrada")
 
-    if tipo is not None:
-        evaluacion.tipo = tipo
+    if nombre is not None:
+        evaluacion.nombre = nombre
     if ponderacion is not None:
         evaluacion.ponderacion = ponderacion
     if opcional is not None:
         evaluacion.opcional = opcional
     if categoria_id is not None:
         evaluacion.categoria_id = categoria_id
-    
+    if tipo_ponderacion is not None:
+        evaluacion.tipo_ponderacion = tipo_ponderacion
+
     try:
         db.session.commit()
         return evaluacion

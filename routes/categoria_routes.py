@@ -16,8 +16,10 @@ def add_categoria():
         tipo_categoria = request.form.get('tipo_categoria')
         seccion_id = request.form.get('seccion_id')
         ponderacion = float(request.form.get('ponderacion'))
-        opcional = 'opcional' in request.form
         curso_id = request.form.get('curso_id')
+        
+        tipo_ponderacion = request.form.get('tipo_ponderacion')
+        tipo_ponderacion = True if tipo_ponderacion == 'porcentaje' else False
         
         seccion = db.session.query(Seccion).get(seccion_id)
         if not seccion:
@@ -28,7 +30,7 @@ def add_categoria():
             tipo_categoria=tipo_categoria,
             seccion=seccion,
             ponderacion=ponderacion,
-            opcional=opcional
+            tipo_ponderacion=tipo_ponderacion
         )
         
         print('Categoría creada exitosamente', 'success')
@@ -44,14 +46,14 @@ def edit_categoria_route(categoria_id):
     try:
         tipo_categoria = request.form.get('tipo_categoria')
         ponderacion = float(request.form.get('ponderacion'))
-        opcional = 'opcional' in request.form
         curso_id = request.form.get('curso_id')
+        tipo_ponderacion = request.form.get('tipo_ponderacion')
         
         categoria = edit_categoria(
             categoria_id=categoria_id,
             tipo_categoria=tipo_categoria,
             ponderacion=ponderacion,
-            opcional=opcional
+            tipo_ponderacion=tipo_ponderacion
         )
         
         print('Categoría actualizada exitosamente', 'success')

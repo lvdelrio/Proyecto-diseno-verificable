@@ -1,12 +1,12 @@
 from ..config import db
 from ..models.categoria import Categoria
 
-def create_categoria(tipo_categoria, seccion, ponderacion, opcional):
+def create_categoria(tipo_categoria, seccion, ponderacion, tipo_ponderacion):
     nueva_categoria = Categoria(
         tipo_categoria=tipo_categoria,
         id_seccion=seccion.id,
-        ponderacion=ponderacion,
-        opcional=opcional
+        ponderacion=ponderacion, 
+        tipo_ponderacion=tipo_ponderacion
     )
     db.session.add(nueva_categoria)
     db.session.commit()

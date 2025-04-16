@@ -15,13 +15,17 @@ evaluacion_blueprint = Blueprint("Evaluaciones", __name__)
 @evaluacion_blueprint.route('/evaluaciones/add', methods=['POST'])
 def add_evaluacion():
     try:
-        categoria_id = request.form.get('categoria_id')  # Cambiamos de seccion_id a categoria_id
-        tipo = request.form.get('tipo')
+        categoria_id = request.form.get('categoria_id') 
+        nombre = request.form.get('nombre')
         ponderacion = request.form.get('ponderacion')
         opcional = 'opcional' in request.form
         curso_id = request.form.get('curso_id')
-        
-        if not all([categoria_id, tipo, ponderacion, curso_id]):
+        tipo_ponderacion = request.form.get('tipo_ponderacion')
+        tipo_ponderacion = True if tipo_ponderacion == 'porcentaje' else False
+
+        print(f'All info: {categoria_id}, {nombre}, {ponderacion}, {opcional}, {curso_id}, {tipo_ponderacion}')
+
+        if any(value is None or (isinstance(value, str) and value.strip() == '') for value in [categoria_id, nombre, ponderacion, curso_id]) or tipo_ponderacion is None:
             print('Faltan campos obligatorios', 'error')
             return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
         
@@ -31,13 +35,13 @@ def add_evaluacion():
             print('La ponderación debe ser un número válido', 'error')
             return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
         
-        # Usamos create_evaluacion_con_notas para crear notas vacías automáticamente
-        nueva_evaluacion = create_evaluacion_con_notas(
+        nueva_evaluacion = create_evaluacion(
             db=db.session,
-            tipo=tipo,
+            nombre=nombre,
             ponderacion=ponderacion,
             opcional=opcional,
-            categoria_id=categoria_id
+            categoria_id=categoria_id, 
+            tipo_ponderacion=tipo_ponderacion
         )
         
         print('Evaluación creada exitosamente', 'success')
@@ -61,6 +65,7 @@ def view_notas_evaluacion(evaluacion_id):
 def delete_evaluacion_route(evaluacion_id):
     try:
         evaluacion = get_evaluacion_by_id(db.session, evaluacion_id)
+        curso_id = evaluacion.categoria.seccion.curso_id
         if not evaluacion or not evaluacion.categoria or not evaluacion.categoria.seccion:
             return jsonify({'success': False, 'message': 'Evaluación no encontrada'}), 404
         

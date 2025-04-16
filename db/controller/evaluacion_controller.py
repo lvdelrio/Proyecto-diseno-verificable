@@ -73,8 +73,9 @@ def edit_evaluacion(evaluacion_id, nombre=None, ponderacion=None, opcional=None,
         evaluacion.opcional = opcional
     if categoria_id is not None:
         evaluacion.categoria_id = categoria_id
-    if tipo_ponderacion is not None:
+    if tipo_ponderacion is not None and tipo_ponderacion != evaluacion.tipo_ponderacion:
         evaluacion.tipo_ponderacion = tipo_ponderacion
+        actualizar_tipo_ponderacion_en_categoria(evaluacion.categoria_id, tipo_ponderacion)
 
     try:
         db.session.commit()
@@ -100,3 +101,14 @@ def validation_evaluacion(nueva_evaluacion, categoria_id):
     if last_evaluation is None:
         return True
     return last_evaluation.tipo_ponderacion == nueva_evaluacion.tipo_ponderacion
+
+def actualizar_tipo_ponderacion_en_categoria(categoria_id: int, nuevo_tipo: bool):
+    evaluaciones = Evaluacion.query.filter_by(categoria_id=categoria_id).all()
+    for evaluacion in evaluaciones:
+        evaluacion.tipo_ponderacion = nuevo_tipo
+
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        abort(400, description=f"Error al actualizar tipo de ponderación en evaluaciones: {str(e)}")

@@ -36,7 +36,7 @@ def get_last_categoria_by_seccion( seccion_id ):
     return Categoria.query.filter_by(id_seccion=seccion_id).order_by(Categoria.id.desc()).first()
 
 def validation_categoria(categoria, seccion_id):
-    last_categorie = get_last_categoria_by_seccion(seccion_id)
+    last_category = get_last_categoria_by_seccion(seccion_id)
     if last_categorie is None:
         return True
     return last_categorie.tipo_ponderacion == categoria.tipo_ponderacion

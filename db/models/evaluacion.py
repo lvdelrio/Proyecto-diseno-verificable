@@ -10,7 +10,7 @@ class Evaluacion(db.Model):
     nombre = db.Column(String(20), index=True)
     ponderacion = db.Column(Float, index=True)
     opcional = db.Column(Integer, index=True)
-    categoria_id = db.Column(Integer, ForeignKey("categoria.id"), nullable = True)
+    categoria_id = db.Column(Integer, ForeignKey("categoria.id", ondelete="CASCADE"), nullable = True)
     tipo_ponderacion = db.Column(Boolean)
     
     categoria: Mapped["Categoria"] = relationship("Categoria", back_populates="evaluaciones")

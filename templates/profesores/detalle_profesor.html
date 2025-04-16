@@ -58,13 +58,13 @@
                             <button type="button" @click="open = !open" class="w-full text-left bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">
                                 {{ curso.nombre }}
                             </button>
-                            <div x-show="open" class="mt-1 px-4 py-2 bg-gray-50 border rounded">
-                                <select name="seccion_id_{{ curso.id }}" class="border p-2 rounded w-full">
-                                    <option value="" disabled selected>Seleccione una sección</option>
-                                    {% for seccion in secciones %}
-                                        <option value="{{ seccion.id }}">{{ seccion.nombre }}</option>
-                                    {% endfor %}
-                                </select>
+                            <div x-show="open" class="mt-1 px-4 py-2 bg-gray-50 border rounded space-y-1">
+                                {% for seccion in secciones %}
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" name="seccion_ids" value="{{ seccion.id }}" class="form-checkbox text-blue-600">
+                                        <span>{{ seccion.nombre }}</span>
+                                    </label>
+                                {% endfor %}
                             </div>
                         </div>
                     {% endfor %}
@@ -77,10 +77,20 @@
             <div x-show="tab === 'inscritos'">
                 <h2 class="text-xl font-bold text-gray-800 mb-3">Cursos y Secciones Inscritas</h2>
                 <ul class="space-y-2">
+                    {% set grouped = {} %}
                     {% for seccion in profesor.secciones %}
-                        <li class="bg-gray-200 p-3 rounded">
-                           Curso: {{ seccion.curso.nombre }} - Sección: {{ seccion.nombre }} 
-                        </li>
+                        {% set _ = grouped.setdefault(seccion.curso.nombre, []).append(seccion) %}
+                    {% endfor %}
+
+                    {% for curso_nombre, secciones in grouped.items() %}
+                        <div class="mb-4">
+                            <h3 class="font-bold text-gray-700">{{ curso_nombre }}</h3>
+                            <ul class="pl-4 list-disc">
+                                {% for seccion in secciones %}
+                                    <li>{{ seccion.nombre }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     {% else %}
                         <p class="text-gray-500">El profesor no está inscrito en ningún curso aún.</p>
                     {% endfor %}

@@ -37,21 +37,20 @@ def get_profesores(pagina=1):
 @profesor_route_blueprint.route('/profesor/<int:profesor_id>')
 def view_profesor(profesor_id):
     profesor = get_profesor_by_id(config.session, profesor_id)
-
     if profesor is None:
         abort(404, description="Profesor no encontrado.")
 
-    cursos_inscritos_ids = {seccion.curso_id for seccion in profesor.secciones}
-
-    cursos_disponibles = [
-        curso for curso in get_all_cursos(config.session)
-        if curso.id not in cursos_inscritos_ids
-    ]
+    profesor_seccion_ids = {seccion.id for seccion in profesor.secciones}
 
     cursos_con_secciones = []
-    for curso in cursos_disponibles:
-        secciones = get_all_secciones_by_curso_id(config.session, curso.id)
-        cursos_con_secciones.append((curso, secciones))
+    for curso in get_all_cursos(config.session):
+        secciones_disponibles = [
+            seccion for seccion in get_all_secciones_by_curso_id(config.session, curso.id)
+            if seccion.id not in profesor_seccion_ids
+        ]
+
+        if secciones_disponibles:
+            cursos_con_secciones.append((curso, secciones_disponibles))
 
     return render_template(
         "Profesores/detalle_profesor.html",
@@ -81,23 +80,21 @@ def delete_profesor(profesor_id):
     delete_profesor_by_id(config.session, profesor_id)
     return redirect(url_for("Profesores.get_profesores"))
 
-@profesor_route_blueprint.route('/profesor/<int:profesor_id>/inscribir', methods=['POST'])
+@profesor_route_blueprint.route('/inscribir/<int:profesor_id>/', methods=['POST'])
 def inscribir_profesor(profesor_id):
     profesor = get_profesor_by_id(config.session, profesor_id)
-    cursos = get_all_cursos(config.session)
+
+    seccion_ids = request.form.getlist("seccion_ids")
+    print("Secciones seleccionadas:", seccion_ids)
 
     enrolled_sections = []
     errors = []
 
-    for curso in cursos:
-        seccion_id = request.form.get(f'seccion_id_{curso.id}')
-        if seccion_id:
-            exito, mensaje = enroll_profesor_in_seccion(config.session, profesor_id, int(seccion_id))
-            if exito:
-                enrolled_sections.append(mensaje)
-            else:
-                errors.append(mensaje)
-
- 
+    for seccion_id in seccion_ids:
+        exito, mensaje = enroll_profesor_in_seccion(config.session, profesor_id, int(seccion_id))
+        if exito:
+            enrolled_sections.append(mensaje)
+        else:
+            errors.append(mensaje)
 
     return redirect(url_for('Profesores.view_profesor', profesor_id=profesor_id))

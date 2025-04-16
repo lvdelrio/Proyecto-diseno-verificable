@@ -44,17 +44,17 @@ def get_paginated_profesores(session, page=1, per_page=10):
 def enroll_profesor_in_seccion(db: Session, profesor_id: int, seccion_id: int):
     profesor = db.query(Profesor).filter(Profesor.id == profesor_id).first()
     if not profesor:
-        return False, "Alumno no encontrado."
+        return False, "Profesor no encontrado."
 
     seccion = db.query(Seccion).filter(Seccion.id == seccion_id).first()
     if not seccion:
         return False, "Sección no encontrada."
 
     if seccion in profesor.secciones:
-        return False, "El alumno ya está inscrito en esta sección."
+        return False, "El profesor ya está inscrito en esta sección."
 
     profesor.secciones.append(seccion)
     db.commit()
     db.refresh(profesor)
 
-    return True, "Alumno inscrito exitosamente."
+    return True, "Profesor inscrito exitosamente."

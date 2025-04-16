@@ -1,6 +1,17 @@
-from flask import Blueprint, request, render_template, redirect, url_for
+from flask import Blueprint, request, render_template, redirect, url_for, abort
 from db.config import db as config
-from db.controller.profesor_controller import get_all_profesores, create_profesor, get_profesor_by_id, edit_profesor_by_id, delete_profesor_by_id, get_paginated_profesores
+from db.controller.curso_controller import get_all_cursos
+from db.controller.seccion_controller import get_all_secciones_by_curso_id
+from db.controller.profesor_controller import (
+    get_all_profesores, 
+    create_profesor, 
+    get_profesor_by_id, 
+    edit_profesor_by_id, 
+    delete_profesor_by_id, 
+    get_paginated_profesores, 
+    enroll_profesor_in_seccion 
+)
+
 
 profesor_route_blueprint = Blueprint("Profesores", __name__)
 
@@ -26,8 +37,26 @@ def get_profesores(pagina=1):
 @profesor_route_blueprint.route('/profesor/<int:profesor_id>')
 def view_profesor(profesor_id):
     profesor = get_profesor_by_id(config.session, profesor_id)
-    print(profesor)
-    return render_template("Profesores/detalle_profesor.html", profesor=profesor)
+    if profesor is None:
+        abort(404, description="Profesor no encontrado.")
+
+    profesor_seccion_ids = {seccion.id for seccion in profesor.secciones}
+
+    cursos_with_secciones = []
+    for curso in get_all_cursos(config.session):
+        available_secciones = [
+            seccion for seccion in get_all_secciones_by_curso_id(config.session, curso.id)
+            if seccion.id not in profesor_seccion_ids
+        ]
+
+        if available_secciones:
+            cursos_with_secciones.append((curso, available_secciones))
+
+    return render_template(
+        "Profesores/detalle_profesor.html",
+        profesor=profesor,
+        cursos_con_secciones=cursos_with_secciones
+    )
 
 @profesor_route_blueprint.route('/agregar_profesor', methods=['POST'])
 def add_profesor():
@@ -51,3 +80,21 @@ def delete_profesor(profesor_id):
     delete_profesor_by_id(config.session, profesor_id)
     return redirect(url_for("Profesores.get_profesores"))
 
+@profesor_route_blueprint.route('/inscribir/<int:profesor_id>/', methods=['POST'])
+def register_profesor(profesor_id):
+    profesor = get_profesor_by_id(config.session, profesor_id)
+
+    seccion_ids = request.form.getlist("seccion_ids")
+    print("Secciones seleccionadas:", seccion_ids)
+
+    enrolled_sections = []
+    errors = []
+
+    for seccion_id in seccion_ids:
+        exito, mensaje = enroll_profesor_in_seccion(config.session, profesor_id, int(seccion_id))
+        if exito:
+            enrolled_sections.append(mensaje)
+        else:
+            errors.append(mensaje)
+
+    return redirect(url_for('Profesores.view_profesor', profesor_id=profesor_id))

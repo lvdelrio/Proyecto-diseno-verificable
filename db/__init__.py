@@ -10,5 +10,6 @@ from .models.requisitos import CursoRequisito
 from .models.categoria import Categoria
 from .models.alumno_seccion import AlumnoSeccion
 from .models.notas_finales import NotasFinales
+from .models.profesor_seccion import ProfesorSeccion
 
 __all__ = ['db', 'init_db', 'Curso', 'Alumno', 'Notas', 'Evaluacion', 'Seccion', 'Profesor', 'CursoRequisito', 'Categoria', 'AlumnoSeccion', 'NotasFinales',  'ProfesorSeccion', 'TipoCurso']

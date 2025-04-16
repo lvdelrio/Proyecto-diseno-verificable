@@ -26,3 +26,12 @@ def delete_categoria(categoria_id):
     categoria = Categoria.query.get(categoria_id)
     db.session.delete(categoria)
     db.session.commit()
+    return
+
+def get_last_categoria_by_seccion( seccion_id ):
+    return Categoria.query(Categoria).filter(Categoria.id_seccion == seccion_id).order_by(Categoria.id.desc()).first()
+
+def validacion_categoria(categoria, seccion_id):
+    if get_last_categoria_by_seccion(seccion_id).tipo_categoria == categoria.tipo_categoria:
+        return False
+    return True

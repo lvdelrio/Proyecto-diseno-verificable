@@ -92,40 +92,35 @@ def edit_evaluacion_form(evaluacion_id):
 
 @evaluacion_blueprint.route('/evaluaciones/<int:evaluacion_id>/edit', methods=['POST'])
 def edit_evaluacion_route(evaluacion_id):
+    evaluacion = get_evaluacion_by_id(db.session, evaluacion_id)
+    curso_id = evaluacion.categoria.seccion.curso_id
+
+    nombre = request.form.get('nombre')
+    ponderacion = request.form.get('ponderacion')
+    opcional = 'opcional' in request.form
+    categoria_id = request.form.get('categoria_id')
+    tipo_ponderacion = request.form.get('tipo_ponderacion')
+    tipo_ponderacion = True if tipo_ponderacion == 'porcentaje' else False
+
+    if any(value is None or (isinstance(value, str) and value.strip() == '') for value in [categoria_id, nombre, ponderacion, curso_id]) or tipo_ponderacion is None:
+        abort(400, description="Faltan campos obligatorios")
+
     try:
-        evaluacion = get_evaluacion_by_id(db.session, evaluacion_id)
-        curso_id = evaluacion.categoria.seccion.curso_id
-
-        nombre = request.form.get('nombre')
-        ponderacion = request.form.get('ponderacion')
-        opcional = 'opcional' in request.form
-        categoria_id = request.form.get('categoria_id')
-        tipo_ponderacion = request.form.get('tipo_ponderacion')
-        tipo_ponderacion = True if tipo_ponderacion == 'porcentaje' else False
-
-        if any(value is None or (isinstance(value, str) and value.strip() == '') for value in [categoria_id, nombre, ponderacion, curso_id]) or tipo_ponderacion is None:
-            abort(400, description="Faltan campos obligatorios")
-
-        try:
-            ponderacion = float(ponderacion)
-        except ValueError:
-            abort(400, description="La ponderación debe ser un número válido")
+        ponderacion = float(ponderacion)
+    except ValueError:
+        abort(400, description="La ponderación debe ser un número válido")
 
 
-        evaluacion = edit_evaluacion(
-            evaluacion_id=evaluacion_id,
-            nombre=nombre,
-            ponderacion=ponderacion,
-            opcional=opcional,
-            categoria_id=categoria_id,
-            tipo_ponderacion=tipo_ponderacion
-        )
+    evaluacion = edit_evaluacion(
+        evaluacion_id=evaluacion_id,
+        nombre=nombre,
+        ponderacion=ponderacion,
+        opcional=opcional,
+        categoria_id=categoria_id,
+        tipo_ponderacion=tipo_ponderacion
+    )
 
-        if not evaluacion:
-            abort(404, description="Evaluación no encontrada")
+    if not evaluacion:
+        abort(404, description="Evaluación no encontrada")
 
-        return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
-
-    except Exception as e:
-        db.session.rollback()
-        abort(400, description=f"Error al actualizar la evaluación: {str(e)}")
+    return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))

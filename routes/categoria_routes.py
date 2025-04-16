@@ -43,24 +43,18 @@ def add_categoria():
 
 @categoria_blueprint.route('/categorias/<int:categoria_id>/edit', methods=['GET'])
 def edit_categoria_form(categoria_id):
-    try:
-        categoria = get_categoria(categoria_id)
-        curso_id = categoria.seccion.curso_id 
+    categoria = get_categoria(categoria_id)
+    if not categoria:
+        abort(404, description="Categoría no encontrada")
 
-        if not categoria:
-            abort(404, description="Categoría no encontrada")
-
-        curso_id = categoria.seccion.curso_id
-
-        return render_template(
-            'Cursos/partials/evaluaciones/edit_categoria.html',
-            categoria=categoria,
-            curso_id=curso_id,
-            secciones=Seccion.query.filter_by(curso_id=curso_id).all()
-        )
-    except Exception as e:
-        print(f'Error al cargar el formulario de edición: {str(e)}')
-        abort(500, description="Error interno del servidor")
+    curso_id = categoria.seccion.curso_id
+    return render_template(
+        'Cursos/partials/evaluaciones/edit_categoria.html',
+        categoria=categoria,
+        curso_id=curso_id,
+        secciones=Seccion.query.filter_by(curso_id=curso_id).all()
+    )
+    
 
 @categoria_blueprint.route('/categorias/<int:categoria_id>/edit', methods=['POST'])
 def edit_categoria_route(categoria_id):

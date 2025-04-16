@@ -12,7 +12,7 @@ def create_evaluacion(db: Session, nombre: str, ponderacion: float, opcional: bo
     nueva_evaluacion = Evaluacion(
         nombre=nombre,
         ponderacion=ponderacion,
-        opcional=int(opcional),
+        opcional=opcional,
         categoria_id=categoria_id,
         tipo_ponderacion=tipo_ponderacion
     )
@@ -25,7 +25,7 @@ def create_evaluacion_con_notas(db: Session, nombre: str, ponderacion: float, op
     nueva_evaluacion = Evaluacion(
         nombre=nombre,
         ponderacion=ponderacion,
-        opcional=int(opcional),
+        opcional=opcional,
         categoria_id=categoria_id,
         tipo_ponderacion=tipo_ponderacion
     )

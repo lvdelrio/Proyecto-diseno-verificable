@@ -63,7 +63,7 @@
                     {% for curso, secciones in cursos_con_secciones %}
                         <div class="mb-2" x-data="{ open: false }">
                             <button type="button" @click="open = !open" class="w-full text-left bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">
-                                {{ curso.nombre }}
+                                {{ curso.tipo_curso.nombre }}
                             </button>
                             <div x-show="open" class="mt-1 px-4 py-2 bg-gray-50 border rounded">
                                 <select name="seccion_id_{{ curso.id }}" class="border p-2 rounded w-full">
@@ -86,7 +86,7 @@
                 <ul class="space-y-2">
                     {% for seccion in alumno.secciones %}
                         <li class="bg-gray-200 p-3 rounded">
-                           Curso: {{ seccion.curso.nombre }} - Sección: {{ seccion.nombre }} 
+                           Curso: {{ seccion.curso.tipo_curso.nombre }} - Sección: {{ seccion.nombre }} 
                         </li>
                     {% else %}
                         <p class="text-gray-500">El alumno no está inscrito en ningún curso aún.</p>

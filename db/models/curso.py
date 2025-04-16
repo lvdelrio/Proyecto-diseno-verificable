@@ -1,5 +1,5 @@
 from ..config import db
-from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy import Column, Integer, String, Text, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 class Curso(db.Model):
@@ -9,14 +9,12 @@ class Curso(db.Model):
     nombre = db.Column(db.String(20), nullable=False)
     descripcion = db.Column(db.Text, nullable=True)
     semestre_impartido = db.Column(db.String(100), nullable=False)
+    fecha_impartida =db.Column(db.Integer, nullable=False)
+
+    tipo_curso_id: Mapped[int] = mapped_column(Integer, ForeignKey("tipo_cursos.id"), nullable=True)
+    tipo_curso: Mapped["TipoCurso"] = relationship(back_populates="cursos")
     
     secciones = db.relationship("Seccion", back_populates="curso")
-    requisitos = relationship(
-        "CursoRequisito",
-        foreign_keys='CursoRequisito.curso_id',
-        back_populates="curso",
-        cascade="all, delete-orphan"
-    )
 
     notas_finales = db.relationship("NotasFinales", back_populates="curso")
 

@@ -74,11 +74,11 @@ def test_sql():
     db.session.add_all([curso, requisito])
     db.session.commit()
 
-    curso_requisito = CursoRequisito(curso_id=curso.id, curso_requisito_id=requisito.id)
-    db.session.add(curso_requisito)
-    db.session.commit()
+    # curso_requisito = CursoRequisito(tipocurso_id=tipo_curso.id, curso_requisito_id=requisito.id)
+    # db.session.add(curso_requisito)
+    # db.session.commit()
 
-    print(f"Curso: {curso.nombre}, Requisitos: {[r.curso_requisito.nombre for r in curso.requisitos]}")
+    # print(f"Curso: {curso.nombre}, Requisitos: {[r.curso_requisito.nombre for r in curso.requisitos]}")
     #print(f"Requisito: {requisito.nombre}, Cursos: {[c.curso.nombre for c in requisito.cursos]}")
     #alumno con notas finales y cursos
 

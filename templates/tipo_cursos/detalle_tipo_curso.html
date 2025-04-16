@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+    <title>{{ tipo_curso.nombre }}</title>
+</head>
+<body class="bg-gray-100 p-10">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+
+        <a href="{{ url_for('Tipo_Cursos.get_tipo_cursos') }}" class="inline-block mb-4 text-blue-500 hover:underline">
+            Volver a lista
+        </a>
+
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-blue-600">{{ tipo_curso.nombre }}</h1>
+
+            <form method="POST" action="{{ url_for('Tipo_Cursos.delete_tipo_curso', tipo_curso_id=tipo_curso.id) }}">
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                    Eliminar Curso
+                </button>
+            </form>
+        </div>
+
+        <div x-data="{ tab: new URLSearchParams(window.location.search).get('tab') || 'info' }" x-cloak>
+            <div class="flex border-b mb-4">
+                <button @click="tab='info'" class="px-4 py-2" :class="tab === 'info' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Información</button>
+                <button @click="tab='inscribir requisitos'" class="px-4 py-2" :class="tab === 'secciones' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Inscribir requisitos</button>
+                <button @click="tab='requisitos'" class="px-4 py-2" :class="tab === 'secciones' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Requisitos</button>
+            </div>
+
+            <div x-show="tab === 'info'">
+                <form method="POST" action="{{ url_for('Tipo_Cursos.edit_tipo_curso', tipo_curso_id=tipo_curso.id) }}">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-1">Nombre del Tipo de Curso:</label>
+                        <input type="text" name="nombre" value="{{ tipo_curso.nombre }}" class="border p-2 rounded w-full" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-1">Descripción:</label>
+                        <textarea name="descripcion" class="border p-2 rounded w-full" rows="3">{{ tipo_curso.descripcion }}</textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                        Guardar Cambios
+                    </button>
+                </form>
+            </div>
+
+            <div x-show="tab === 'inscribir requisitos'">
+                <h2 class="text-xl font-bold text-gray-800 mb-3">Inscribir requisitos</h2>
+                <form method="POST" action="{{ url_for('Tipo_Cursos.inscribir_tipo_curso', tipo_curso_id=tipo_curso.id) }}">
+                    {% for curso_requisito in tipo_cursos_disponibles %}
+                        <label class="flex items-center space-x-2 bg-gray-100 p-3 rounded hover:bg-gray-200 cursor-pointer">
+                            <input type="checkbox" name="tipo_curso_ids" value="{{ curso_requisito.id }}" class="form-checkbox text-blue-600">
+                            <span class="text-gray-800">{{ curso_requisito.nombre }}</span>
+                        </label>
+                    {% endfor %}
+                    <button type="submit" class="w-full mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                        Inscribir Requisito
+                    </button>
+                </form>
+            </div>
+
+            <div x-show="tab === 'requisitos'">
+                <h2 class="text-xl font-bold text-gray-800 mb-3">Requisitos del Curso</h2>
+                <ul class="space-y-2">
+                    {% for cursos_requisito in tipo_curso.requisitos %}
+                        <li class="bg-gray-200 p-3 rounded">
+                           Curso: {{ cursos_requisito.curso_requisito.nombre }}
+                        </li>
+                    {% else %}
+                        <p class="text-gray-500">El Curso no tiene requisitos aún.</p>
+                    {% endfor %}
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+</body>
+</html>
+

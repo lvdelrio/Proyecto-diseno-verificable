@@ -1,4 +1,4 @@
-from flask import Blueprint, request, redirect, url_for
+from flask import Blueprint, request, redirect, url_for, render_template, abort
 from db.config import db
 from db.controller.categoria_controller import (
     create_categoria,
@@ -41,6 +41,21 @@ def add_categoria():
         print(f'Error al crear categoría: {str(e)}', 'error')
         return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
 
+@categoria_blueprint.route('/categorias/<int:categoria_id>/edit', methods=['GET'])
+def edit_categoria_form(categoria_id):
+    categoria = get_categoria(categoria_id)
+    if not categoria:
+        abort(404, description="Categoría no encontrada")
+
+    curso_id = categoria.seccion.curso_id
+    return render_template(
+        'Cursos/partials/evaluaciones/edit_categoria.html',
+        categoria=categoria,
+        curso_id=curso_id,
+        secciones=Seccion.query.filter_by(curso_id=curso_id).all()
+    )
+    
+
 @categoria_blueprint.route('/categorias/<int:categoria_id>/edit', methods=['POST'])
 def edit_categoria_route(categoria_id):
     try:
@@ -48,6 +63,7 @@ def edit_categoria_route(categoria_id):
         ponderacion = float(request.form.get('ponderacion'))
         curso_id = request.form.get('curso_id')
         tipo_ponderacion = request.form.get('tipo_ponderacion')
+        tipo_ponderacion = True if tipo_ponderacion == 'porcentaje' else False
         
         categoria = edit_categoria(
             categoria_id=categoria_id,

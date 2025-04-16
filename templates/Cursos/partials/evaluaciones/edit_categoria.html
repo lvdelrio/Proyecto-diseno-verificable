@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Categoría | SGA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div class="bg-white shadow rounded-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-800">Editar Categoría: {{ categoria.tipo_categoria }}</h2>
+                <a href="{{ url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones') }}" 
+                   class="text-gray-600 hover:text-gray-800 transition duration-300 ease-in-out">
+                    <i class="fas fa-times text-2xl"></i>
+                </a>
+            </div>
+            <form method="POST" action="{{ url_for('Categorias.edit_categoria_route', categoria_id=categoria.id) }}" class="space-y-6">
+                <input type="hidden" name="curso_id" value="{{ curso_id }}">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                        <label for="seccion_id" class="block text-sm font-medium text-gray-700 mb-1">Sección</label>
+                        <select id="seccion_id" name="seccion_id" 
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                            {% for seccion in secciones %}
+                                <option value="{{ seccion.id }}" 
+                                    {% if seccion.id == categoria.seccion_id %}selected{% endif %}>
+                                    {{ seccion.nombre }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="tipo_categoria" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                        <input id="tipo_categoria" type="text" name="tipo_categoria" value="{{ categoria.tipo_categoria }}"
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <div>
+                        <label for="ponderacion" class="block text-sm font-medium text-gray-700 mb-1">Ponderación</label>
+                        <input id="ponderacion" type="number" name="ponderacion" min="0.01" max="100" step="0.01" 
+                               value="{{ categoria.ponderacion }}"
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                    </div>
+                    <div>
+                        <label for="tipo_ponderacion" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Ponderación</label>
+                        <select id="tipo_ponderacion" name="tipo_ponderacion" 
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="porcentaje" {% if categoria.tipo_ponderacion == 'porcentaje' %}selected{% endif %}>Porcentaje</option>
+                            <option value="peso" {% if categoria.tipo_ponderacion == 'peso' %}selected{% endif %}>Peso</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center">
+                        <input id="opcional" type="checkbox" name="opcional" 
+                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                               {% if categoria.opcional %}checked{% endif %}>
+                        <label for="opcional" class="ml-2 block text-sm text-gray-700">Categoría opcional</label>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <a href="{{ url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones') }}" 
+                       class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition duration-300 ease-in-out">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300 ease-in-out">
+                        <i class="fas fa-save mr-2"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="https://unpkg.com/alpinejs@3.x/dist/cdn.min.js" defer></script>
+</body>
+</html>

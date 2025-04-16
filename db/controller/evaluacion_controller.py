@@ -12,7 +12,7 @@ def create_evaluacion(db: Session, nombre: str, ponderacion: float, opcional: bo
     nueva_evaluacion = Evaluacion(
         nombre=nombre,
         ponderacion=ponderacion,
-        opcional=int(opcional),
+        opcional=opcional,
         categoria_id=categoria_id,
         tipo_ponderacion=tipo_ponderacion
     )
@@ -29,7 +29,7 @@ def create_evaluacion_con_notas(db: Session, nombre: str, ponderacion: float, op
     nueva_evaluacion = Evaluacion(
         nombre=nombre,
         ponderacion=ponderacion,
-        opcional=int(opcional),
+        opcional=opcional,
         categoria_id=categoria_id,
         tipo_ponderacion=tipo_ponderacion
     )
@@ -60,8 +60,7 @@ def get_all_evaluaciones(db: Session):
 def get_evaluaciones_by_seccion(db: Session, categoria_id: int):
     return db.query(Evaluacion).filter(Evaluacion.categoria_id == categoria_id).all()
 
-def edit_evaluacion(evaluacion_id, nombre=None, ponderacion=None, opcional=None, categoria_id=None, tipo_ponderacion: bool = False):
-
+def edit_evaluacion(evaluacion_id, nombre=None, ponderacion=None, opcional=None, categoria_id=None, tipo_ponderacion=None):
     evaluacion = Evaluacion.query.get(evaluacion_id)
     if not evaluacion:
         abort(404, description="Evaluación no encontrada")

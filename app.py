@@ -3,6 +3,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from db.config import db as config
 from db import db, init_db
+from db.seeds import seed_database
 
 from routes.cursos_routes import curso_route_blueprint
 from routes.profesores_routes import profesor_route_blueprint
@@ -41,9 +42,8 @@ def home():
 
 @app.route('/testing', methods = ['GET'])
 def testing():
-    from db.test_sql import test_sql
-    test_sql()
-    return "Testing"
+    seed_database()
+    return "Testing, no ejecutar mas de una vez, creara todo dos veces"
 
 
 if __name__ == "__main__":

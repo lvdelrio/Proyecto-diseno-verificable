@@ -7,11 +7,7 @@ seccion_route_blueprint = Blueprint("Secciones", __name__)
 @seccion_route_blueprint.route('/secciones/<int:curso_id>', methods=['POST'])
 def add_seccion(curso_id):
     nombre = request.form["nombre_seccion"]
-
-    nueva_seccion = create_seccion(config.session, curso_id, nombre)
-    print("nueva_seccion", nueva_seccion)
-    print(curso_id)
-
+    create_seccion(config.session, curso_id, nombre)
     return redirect(url_for("Cursos.view_curso", curso_id=curso_id, tab="secciones"))
 
 @seccion_route_blueprint.route('/secciones', methods=['GET'])
@@ -23,7 +19,6 @@ def get_secciones_by_id(curso_id):
 def view_seccion(seccion_id):
     seccion = get_seccion_by_id(config.session, seccion_id)
     alumnos = seccion.alumnos
-    print(alumnos)
     return render_template("secciones/detalle_seccion.html", seccion=seccion)
 
 @seccion_route_blueprint.route('/editar_seccion/<int:seccion_id>', methods=['POST'])

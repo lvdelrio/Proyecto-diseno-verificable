@@ -23,8 +23,6 @@ def add_evaluacion():
         tipo_ponderacion = request.form.get('tipo_ponderacion')
         tipo_ponderacion = True if tipo_ponderacion == 'porcentaje' else False
 
-        print(f'All info: {categoria_id}, {nombre}, {ponderacion}, {opcional}, {curso_id}, {tipo_ponderacion}')
-
         if any(value is None or (isinstance(value, str) and value.strip() == '') for value in [categoria_id, nombre, ponderacion, curso_id]) or tipo_ponderacion is None:
             print('Faltan campos obligatorios', 'error')
             return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))

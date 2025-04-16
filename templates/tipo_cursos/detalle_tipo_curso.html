@@ -28,7 +28,7 @@
         <div x-data="{ tab: new URLSearchParams(window.location.search).get('tab') || 'info' }" x-cloak>
             <div class="flex border-b mb-4">
                 <button @click="tab='info'" class="px-4 py-2" :class="tab === 'info' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Información</button>
-                <button @click="tab='inscribir requisitos'" class="px-4 py-2" :class="tab === 'secciones' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Inscribir requisitos</button>
+                <button @click="tab='register requisitos'" class="px-4 py-2" :class="tab === 'secciones' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Inscribir requisitos</button>
                 <button @click="tab='requisitos'" class="px-4 py-2" :class="tab === 'secciones' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Requisitos</button>
             </div>
 
@@ -49,9 +49,9 @@
                 </form>
             </div>
 
-            <div x-show="tab === 'inscribir requisitos'">
+            <div x-show="tab === 'register requisitos'">
                 <h2 class="text-xl font-bold text-gray-800 mb-3">Inscribir requisitos</h2>
-                <form method="POST" action="{{ url_for('Tipo_Cursos.inscribir_tipo_curso', tipo_curso_id=tipo_curso.id) }}">
+                <form method="POST" action="{{ url_for('Tipo_Cursos.register_tipo_curso', tipo_curso_id=tipo_curso.id) }}">
                     {% for curso_requisito in tipo_cursos_disponibles %}
                         <label class="flex items-center space-x-2 bg-gray-100 p-3 rounded hover:bg-gray-200 cursor-pointer">
                             <input type="checkbox" name="tipo_curso_ids" value="{{ curso_requisito.id }}" class="form-checkbox text-blue-600">

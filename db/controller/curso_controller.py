@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from ..models.curso import Curso
 
-def create_curso(db: Session, name: str, description: str, imparted_semester: str):
-    new_curso= Curso(nombre=name, descripcion=description, semestre_impartido=imparted_semester)
+def create_curso(db: Session, tipo_curso_id: int, fecha_impartida: int, semestre_impartido: str):
+    new_curso = Curso(tipo_curso_id=tipo_curso_id, fecha_impartida=fecha_impartida, semestre_impartido=semestre_impartido)
     db.add(new_curso)
     db.commit()
     db.refresh(new_curso)
@@ -15,12 +15,12 @@ def get_all_cursos(db: Session):
     return db.query(Curso).all()
 
 
-def edit_curso_by_id(db: Session, curso_id: int, name: str, description: str, imparted_semester: str):
+def edit_curso_by_id(db: Session, curso_id: int, tipo_curso_id: int, fecha_impartida: int, semestre_impartido: str):
     curso = db.query(Curso).filter(Curso.id == curso_id).first()
     if curso:
-        curso.nombre = name
-        curso.descripcion = description
-        curso.semestre_impartido = imparted_semester
+        curso.tipo_curso_id=tipo_curso_id
+        curso.fecha_impartida=fecha_impartida
+        curso.semestre_impartido = semestre_impartido
         db.commit()
         db.refresh(curso)
         return curso

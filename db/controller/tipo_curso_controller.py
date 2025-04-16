@@ -28,7 +28,6 @@ def edit_tipo_curso_by_id(db: Session, tipo_curso_id: int, name: str, descriptio
 
 def delete_tipo_curso_by_id(db: Session, tipo_curso_id: int):
     tipo_curso = db.query(TipoCurso).filter(TipoCurso.id == tipo_curso_id).first()
-    print(tipo_curso)
     if tipo_curso:
         db.delete(tipo_curso)
         db.commit()

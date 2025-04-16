@@ -145,7 +145,7 @@
                             {{ seccion.nombre }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ categoria.ponderacion }}% ({{ categoria.tipo_ponderacion }})
+                            {{ categoria.ponderacion }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <a href="{{ url_for('Categorias.edit_categoria_form', categoria_id=categoria.id) }}" 
@@ -185,7 +185,7 @@
                                                     {{ evaluacion.nombre }}
                                                 </td>
                                                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                                    {{ evaluacion.ponderacion }}% ({{ evaluacion.tipo_ponderacion }})
+                                                    {{ evaluacion.ponderacion }} ({{ evaluacion.tipo_ponderacion }})
                                                 </td>
                                                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                                                     {% if evaluacion.opcional %}Opcional{% else %}Obligatoria{% endif %}

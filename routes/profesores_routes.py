@@ -80,7 +80,7 @@ def delete_profesor(profesor_id):
     delete_profesor_by_id(config.session, profesor_id)
     return redirect(url_for("Profesores.get_profesores"))
 
-@profesor_route_blueprint.route('/inscribir/<int:profesor_id>/', methods=['POST'])
+@profesor_route_blueprint.route('/inscribir_profesor/<int:profesor_id>/', methods=['POST'])
 def register_profesor(profesor_id):
     profesor = get_profesor_by_id(config.session, profesor_id)
 

@@ -53,7 +53,7 @@ def delete_tipo_curso(tipo_curso_id):
     delete_tipo_curso_by_id(config.session, tipo_curso_id)
     return redirect(url_for("Tipo_Cursos.get_tipo_cursos"))
 
-@tipo_curso_route_blueprint.route('/inscribir/<int:tipo_curso_id>/', methods=['POST'])
+@tipo_curso_route_blueprint.route('/inscribir_curso/<int:tipo_curso_id>/', methods=['POST'])
 def register_tipo_curso(tipo_curso_id):
     tipo_curso_by_id = get_tipo_curso_by_id(config.session, tipo_curso_id)
     tipo_cursos_ids = request.form.getlist("tipo_curso_ids")

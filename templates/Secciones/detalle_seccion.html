@@ -11,7 +11,7 @@
 <body class="bg-gray-100 p-10">
     <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
 
-        <a href="{{ url_for('Cursos.get_cursos') }}" class="inline-block mb-4 text-blue-500 hover:underline">
+        <a href="{{ url_for('Cursos.view_curso', curso_id=seccion.curso.id) }}" class="inline-block mb-4 text-blue-500 hover:underline">
             Volver a lista
         </a>
 

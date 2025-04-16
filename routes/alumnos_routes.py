@@ -50,6 +50,7 @@ def view_alumno(alumno_id):
     cursos_with_secciones = []
     for curso in available_cursos:
         secciones = get_all_secciones_by_curso_id(config.session, curso.id)
+        if(len(secciones)==0): continue
         cursos_with_secciones.append((curso, secciones))
 
     return render_template(
@@ -81,7 +82,7 @@ def delete_alumno(alumno_id):
     delete_alumno_by_id(config.session, alumno_id)
     return redirect(url_for("Alumnos.get_alumnos"))
 
-@alumno_route_blueprint.route('/alumno/<int:alumno_id>/inscribir', methods=['POST'])
+@alumno_route_blueprint.route('/inscribir_alumno/<int:alumno_id>/', methods=['POST'])
 def register_alumno(alumno_id):
     alumno = get_alumno_by_id(config.session, alumno_id)
     cursos = get_all_cursos(config.session)

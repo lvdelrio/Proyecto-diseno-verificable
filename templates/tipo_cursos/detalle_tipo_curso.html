@@ -58,6 +58,8 @@
                             <input type="checkbox" name="tipo_curso_ids" value="{{ curso_requisito.id }}" class="form-checkbox text-blue-600">
                             <span class="text-gray-800">{{ curso_requisito.nombre }}</span>
                         </label>
+                    {% else %}
+                        <p class="text-gray-500">El Curso no tiene requisitos aún.</p>
                     {% endfor %}
                     <button type="submit" class="w-full mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
                         Inscribir Requisito

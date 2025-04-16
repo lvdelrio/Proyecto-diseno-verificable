@@ -43,7 +43,7 @@ def home():
 @app.route('/testing', methods = ['GET'])
 def testing():
     seed_database()
-    return "Testing"
+    return "Testing, no ejecutar mas de una vez, creara todo dos veces"
 
 
 if __name__ == "__main__":

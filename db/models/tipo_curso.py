@@ -9,7 +9,7 @@ class TipoCurso(db.Model):
     nombre: Mapped[str] = mapped_column(String(20), nullable=False)
     descripcion: Mapped[str] = mapped_column(Text, nullable=False)
 
-    cursos = relationship("Curso", back_populates="tipo_curso")
+    cursos = relationship("Curso", back_populates="tipo_curso", cascade="all, delete-orphan")
 
     requisitos = relationship(
         "CursoRequisito",

@@ -18,7 +18,6 @@
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Header con botón de volver -->
     <header class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
             <div class="flex items-center space-x-4">
@@ -36,9 +35,7 @@
         </div>
     </header>
 
-    <!-- Main Content (se mantiene igual) -->
     <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <!-- Panel de Filtros -->
         <div class="mb-6 flex justify-between items-center">
             <div class="flex items-center">
                 <input type="text" placeholder="Buscar curso..." class="border p-2 rounded-l-lg w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -49,7 +46,6 @@
             <span class="text-sm text-gray-600">{{ cursos|length }} cursos registrados</span>
         </div>
 
-        <!-- Lista de Cursos -->
         <div class="bg-white shadow rounded-lg overflow-hidden">
             <div class="grid grid-cols-12 bg-gray-100 p-4 font-semibold text-gray-700">
                 <div class="col-span-5">Nombre del Tipo de Curso</div>
@@ -76,7 +72,6 @@
         </div>
     </main>
 
-    <!-- Panel Lateral para Agregar Curso -->
     <div id="addTipoCoursePanel" class="slide-panel fixed top-0 right-0 h-full w-96 bg-white shadow-xl z-50 p-6 overflow-y-auto">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-bold text-gray-800">Agregar Nuevo Tipo Curso</h2>
@@ -109,7 +104,6 @@
         </form>
     </div>
 
-    <!-- Overlay para cuando el panel está activo -->
     <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
 
     <script>

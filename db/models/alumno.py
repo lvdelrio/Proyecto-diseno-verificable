@@ -15,10 +15,13 @@ class Alumno(db.Model):
     notas_finales: Mapped[list["NotasFinales"]] = relationship("NotasFinales", back_populates="alumno")
     secciones: Mapped[list["Seccion"]] = relationship(
                                             "Seccion",
-                                            secondary="alumno_seccion",
-                                            back_populates="alumnos"
+                                            secondary="alumno_seccion"
                                             )
-
-
+    alumnos_seccion: Mapped[list["AlumnoSeccion"]] = relationship(
+        "AlumnoSeccion",
+        back_populates="alumno",
+        cascade="all, delete-orphan"
+    )
+    
     def __repr__(self):
         return f"<Alumno(id={self.id}, nombre='{self.nombre}')>"

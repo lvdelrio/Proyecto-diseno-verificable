@@ -1,6 +1,6 @@
-from flask import Blueprint, request, render_template, redirect, url_for, abort
+from flask import Blueprint, request, render_template, redirect, url_for, abort, jsonify
 from db.config import db as config
-from db.controller.tipo_curso_controller import get_all_tipo_cursos, create_tipo_curso, get_tipo_curso_by_id, edit_tipo_curso_by_id, delete_tipo_curso_by_id, enroll_tipo_curso_in_tipo_cursos
+from db.controller.tipo_curso_controller import get_all_tipo_cursos, create_tipo_curso, get_tipo_curso_by_id, edit_tipo_curso_by_id, delete_tipo_curso_by_id, enroll_tipo_curso_in_tipo_cursos, create_tipo_cursos_from_json
 
 tipo_curso_route_blueprint = Blueprint("Tipo_Cursos", __name__)
 
@@ -69,3 +69,12 @@ def register_tipo_curso(tipo_curso_id):
             errors.append(mensaje)
 
     return redirect(url_for('Tipo_Cursos.view_tipo_curso', tipo_curso_id=tipo_curso_id))
+
+@tipo_curso_route_blueprint.route("/importar_tipo_cursos", methods=["POST"])
+def load_tipo_cursos_json():
+    data = request.json
+    if not data:
+        abort(400, description="No se recibió JSON válido.")
+    
+    create_tipo_cursos_from_json(config.session, data)
+    return jsonify({"message": "Tipos de cursos cargados correctamente"}), 201

@@ -62,3 +62,29 @@ def enroll_tipo_curso_in_tipo_cursos(db: Session, tipo_curso_base_id: int, tipo_
     db.add(nuevo_requisito)
     db.commit()
     return True, "Requisito agregado exitosamente."
+
+def create_tipo_cursos_from_json(db: Session, data: dict):
+    cursos_json = data.get("cursos", [])
+    tipos_curso_map = {}
+
+    for curso_data in cursos_json:
+        tipo_curso = TipoCurso(
+            id=curso_data["id"],
+            nombre=curso_data.get("nombre"),
+            codigo=curso_data.get("codigo"),
+            descripcion=curso_data.get("descripcion"),
+            creditos=curso_data.get("creditos")
+        )
+        db.add(tipo_curso)
+        tipos_curso_map[curso_data["codigo"]] = tipo_curso
+    
+    db.commit()
+    for curso_data in cursos_json:
+        for req_codigo in curso_data["requisitos"]:
+            requisito = CursoRequisito(
+                tipo_curso_id=curso_data["id"],
+                curso_requisito_id=tipos_curso_map[req_codigo].id
+            )
+            db.add(requisito)
+    
+    db.commit()

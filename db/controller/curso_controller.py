@@ -33,3 +33,18 @@ def delete_curso_by_id(db: Session, curso_id: int):
         db.commit()
         return True
     return False
+
+def create_cursos_from_json(db: Session, data: dict):
+    if not data or "instancias" not in data:
+        raise ValueError("No se recibió JSON válido o no contiene 'instancias'.")
+    instancias_json = data.get("instancias", [])
+    for instancia in instancias_json:
+        curso = Curso(
+            id=instancia["id"],
+            tipo_curso_id=instancia.get("curso_id"),
+            fecha_impartida=data.get("año"),
+            semestre_impartido=data.get("semestre")
+        )
+        db.add(curso)
+
+    db.commit()

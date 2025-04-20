@@ -1,7 +1,7 @@
-from flask import Blueprint, request, render_template, redirect, url_for
+from flask import Blueprint, request, render_template, redirect, url_for, abort, jsonify
 from db.config import db as config
 from db.controller.tipo_curso_controller import get_all_tipo_cursos
-from db.controller.curso_controller import get_all_cursos, create_curso, get_curso_by_id, edit_curso_by_id, delete_curso_by_id
+from db.controller.curso_controller import get_all_cursos, create_curso, get_curso_by_id, edit_curso_by_id, delete_curso_by_id, create_cursos_from_json
 
 curso_route_blueprint = Blueprint("Cursos", __name__)
 
@@ -38,3 +38,12 @@ def edit_curso(curso_id):
 def delete_curso(curso_id):
     delete_curso_by_id(config.session, curso_id)
     return redirect(url_for("Cursos.get_cursos"))
+
+@curso_route_blueprint.route("/importar_cursos", methods=["POST"])
+def load_cursos_json():
+    data = request.json
+    if not data:
+        abort(400, description="No se recibió JSON válido.")
+
+    create_cursos_from_json(config.session, data)
+    return jsonify({"message": "Cursos cargados correctamente"}), 201

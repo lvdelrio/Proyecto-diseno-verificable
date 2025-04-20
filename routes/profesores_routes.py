@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for, abort
+from flask import Blueprint, request, render_template, redirect, url_for, abort, jsonify
 from db.config import db as config
 from db.controller.curso_controller import get_all_cursos
 from db.controller.seccion_controller import get_all_secciones_by_curso_id
@@ -9,7 +9,8 @@ from db.controller.profesor_controller import (
     edit_profesor_by_id, 
     delete_profesor_by_id, 
     get_paginated_profesores, 
-    enroll_profesor_in_seccion 
+    enroll_profesor_in_seccion,
+    create_profesores_from_json
 )
 
 
@@ -98,3 +99,12 @@ def register_profesor(profesor_id):
             errors.append(mensaje)
 
     return redirect(url_for('Profesores.view_profesor', profesor_id=profesor_id))
+
+@profesor_route_blueprint.route('/importar_profesores', methods=['POST'])
+def load_profesores():
+    data = request.json
+    if not data:
+        abort(400, description="No se recibió JSON válido.")
+
+    create_profesores_from_json(config.session, data)
+    return jsonify({"message": "Profesores cargados correctamente"}), 201

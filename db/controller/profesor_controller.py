@@ -2,8 +2,11 @@ from sqlalchemy.orm import Session
 from ..models.profesor import Profesor
 from ..models.seccion import Seccion
 
-def create_profesor(db: Session, nombre: str, email: str):
-    new_profesor= Profesor(nombre=nombre, email=email)
+def create_profesor(db: Session, nombre: str, email: str, id: int = None):
+    if id is not None:
+        new_profesor = Profesor(id=id, nombre=nombre, email=email)
+    else:
+        new_profesor= Profesor(nombre=nombre, email=email)
     db.add(new_profesor)
     db.commit()
     db.refresh(new_profesor)
@@ -58,3 +61,14 @@ def enroll_profesor_in_seccion(db: Session, profesor_id: int, seccion_id: int):
     db.refresh(profesor)
 
     return True, "Profesor inscrito exitosamente."
+
+def create_profesores_from_json(db: Session, data: dict):
+    profesores_json = data.get("profesores", [])
+
+    for profesor in profesores_json:
+        create_profesor(
+            db=db,
+            id=profesor["id"],
+            nombre=profesor.get("nombre"),
+            email=profesor.get("correo")
+        )

@@ -58,3 +58,9 @@ def enroll_profesor_in_seccion(db: Session, profesor_id: int, seccion_id: int):
     db.refresh(profesor)
 
     return True, "Profesor inscrito exitosamente."
+
+def add_profesor_to_seccion(db: Session, profesor_id: int, seccion: Seccion):
+    profesor = Profesor.query.get(profesor_id)
+    if profesor:
+        seccion.profesores.append(profesor)
+        db.commit()

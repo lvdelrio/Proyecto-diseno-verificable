@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash, abort
+from flask import Blueprint, request, render_template, redirect, url_for, flash, abort, jsonify
 from db.config import db as config
 from db.controller.curso_controller import get_all_cursos
 from db.controller.seccion_controller import get_all_secciones_by_curso_id
@@ -9,7 +9,8 @@ from db.controller.alumno_controller import (
     edit_alumno_by_id,
     delete_alumno_by_id,
     get_paginated_alumnos,
-    enroll_alumno_in_seccion
+    enroll_alumno_in_seccion,
+    create_alumno_seccion_from_json
 )
 
 alumno_route_blueprint = Blueprint("Alumnos", __name__)
@@ -102,3 +103,12 @@ def register_alumno(alumno_id):
  
 
     return redirect(url_for('Alumnos.view_alumno', alumno_id=alumno_id))
+
+@alumno_route_blueprint.route('/importar_alumnos_seccion', methods=['POST'])
+def load_alumnos_seccion():
+    data = request.json
+    if not data:
+        abort(400, description="No se recibió JSON válido.")
+
+    create_alumno_seccion_from_json(config.session, data)
+    return jsonify({"message": "Alumnos cargados correctamente"}), 201

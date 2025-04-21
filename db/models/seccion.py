@@ -8,6 +8,7 @@ class Seccion(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     nombre: Mapped[str] = mapped_column(String(50))
     curso_id: Mapped[int] = mapped_column(Integer, ForeignKey("cursos.id", ondelete="CASCADE"), nullable=True)
+    sala_id: Mapped[int] = mapped_column(Integer, ForeignKey("salas.id", ondelete="SET NULL"), nullable=True)
 
     curso: Mapped["Curso"] = relationship(back_populates="secciones")
     categorias: Mapped[list["Categoria"]] = relationship("Categoria", back_populates="seccion", cascade="all, delete-orphan")
@@ -26,4 +27,5 @@ class Seccion(db.Model):
         back_populates="seccion",
         cascade="all, delete-orphan"
     )
+    sala: Mapped["Sala"] = relationship("Sala", back_populates="secciones")
 

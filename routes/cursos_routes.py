@@ -40,7 +40,7 @@ def delete_curso(curso_id):
     return redirect(url_for("Cursos.get_cursos"))
 
 @curso_route_blueprint.route("/importar_cursos", methods=["POST"])
-def load_cursos_json():
+def load_cursos():
     data = request.json
     if not data:
         abort(400, description="No se recibió JSON válido.")

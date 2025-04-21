@@ -71,7 +71,7 @@ def register_tipo_curso(tipo_curso_id):
     return redirect(url_for('Tipo_Cursos.view_tipo_curso', tipo_curso_id=tipo_curso_id))
 
 @tipo_curso_route_blueprint.route("/importar_tipo_cursos", methods=["POST"])
-def load_tipo_cursos_json():
+def load_tipo_cursos():
     data = request.json
     if not data:
         abort(400, description="No se recibió JSON válido.")

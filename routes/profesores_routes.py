@@ -2,10 +2,10 @@ from flask import Blueprint, request, render_template, redirect, url_for, abort
 from db.config import db as config
 from db.controller.curso_controller import get_all_cursos
 from db.controller.seccion_controller import get_all_secciones_by_curso_id
+from db.controller.common_controller import get_profesor_by_id
 from db.controller.profesor_controller import (
     get_all_profesores, 
     create_profesor, 
-    get_profesor_by_id, 
     edit_profesor_by_id, 
     delete_profesor_by_id, 
     get_paginated_profesores, 

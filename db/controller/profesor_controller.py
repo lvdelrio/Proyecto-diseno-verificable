@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from ..models.profesor import Profesor
 from ..models.seccion import Seccion
+from ..controller.common_controller import get_seccion_by_id, get_profesor_by_id
 
 def create_profesor(db: Session, nombre: str, email: str):
     new_profesor= Profesor(nombre=nombre, email=email)
@@ -8,9 +9,6 @@ def create_profesor(db: Session, nombre: str, email: str):
     db.commit()
     db.refresh(new_profesor)
     return new_profesor
-
-def get_profesor_by_id(db: Session, profesor_id: int):
-    return db.query(Profesor).filter(Profesor.id == profesor_id).first()
 
 def get_all_profesores(db: Session):
     return db.query(Profesor).all()
@@ -42,11 +40,11 @@ def get_paginated_profesores(session, page=1, per_page=10):
     )
 
 def enroll_profesor_in_seccion(db: Session, profesor_id: int, seccion_id: int):
-    profesor = db.query(Profesor).filter(Profesor.id == profesor_id).first()
+    profesor = get_profesor_by_id(db, profesor_id)
     if not profesor:
         return False, "Profesor no encontrado."
 
-    seccion = db.query(Seccion).filter(Seccion.id == seccion_id).first()
+    seccion = get_seccion_by_id(db, seccion_id)
     if not seccion:
         return False, "Sección no encontrada."
 
@@ -58,9 +56,3 @@ def enroll_profesor_in_seccion(db: Session, profesor_id: int, seccion_id: int):
     db.refresh(profesor)
 
     return True, "Profesor inscrito exitosamente."
-
-def add_profesor_to_seccion(db: Session, profesor_id: int, seccion: Seccion):
-    profesor = Profesor.query.get(profesor_id)
-    if profesor:
-        seccion.profesores.append(profesor)
-        db.commit()

@@ -5,8 +5,8 @@ from ..models.seccion import Seccion
 from ..models.profesor import Profesor
 from ..models.evaluacion import Evaluacion
 from ..models.categoria import Categoria
-from ..controller.profesor_controller import add_profesor_to_seccion
-from ..controller.categoria_controller import create_categoria, process_categorias
+from ..controller.profesor_controller import enroll_profesor_in_seccion
+from ..controller.categoria_controller import create_multiple_categorias_and_evaluaciones
 from ..controller.evaluacion_controller import create_evaluacion
 
 def create_seccion(db: Session, curso_id: int, nombre: str, id: int = None):
@@ -21,9 +21,6 @@ def create_seccion(db: Session, curso_id: int, nombre: str, id: int = None):
     db.commit()
     db.refresh(new_seccion)
     return new_seccion
-
-def get_seccion_by_id(db: Session, new_seccion: int):
-    return db.query(Seccion).filter(Seccion.id == new_seccion).first()
 
 def get_all_secciones_by_curso_id(db: Session, curso_id: int):
     return db.query(Seccion).filter(Seccion.curso_id ==curso_id).all()
@@ -58,10 +55,10 @@ def curso_from_seccion_id(db: Session, seccion_id: int):
 def create_secciones_from_json(db: Session, data: dict):
     secciones_json = data.get("secciones", [])    
     for seccion_data in secciones_json:
-        process_seccion(db, seccion_data)
+        process_seccion_and_relations(db, seccion_data)
     db.commit()
 
-def process_seccion( db: Session, seccion_data: dict):
+def process_seccion_and_relations( db: Session, seccion_data: dict):
     seccion = create_seccion(
         db,
         id=seccion_data["id"],
@@ -70,12 +67,12 @@ def process_seccion( db: Session, seccion_data: dict):
     )
 
     if "profesor_id" in seccion_data:
-        add_profesor_to_seccion(
+        enroll_profesor_in_seccion(
             db,
             profesor_id=seccion_data["profesor_id"],
-            seccion=seccion
+            seccion_id=seccion.id
         )
-    process_categorias(db, seccion, seccion_data.get("evaluacion", {}))
+    create_multiple_categorias_and_evaluaciones(db, seccion, seccion_data.get("evaluacion", {}))
 
 
 

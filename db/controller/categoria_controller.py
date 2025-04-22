@@ -71,30 +71,23 @@ def actualizar_tipo_ponderacion_en_seccion(seccion_id: int, nuevo_tipo: bool):
         db.session.rollback()
         abort(400, description=f"Error al actualizar tipo de ponderación en la sección: {str(e)}")
 
-def process_categorias(db: Session, seccion: Seccion, evaluacion_data: dict):
-    tipo_ponderacion_global = evaluacion_data.get("tipo") == "porcentaje"
-
+def create_multiple_categorias_and_evaluaciones(db: Session, seccion: Seccion, evaluacion_data: dict):
     for categoria_json in evaluacion_data.get("combinacion_topicos", []):
         categoria = create_categoria(
             seccion=seccion,
             tipo_categoria=categoria_json["nombre"],
             ponderacion=categoria_json["valor"],
-            tipo_ponderacion=tipo_ponderacion_global
+            tipo_ponderacion=evaluacion_data.get("tipo") == "porcentaje"
         )
 
-        evaluaciones_json = evaluacion_data.get("topicos", {}).get(str(categoria_json["id"]), {})
-        if evaluaciones_json:
-            cantidad = evaluaciones_json["cantidad"]
-            valores = evaluaciones_json["valores"]
-            obligatorias = evaluaciones_json["obligatorias"]
-            tipo_eval = evaluaciones_json["tipo"] == "porcentaje"
-
-            for i in range(cantidad):
+        evaluacion_topico = evaluacion_data.get("topicos", {}).get(str(categoria_json["id"]))
+        if evaluacion_topico:
+            for i in range(evaluacion_topico["cantidad"]):
                 create_evaluacion(
                     db,
                     nombre=f"{categoria.tipo_categoria} {i + 1}",
-                    ponderacion=valores[i],
-                    opcional=not obligatorias[i],
-                    tipo_ponderacion=tipo_eval,
+                    ponderacion=evaluacion_topico["valores"][i],
+                    opcional=not evaluacion_topico["obligatorias"][i],
+                    tipo_ponderacion=evaluacion_topico["tipo"] == "porcentaje",
                     categoria_id=categoria.id
                 )

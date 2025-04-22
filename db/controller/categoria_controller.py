@@ -1,6 +1,9 @@
 from flask import abort
+from sqlalchemy.orm import Session
 from ..config import db
 from ..models.categoria import Categoria
+from ..models.seccion import Seccion
+from ..controller.evaluacion_controller import create_evaluacion
 
 def create_categoria(tipo_categoria, seccion, ponderacion, tipo_ponderacion):
     nueva_categoria = Categoria(
@@ -10,6 +13,7 @@ def create_categoria(tipo_categoria, seccion, ponderacion, tipo_ponderacion):
         tipo_ponderacion=tipo_ponderacion
     )
     if not validation_categoria(nueva_categoria, seccion.id):
+        db.session.rollback()
         abort(400, description="Error: La categoría no es válida para la sección.")
         return
     db.session.add(nueva_categoria)
@@ -66,3 +70,24 @@ def actualizar_tipo_ponderacion_en_seccion(seccion_id: int, nuevo_tipo: bool):
     except Exception as e:
         db.session.rollback()
         abort(400, description=f"Error al actualizar tipo de ponderación en la sección: {str(e)}")
+
+def create_multiple_categorias_and_evaluaciones(db: Session, seccion: Seccion, evaluacion_data: dict):
+    for categoria_json in evaluacion_data.get("combinacion_topicos", []):
+        categoria = create_categoria(
+            seccion=seccion,
+            tipo_categoria=categoria_json["nombre"],
+            ponderacion=categoria_json["valor"],
+            tipo_ponderacion=evaluacion_data.get("tipo") == "porcentaje"
+        )
+
+        evaluacion_topico = evaluacion_data.get("topicos", {}).get(str(categoria_json["id"]))
+        if evaluacion_topico:
+            for i in range(evaluacion_topico["cantidad"]):
+                create_evaluacion(
+                    db,
+                    nombre=f"{categoria.tipo_categoria} {i + 1}",
+                    ponderacion=evaluacion_topico["valores"][i],
+                    opcional=not evaluacion_topico["obligatorias"][i],
+                    tipo_ponderacion=evaluacion_topico["tipo"] == "porcentaje",
+                    categoria_id=categoria.id
+                )

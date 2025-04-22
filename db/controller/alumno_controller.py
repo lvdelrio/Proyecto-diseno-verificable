@@ -6,14 +6,13 @@ from ..models.seccion import Seccion
 from ..models.alumno_seccion import AlumnoSeccion
 from ..controller.seccion_controller import get_seccion_by_id
 
-def create_alumno(db: Session, name: str, email: str, fecha_ingreso: str = None):
+def create_alumno(db: Session, name: str, email: str, fecha_ingreso: str = None, id: int = None):
+
     fecha_ingreso_dt = datetime.strptime(fecha_ingreso, '%Y-%m-%d').date() if fecha_ingreso else None
-    
-    new_user = Alumno(
-        nombre=name,
-        email=email,
-        fecha_ingreso=fecha_ingreso_dt
-    )
+    if id is not None:
+        new_user = Alumno(id=id, nombre=name, email=email, fecha_ingreso=fecha_ingreso_dt)
+    else:
+        new_user = Alumno(nombre=name, email=email, fecha_ingreso=fecha_ingreso_dt)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -62,16 +61,23 @@ def enroll_alumno_in_seccion(db: Session, alumno_id: int, seccion_id: int):
     alumno.secciones.append(seccion)
     db.commit()
     db.refresh(alumno)
-
     return True, "Alumno inscrito exitosamente."
 
 def create_alumno_seccion_from_json(db:Session, data:dict):
     alumno_seccion_json = data.get("alumno_seccion", [])
-
     for alumno_seccion in alumno_seccion_json:
         alumno_id = alumno_seccion["alumno_id"]
         seccion_id = alumno_seccion["seccion_id"]
-
         enroll_alumno_in_seccion(db, alumno_id, seccion_id)
 
-        
+def create_alumnos_from_json(db: Session, data: dict):
+    alumnos_json = data.get("alumnos", [])
+    for alumno in alumnos_json:
+        create_alumno(
+            db=db,
+            id=alumno["id"],
+            name=alumno.get("nombre"),
+            email=alumno.get("correo"),
+            fecha_ingreso=f"{alumno.get('anio_ingreso')}-01-01"
+        )
+

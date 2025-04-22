@@ -4,6 +4,7 @@ from ..config import db
 from ..models.categoria import Categoria
 from ..models.seccion import Seccion
 from ..controller.evaluacion_controller import create_evaluacion
+from ..utils.prorrotear import prorate_values
 
 def create_categoria(tipo_categoria, seccion, ponderacion, tipo_ponderacion):
     nueva_categoria = Categoria(
@@ -40,7 +41,6 @@ def edit_categoria(categoria_id, tipo_categoria=None, id_seccion=None, ponderaci
     if tipo_ponderacion is not None and tipo_ponderacion != categoria.tipo_ponderacion:
         categoria.tipo_ponderacion = tipo_ponderacion
         actualizar_tipo_ponderacion_en_seccion(categoria.id_seccion, tipo_ponderacion)
-
     try:
         db.session.commit()
         return categoria
@@ -85,12 +85,16 @@ def create_multiple_categorias_and_evaluaciones(db: Session, seccion: Seccion, e
 
         evaluacion_topico = evaluacion_data.get("topicos", {}).get(str(categoria_json["id"]))
         if evaluacion_topico:
+            valores = evaluacion_topico["valores"]
+            tipo_ponderacion_actual = evaluacion_topico["tipo"] == "porcentaje"
+            if tipo_ponderacion_actual:
+                valores = prorate_values( evaluacion_topico["valores"] )
             for i in range(evaluacion_topico["cantidad"]):
                 create_evaluacion(
                     db,
                     nombre=f"{categoria.tipo_categoria} {i + 1}",
-                    ponderacion=evaluacion_topico["valores"][i],
+                    ponderacion=valores[i],
                     opcional=not evaluacion_topico["obligatorias"][i],
-                    tipo_ponderacion=evaluacion_topico["tipo"] == "porcentaje",
+                    tipo_ponderacion=tipo_ponderacion_actual,
                     categoria_id=categoria.id
                 )

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from ..models.alumno import Alumno
 from ..models.seccion import Seccion
 from ..models.alumno_seccion import AlumnoSeccion
-from ..controller.seccion_controller import get_seccion_by_id
+from ..controller.common_controller import get_seccion_by_id
 
 def create_alumno(db: Session, name: str, email: str, fecha_ingreso: str = None, id: int = None):
 

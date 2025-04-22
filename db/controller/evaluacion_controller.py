@@ -7,8 +7,9 @@ from db.models.notas import Notas
 from db.models.alumno import Alumno
 from db.models.categoria import Categoria
 from db.models.alumno_seccion import AlumnoSeccion
-from ..controller.common_controller import get_all_alumno_seccion_by_categoria_id
+from ..controller.common_controller import get_all_alumno_seccion_by_categoria_id, get_evaluaciones_by_categoria
 from ..controller.notas_controller import create_nota
+from db.utils.prorrotear import recalculate_categoria_ponderations
 
 def create_evaluacion(db: Session, nombre: str, ponderacion: float, opcional: bool, categoria_id: int = None, tipo_ponderacion: bool = False):
     nueva_evaluacion = Evaluacion(
@@ -75,6 +76,7 @@ def edit_evaluacion(evaluacion_id, nombre=None, ponderacion=None, opcional=None,
 
     try:
         db.session.commit()
+        recalculate_categoria_ponderations(db, evaluacion.categoria_id)
         return evaluacion
     except Exception as e:
         db.session.rollback()

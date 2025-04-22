@@ -1,7 +1,10 @@
 from datetime import datetime
+from flask import abort
 from sqlalchemy.orm import Session
 from ..models.alumno import Alumno
 from ..models.seccion import Seccion
+from ..models.alumno_seccion import AlumnoSeccion
+from ..controller.seccion_controller import get_seccion_by_id
 
 def create_alumno(db: Session, name: str, email: str, fecha_ingreso: str = None):
     fecha_ingreso_dt = datetime.strptime(fecha_ingreso, '%Y-%m-%d').date() if fecha_ingreso else None
@@ -50,13 +53,8 @@ def get_paginated_alumnos(session, page=1, per_page=10):
     )
 
 def enroll_alumno_in_seccion(db: Session, alumno_id: int, seccion_id: int):
-    alumno = db.query(Alumno).filter(Alumno.id == alumno_id).first()
-    if not alumno:
-        return False, "Alumno no encontrado."
-
-    seccion = db.query(Seccion).filter(Seccion.id == seccion_id).first()
-    if not seccion:
-        return False, "Sección no encontrada."
+    alumno = get_alumno_by_id(db, alumno_id)
+    seccion = get_seccion_by_id(db, seccion_id)
 
     if seccion in alumno.secciones:
         return False, "El alumno ya está inscrito en esta sección."
@@ -66,3 +64,14 @@ def enroll_alumno_in_seccion(db: Session, alumno_id: int, seccion_id: int):
     db.refresh(alumno)
 
     return True, "Alumno inscrito exitosamente."
+
+def create_alumno_seccion_from_json(db:Session, data:dict):
+    alumno_seccion_json = data.get("alumno_seccion", [])
+
+    for alumno_seccion in alumno_seccion_json:
+        alumno_id = alumno_seccion["alumno_id"]
+        seccion_id = alumno_seccion["seccion_id"]
+
+        enroll_alumno_in_seccion(db, alumno_id, seccion_id)
+
+        

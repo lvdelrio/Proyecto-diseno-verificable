@@ -25,7 +25,7 @@ def get_all_alumnos(db: Session):
     return db.query(Alumno).all()
 
 def edit_alumno_by_id(db: Session, user_id: int, name: str, email: str, fecha_ingreso: str = None):
-    alumno = db.query(Alumno).filter(Alumno.id == user_id).first()
+    alumno = get_alumno_by_id(db, user_id)
     if alumno:
         alumno.nombre = name
         alumno.email = email
@@ -37,7 +37,7 @@ def edit_alumno_by_id(db: Session, user_id: int, name: str, email: str, fecha_in
     return None
 
 def delete_alumno_by_id(db: Session, user_id: int):
-    user = db.query(Alumno).filter(Alumno.id == user_id).first()
+    user = get_alumno_by_id(db, user_id)
     if user:
         db.delete(user)
         db.commit()

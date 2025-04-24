@@ -22,6 +22,9 @@ def create_nota(db: Session, alumno_id: int, evaluacion_id: int, nota: float):
     db.commit()
     return nota_existente if nota_existente else nueva_nota
 
+def get_nota_by_id(db: Session, nota_id: int):
+    return db.query(Notas).filter(Notas.id == nota_id).first()
+
 def get_nota(db: Session, alumno_id: int, evaluacion_id: int):
     return db.query(Notas).filter(
         Notas.alumno_id == alumno_id,
@@ -35,7 +38,7 @@ def get_notas_by_evaluacion(db: Session, evaluacion_id: int):
     return db.query(Notas).filter(Notas.evaluacion_id == evaluacion_id).all()
 
 def delete_nota(db: Session, nota_id: int):
-    nota = db.query(Notas).filter(Notas.id == nota_id).first()
+    nota = get_nota_by_id(db, nota_id)
     if nota:
         db.delete(nota)
         db.commit()

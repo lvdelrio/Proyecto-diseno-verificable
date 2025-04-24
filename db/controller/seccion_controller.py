@@ -8,19 +8,26 @@ from ..models.categoria import Categoria
 from ..controller.profesor_controller import enroll_profesor_in_seccion
 from ..controller.categoria_controller import create_multiple_categorias_and_evaluaciones
 from ..controller.evaluacion_controller import create_evaluacion
+from ..controller.curso_controller import get_curso_by_id
+from ..controller.common_controller import get_seccion_by_id
 
 def create_seccion(db: Session, curso_id: int, nombre: str, id: int = None):
-    curso = db.query(Curso).filter(Curso.id == curso_id).first()
+    curso = get_curso_by_id(db, curso_id)
     if not curso:
         return None
     if id is not None:
         new_seccion = Seccion(id=id, nombre=nombre, curso=curso)
     else:
         new_seccion = Seccion(nombre=nombre, curso=curso)
-    db.add(new_seccion)
-    db.commit()
-    db.refresh(new_seccion)
-    return new_seccion
+    try:
+        db.add(new_seccion)
+        db.commit()
+        db.refresh(new_seccion)
+        return new_seccion
+    except Exception as e:
+        db.rollback()
+        print(f"Error creating seccion: {e}")
+        return None
 
 def get_all_secciones_by_curso_id(db: Session, curso_id: int):
     return db.query(Seccion).filter(Seccion.curso_id ==curso_id).all()
@@ -30,7 +37,7 @@ def get_all_secciones(db: Session):
 
 
 def edit_seccion_by_id(db: Session, seccion_id: int, nombre: str):
-    seccion = db.query(Seccion).filter(Seccion.id == seccion_id).first()
+    seccion = get_seccion_by_id(db, seccion_id)
     if seccion:
         seccion.nombre = nombre
         db.commit()
@@ -39,7 +46,7 @@ def edit_seccion_by_id(db: Session, seccion_id: int, nombre: str):
     return None
 
 def delete_seccion_by_id(db: Session, seccion_id: int):
-    seccion = db.query(Seccion).filter(Seccion.id == seccion_id).first()
+    seccion = get_seccion_by_id(db, seccion_id)
     if seccion:
         db.delete(seccion)
         db.commit()
@@ -47,7 +54,7 @@ def delete_seccion_by_id(db: Session, seccion_id: int):
     return False
 
 def curso_from_seccion_id(db: Session, seccion_id: int):
-    seccion = db.query(Seccion).filter(Seccion.id == seccion_id).first()
+    seccion = get_seccion_by_id(db, seccion_id)
     if seccion:
         return seccion.curso_id
     return False

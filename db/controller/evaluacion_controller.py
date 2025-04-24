@@ -7,6 +7,8 @@ from db.models.notas import Notas
 from db.models.alumno import Alumno
 from db.models.categoria import Categoria
 from db.models.alumno_seccion import AlumnoSeccion
+from ..controller.common_controller import get_all_alumno_seccion_by_categoria_id
+from ..controller.notas_controller import create_nota
 
 def create_evaluacion(db: Session, nombre: str, ponderacion: float, opcional: bool, categoria_id: int = None, tipo_ponderacion: bool = False):
     nueva_evaluacion = Evaluacion(
@@ -26,23 +28,14 @@ def create_evaluacion(db: Session, nombre: str, ponderacion: float, opcional: bo
     return nueva_evaluacion
 
 def create_evaluacion_con_notas(db: Session, nombre: str, ponderacion: float, opcional: bool, categoria_id: int = None, tipo_ponderacion: bool = False):
-    nueva_evaluacion = Evaluacion(
-        nombre=nombre,
-        ponderacion=ponderacion,
-        opcional=opcional,
-        categoria_id=categoria_id,
-        tipo_ponderacion=tipo_ponderacion
-    )
-    db.add(nueva_evaluacion)
-    db.commit()
-    db.refresh(nueva_evaluacion)
-
-    alumnos_seccion = db.query(AlumnoSeccion).filter(AlumnoSeccion.categoria_id == categoria_id).all()
+    
+    nueva_evaluacion = create_evaluacion(db, nombre, ponderacion, opcional, categoria_id, tipo_ponderacion)
+    alumnos_seccion = get_all_alumno_seccion_by_categoria_id(db, categoria_id)
     if not alumnos_seccion:
         raise ValueError("No hay alumnos en la sección especificada.")
 
     notas_vacias = [
-        Notas(alumno_id=alumno.id, evaluacion_id=nueva_evaluacion.id, nota=None)
+        create_nota(db=db, alumno_id=alumno.id, evaluacion_id=nueva_evaluacion.id, nota=None)
         for alumno in alumnos_seccion
     ]
 
@@ -60,8 +53,11 @@ def get_all_evaluaciones(db: Session):
 def get_evaluaciones_by_seccion(db: Session, categoria_id: int):
     return db.query(Evaluacion).filter(Evaluacion.categoria_id == categoria_id).all()
 
+def get_evaluaciones_by_categoria(db: Session, categoria_id: int):
+    return db.query(Evaluacion).filter(Evaluacion.categoria_id == categoria_id).all()
+
 def edit_evaluacion(evaluacion_id, nombre=None, ponderacion=None, opcional=None, categoria_id=None, tipo_ponderacion=None):
-    evaluacion = Evaluacion.query.get(evaluacion_id)
+    evaluacion = get_evaluacion_by_id(db, evaluacion_id)
     if not evaluacion:
         abort(404, description="Evaluación no encontrada")
 
@@ -85,7 +81,7 @@ def edit_evaluacion(evaluacion_id, nombre=None, ponderacion=None, opcional=None,
         abort(400, description=f"Error al actualizar la evaluación: {str(e)}")
 
 def delete_evaluacion(db: Session, evaluacion_id: int):
-    evaluacion = db.query(Evaluacion).filter(Evaluacion.id == evaluacion_id).first()
+    evaluacion = get_evaluacion_by_id(db, evaluacion_id)
     if evaluacion:
         db.delete(evaluacion)
         db.commit()
@@ -103,10 +99,9 @@ def validation_evaluacion(nueva_evaluacion, categoria_id):
     return last_evaluation.tipo_ponderacion == nueva_evaluacion.tipo_ponderacion
 
 def actualizar_tipo_ponderacion_en_categoria(categoria_id: int, nuevo_tipo: bool):
-    evaluaciones = Evaluacion.query.filter_by(categoria_id=categoria_id).all()
+    evaluaciones = get_evaluaciones_by_categoria(db, categoria_id)
     for evaluacion in evaluaciones:
         evaluacion.tipo_ponderacion = nuevo_tipo
-
     try:
         db.session.commit()
     except Exception as e:

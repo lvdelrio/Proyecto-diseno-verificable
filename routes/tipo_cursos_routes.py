@@ -1,6 +1,7 @@
 from flask import Blueprint, request, render_template, redirect, url_for, abort, jsonify
 from db.config import db as config
 from db.controller.tipo_curso_controller import get_all_tipo_cursos, create_tipo_curso, get_tipo_curso_by_id, edit_tipo_curso_by_id, delete_tipo_curso_by_id, enroll_tipo_curso_in_tipo_cursos, create_tipo_cursos_from_json
+from db.services.tipo_curso_service import get_tipo_curso_and_cursos_disponibles, register_tipo_curso_in_tipo_cursos
 
 tipo_curso_route_blueprint = Blueprint("Tipo_Cursos", __name__)
 
@@ -11,21 +12,7 @@ def get_tipo_cursos():
 
 @tipo_curso_route_blueprint.route('/tipo_curso/<int:tipo_curso_id>')
 def view_tipo_curso(tipo_curso_id):
-    tipo_curso_base = get_tipo_curso_by_id(config.session, tipo_curso_id)
-
-    if tipo_curso_base is None:
-        abort(404, description="Tipo curso no encontrado.")
-
-    tipo_cursos_inscritos_ids = {
-        requisito.curso_requisito.id
-        for requisito in tipo_curso_base.requisitos
-        if requisito.curso_requisito is not None
-    }
-    cursos_disponibles = [
-        curso for curso in get_all_tipo_cursos(config.session)
-        if curso.id not in tipo_cursos_inscritos_ids and curso.id != tipo_curso_id
-    ]
-
+    tipo_curso_base, cursos_disponibles = get_tipo_curso_and_cursos_disponibles(config, tipo_curso_id)
     return render_template(
         "Tipo_Cursos/detalle_tipo_curso.html",
         tipo_curso=tipo_curso_base,
@@ -55,19 +42,7 @@ def delete_tipo_curso(tipo_curso_id):
 
 @tipo_curso_route_blueprint.route('/inscribir_curso/<int:tipo_curso_id>/', methods=['POST'])
 def register_tipo_curso(tipo_curso_id):
-    tipo_curso_by_id = get_tipo_curso_by_id(config.session, tipo_curso_id)
-    tipo_cursos_ids = request.form.getlist("tipo_curso_ids")
-
-    enrolled_tipo_cursos = []
-    errors = []
-
-    for tipo_id in tipo_cursos_ids:
-        exito, mensaje = enroll_tipo_curso_in_tipo_cursos(config.session, tipo_curso_id, int(tipo_id))
-        if exito:
-            enrolled_tipo_cursos.append(mensaje)
-        else:
-            errors.append(mensaje)
-
+    register_tipo_curso_in_tipo_cursos(config.session, tipo_curso_id, request.form)
     return redirect(url_for('Tipo_Cursos.view_tipo_curso', tipo_curso_id=tipo_curso_id))
 
 @tipo_curso_route_blueprint.route("/importar_tipo_cursos", methods=["POST"])

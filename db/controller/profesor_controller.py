@@ -18,7 +18,7 @@ def get_all_profesores(db: Session):
 
 
 def edit_profesor_by_id(db: Session, profesor_id: int, nombre: str, email: str):
-    profesor = db.query(Profesor).filter(Profesor.id == profesor_id).first()
+    profesor = get_profesor_by_id(db, profesor_id)
     if profesor:
         profesor.nombre = nombre
         profesor.email = email
@@ -28,7 +28,7 @@ def edit_profesor_by_id(db: Session, profesor_id: int, nombre: str, email: str):
     return None
 
 def delete_profesor_by_id(db: Session, professor_id: int):
-    profesor = db.query(Profesor).filter(Profesor.id == professor_id).first()
+    profesor = get_profesor_by_id(db, professor_id)
     if profesor:
         db.delete(profesor)
         db.commit()

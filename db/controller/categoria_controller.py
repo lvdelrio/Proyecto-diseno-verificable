@@ -23,8 +23,11 @@ def create_categoria(tipo_categoria, seccion, ponderacion, tipo_ponderacion):
 def get_categoria(categoria_id):
     return Categoria.query.get(categoria_id)
 
+def get_all_categorias_by_seccion(seccion_id):
+    return Categoria.query.filter_by(id_seccion=seccion_id).all()
+
 def edit_categoria(categoria_id, tipo_categoria=None, id_seccion=None, ponderacion=None, tipo_ponderacion=None):
-    categoria = Categoria.query.get(categoria_id)
+    categoria = get_categoria(categoria_id)
     if not categoria:
         abort(404, description="Categoría no encontrada")
 
@@ -46,7 +49,7 @@ def edit_categoria(categoria_id, tipo_categoria=None, id_seccion=None, ponderaci
         abort(400, description=f"Error al actualizar la categoría: {str(e)}") 
 
 def delete_categoria(categoria_id):
-    categoria = Categoria.query.get(categoria_id)
+    categoria = get_categoria(categoria_id)
     db.session.delete(categoria)
     db.session.commit()
     return
@@ -61,7 +64,7 @@ def validation_categoria(categoria, seccion_id):
     return last_category.tipo_ponderacion == categoria.tipo_ponderacion
 
 def actualizar_tipo_ponderacion_en_seccion(seccion_id: int, nuevo_tipo: bool):
-    categorias = Categoria.query.filter_by(id_seccion=seccion_id).all()
+    categorias = get_all_categorias_by_seccion(seccion_id)
     for categoria in categorias:
         categoria.tipo_ponderacion = nuevo_tipo
 

@@ -6,7 +6,7 @@
     <style>
         [x-cloak] { display: none !important; }
     </style>
-    <title>{{ tipo_curso.nombre }}</title>
+    <title>{{ tipo_curso.codigo }}</title>
 </head>
 <body class="bg-gray-100 p-10">
     <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
@@ -16,7 +16,7 @@
         </a>
 
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-blue-600">{{ tipo_curso.nombre }}</h1>
+            <h1 class="text-3xl font-bold text-blue-600">{{ tipo_curso.codigo }}</h1>
 
             <form method="POST" action="{{ url_for('Tipo_Cursos.delete_tipo_curso', tipo_curso_id=tipo_curso.id) }}">
                 <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
@@ -35,8 +35,8 @@
             <div x-show="tab === 'info'">
                 <form method="POST" action="{{ url_for('Tipo_Cursos.edit_tipo_curso', tipo_curso_id=tipo_curso.id) }}">
                     <div class="mb-4">
-                        <label class="block text-gray-700 font-medium mb-1">Nombre del Tipo de Curso:</label>
-                        <input type="text" name="nombre" value="{{ tipo_curso.nombre }}" class="border p-2 rounded w-full" required>
+                        <label class="block text-gray-700 font-medium mb-1">Codigo del Tipo de Curso:</label>
+                        <input type="text" name="codigo" value="{{ tipo_curso.codigo }}" class="border p-2 rounded w-full" required>
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 font-medium mb-1">Descripción:</label>

@@ -81,14 +81,14 @@
         <!-- Lista de Cursos -->
         <div class="bg-white shadow rounded-lg overflow-hidden">
             <div class="grid grid-cols-12 bg-gray-100 p-4 font-semibold text-gray-700">
-                <div class="col-span-5">Nombre del Curso</div>
+                <div class="col-span-5">Id del Curso</div>
                 <div class="col-span-5">Descripción</div>
                 <div class="col-span-2 text-center">Acciones</div>
             </div>
             
             {% for curso in cursos %}
             <div class="grid grid-cols-12 p-4 border-b hover:bg-gray-50 items-center">
-                <div class="col-span-5 font-medium text-gray-800">{{ curso.tipo_curso.nombre }}</div>
+                <div class="col-span-5 font-medium text-gray-800">{{ curso.tipo_curso.codigo }}</div>
                 <div class="col-span-5 text-gray-600 text-sm truncate">{{ curso.tipo_curso.descripcion or "Sin descripción" }}</div>
                 <div class="col-span-2 flex justify-center space-x-2">
                     <a href="{{ url_for('Cursos.view_curso', curso_id=curso.id) }}" class="text-blue-500 hover:text-blue-700 p-2" title="Ver detalle">
@@ -121,7 +121,7 @@
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
                     <option value="" disabled selected>Selecciona un tipo</option>
                     {% for tipo in tipo_cursos %}
-                        <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
+                        <option value="{{ tipo.id }}">{{ tipo.id }}</option>
                     {% endfor %}
                 </select>
             </div>

@@ -37,7 +37,6 @@
                     <button onclick="toggleJsonUpload()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center">
                         <i class="fas fa-file-import mr-2"></i> Subir JSON
                     </button>
-                    <!-- Menú desplegable para subir JSON -->
                     <div id="jsonUploadDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-50 p-3 border border-gray-200">
                         <form id="bulkUploadForm" enctype="multipart/form-data">
                             <div class="mb-3">
@@ -185,7 +184,7 @@
                 if (response.ok) {
                     const result = await response.json();
                     alert(result.message);
-                    toggleJsonUpload(); // Cerrar el dropdown
+                    toggleJsonUpload(); 
                     window.location.reload();
                 } else {
                     const error = await response.json();

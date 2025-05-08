@@ -13,10 +13,10 @@ from ..controller.common_controller import get_seccion_by_id
 
 def create_seccion(db: Session, curso_id: int, nombre: str, id: int = None):
     curso = get_curso_by_id(db, curso_id)
-    if not curso:
+    if not curso_id:
         return None
     if id is not None:
-        new_seccion = Seccion(id=id, nombre=nombre, curso=curso)
+        new_seccion = Seccion(id=id, nombre=nombre, curso_id=curso_id)
     else:
         new_seccion = Seccion(nombre=nombre, curso=curso)
     try:
@@ -80,6 +80,3 @@ def process_seccion_and_relations( db: Session, seccion_data: dict):
             seccion_id=seccion.id
         )
     create_multiple_categorias_and_evaluaciones(db, seccion, seccion_data.get("evaluacion", {}))
-
-
-

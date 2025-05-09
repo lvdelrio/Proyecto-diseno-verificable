@@ -7,15 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="{{ url_for('static', filename='js/profesor_script.js') }}"></script>
-    <style>
-        .slide-panel {
-            transition: transform 0.3s ease-in-out;
-            transform: translateX(100%);
-        }
-        .slide-panel.active {
-            transform: translateX(0);
-        }
-    </style>
+    <script type="module" src="{{ url_for('static', filename='js/components/json_upload.js') }}"></script>
+    <link href="{{ url_for('static', filename='css/components/slide_panel.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/components/slide_panel.js') }}"></script>
 </head>
 <body class="bg-gray-50">
     {% from "components/json_upload.html" import json_upload_button %}
@@ -30,8 +24,8 @@
                     Gestión de Profesores
                 </h1>
             </div>
-            <div class="flex space-x-3 relative">
-                <button onclick="togglePanel()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center">
+            <div class="flex space-x-3 relative"> 
+                <button data-panel-target="addProfesorPanel" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
                     <i class="fas fa-plus mr-2"></i> Nuevo Profesor
                 </button>
                 <div class="relative">
@@ -48,7 +42,6 @@
             <span class="text-sm text-gray-600">Mostrando {{ profesores|length }} de {{ total_profesores }} profesores</span>
         </div>
 
-        <!-- Lista de Profesores -->
         <div class="bg-white shadow rounded-lg overflow-hidden">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
@@ -129,7 +122,7 @@
     <div id="addProfesorPanel" class="slide-panel fixed top-0 right-0 h-full w-96 bg-white shadow-xl z-50 p-6 overflow-y-auto">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-bold text-gray-800">Agregar Nuevo Profesor</h2>
-            <button onclick="togglePanel()" class="text-gray-500 hover:text-gray-700">
+            <button data-action="close-panel" class="text-gray-500 hover:text-gray-700">
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
@@ -158,17 +151,7 @@
         </form>
     </div>
 
-    <!-- Overlay -->
     <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
 
-    <script>
-        function togglePanel() {
-            const panel = document.getElementById('addProfesorPanel');
-            const overlay = document.getElementById('overlay');
-            panel.classList.toggle('active');
-            overlay.classList.toggle('hidden');
-            document.body.classList.toggle('overflow-hidden');
-        }
-    </script>
 </body>
 </html>

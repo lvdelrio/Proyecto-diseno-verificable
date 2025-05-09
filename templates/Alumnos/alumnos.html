@@ -6,18 +6,13 @@
     <title>Gestión de Alumnos | SGA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <style>
-        .slide-panel {
-            transition: transform 0.3s ease-in-out;
-            transform: translateX(100%);
-        }
-        .slide-panel.active {
-            transform: translateX(0);
-        }
+    <script type="module" src="{{ url_for('static', filename='js/components/json_upload.js') }}"></script>
+    <link href="{{ url_for('static', filename='css/components/slide_panel.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/components/slide_panel.js') }}"></script>
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Header -->
+    {% from "components/json_upload.html" import json_upload_button %}
     <header class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
             <div class="flex items-center space-x-4">
@@ -29,20 +24,23 @@
                     Gestión de Alumnos
                 </h1>
             </div>
-            <button onclick="togglePanel()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 flex items-center">
-                <i class="fas fa-plus mr-2"></i> Nuevo Alumno
-            </button>
+            <div class="flex space-x-3 relative">
+                <button data-panel-target="addAlumnoPanel" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
+                    <i class="fas fa-plus mr-2"></i> Nuevo Alumno
+                </button>
+                <div class="relative">
+                    {{ json_upload_button('Alumnos.load_alumnos') }}
+                </div>
+            </div>
         </div>
     </header>
-
-    <!-- Main Content -->
+  
     <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <!-- Filtros y estadísticas -->
         <div class="mb-6 flex justify-between items-center">
             <span class="text-sm text-gray-600">Mostrando {{ alumnos|length }} de {{ total_alumnos }} alumnos</span>
         </div>
 
-        <!-- Lista de Alumnos -->
+
         <div class="bg-white shadow rounded-lg overflow-hidden">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
@@ -92,7 +90,6 @@
             </table>
         </div>
 
-        <!-- Paginación -->
         <div class="mt-6 flex justify-between items-center">
             <div class="text-sm text-gray-500">
                 Mostrando página {{ pagina_actual }} de {{ total_paginas }}
@@ -121,11 +118,10 @@
         </div>
     </main>
 
-    <!-- Panel Lateral para Agregar Alumno -->
     <div id="addAlumnoPanel" class="slide-panel fixed top-0 right-0 h-full w-96 bg-white shadow-xl z-50 p-6 overflow-y-auto">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-bold text-gray-800">Agregar Nuevo Alumno</h2>
-            <button onclick="togglePanel()" class="text-gray-500 hover:text-gray-700">
+            <button data-action="close-panel" class="text-gray-500 hover:text-gray-700">
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
@@ -160,17 +156,7 @@
         </form>
     </div>
 
-    <!-- Overlay -->
     <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
 
-    <script>
-        function togglePanel() {
-            const panel = document.getElementById('addAlumnoPanel');
-            const overlay = document.getElementById('overlay');
-            panel.classList.toggle('active');
-            overlay.classList.toggle('hidden');
-            document.body.classList.toggle('overflow-hidden');
-        }
-    </script>
 </body>
 </html>

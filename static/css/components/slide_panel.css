@@ -1,0 +1,8 @@
+.slide-panel {
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%);
+}
+
+.slide-panel.active {
+    transform: translateX(0);
+}

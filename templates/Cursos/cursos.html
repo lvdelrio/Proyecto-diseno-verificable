@@ -7,18 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="{{ url_for('static', filename='js/curso_script.js') }}"></script>
-    <style>
-        .slide-panel {
-            transition: transform 0.3s ease-in-out;
-            transform: translateX(100%);
-        }
-        .slide-panel.active {
-            transform: translateX(0);
-        }
-    </style>
+    <script type="module" src="{{ url_for('static', filename='js/components/json_upload.js') }}"></script>
+    <link href="{{ url_for('static', filename='css/components/slide_panel.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/components/slide_panel.js') }}"></script>
 </head>
 <body class="bg-gray-50">
-    <!-- Header con botón de volver -->
+    {% from "components/json_upload.html" import json_upload_button %}
     <header class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
             <div class="flex items-center space-x-4">
@@ -30,30 +24,33 @@
                     Gestión de Cursos
                 </h1>
             </div>
-            <button onclick="togglePanel()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
-                <i class="fas fa-plus mr-2"></i> Nuevo Curso
-            </button>
+            <div class="flex space-x-3 relative"> 
+                <button data-panel-target="addCoursePanel" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
+                    <i class="fas fa-plus mr-2"></i> Nuevo Curso
+                </button>
+                <div class="relative">
+                    {{ json_upload_button('Cursos.load_cursos') }}
+                </div>
+            </div>
         </div>
     </header>
 
-    <!-- Main Content (se mantiene igual) -->
+    
     <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <!-- Panel de Filtros -->
         <div class="mb-6 flex justify-between items-center">
             <span class="text-sm text-gray-600">{{ cursos|length }} cursos registrados</span>
         </div>
 
-        <!-- Lista de Cursos -->
         <div class="bg-white shadow rounded-lg overflow-hidden">
             <div class="grid grid-cols-12 bg-gray-100 p-4 font-semibold text-gray-700">
-                <div class="col-span-5">Nombre del Curso</div>
+                <div class="col-span-5">Id del Curso</div>
                 <div class="col-span-5">Descripción</div>
                 <div class="col-span-2 text-center">Acciones</div>
             </div>
             
             {% for curso in cursos %}
             <div class="grid grid-cols-12 p-4 border-b hover:bg-gray-50 items-center">
-                <div class="col-span-5 font-medium text-gray-800">{{ curso.tipo_curso.nombre }}</div>
+                <div class="col-span-5 font-medium text-gray-800">{{ curso.tipo_curso.codigo }}</div>
                 <div class="col-span-5 text-gray-600 text-sm truncate">{{ curso.tipo_curso.descripcion or "Sin descripción" }}</div>
                 <div class="col-span-2 flex justify-center space-x-2">
                     <a href="{{ url_for('Cursos.view_curso', curso_id=curso.id) }}" class="text-blue-500 hover:text-blue-700 p-2" title="Ver detalle">
@@ -70,11 +67,10 @@
         </div>
     </main>
 
-    <!-- Panel Lateral para Agregar Curso -->
     <div id="addCoursePanel" class="slide-panel fixed top-0 right-0 h-full w-96 bg-white shadow-xl z-50 p-6 overflow-y-auto">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-bold text-gray-800">Agregar Nuevo Curso</h2>
-            <button onclick="togglePanel()" class="text-gray-500 hover:text-gray-700">
+            <button data-action="close-panel" class="text-gray-500 hover:text-gray-700">
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
@@ -86,7 +82,7 @@
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
                     <option value="" disabled selected>Selecciona un tipo</option>
                     {% for tipo in tipo_cursos %}
-                        <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
+                        <option value="{{ tipo.id }}">{{ tipo.id }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -119,17 +115,7 @@
         </form>
     </div>
 
-    <!-- Overlay para cuando el panel está activo -->
     <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
 
-    <script>
-        function togglePanel() {
-            const panel = document.getElementById('addCoursePanel');
-            const overlay = document.getElementById('overlay');
-            panel.classList.toggle('active');
-            overlay.classList.toggle('hidden');
-            document.body.classList.toggle('overflow-hidden');
-        }
-    </script>
 </body>
 </html>

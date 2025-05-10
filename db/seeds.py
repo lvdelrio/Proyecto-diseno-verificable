@@ -23,12 +23,12 @@ from db.controller.tipo_curso_controller import create_tipo_curso, enroll_tipo_c
 
 
 def seed_database():
-    tipo_curso_1 = create_tipo_curso(config.session, name="Calculo 1", description="Matematicas")
-    tipo_curso_2 = create_tipo_curso(config.session, name="Calculo 2", description="Matematicas")
-    tipo_curso_3 = create_tipo_curso(config.session, name="Calculo 3", description="Matematicas")
-    tipo_curso_4 = create_tipo_curso(config.session, name="Economia", description="Economica")
-    tipo_curso_5 = create_tipo_curso(config.session, name="Fisica 1", description="Fisica")
-    tipo_curso_6 = create_tipo_curso(config.session, name="Electricidad", description="Fisica")
+    tipo_curso_1 = create_tipo_curso(config.session, name="Calculo 1", description="Matematicas", code="aaaa", credits=6)
+    tipo_curso_2 = create_tipo_curso(config.session, name="Calculo 2", description="Matematicas", code="aaab", credits=6)
+    tipo_curso_3 = create_tipo_curso(config.session, name="Calculo 3", description="Matematicas", code="aaac", credits=12)
+    tipo_curso_4 = create_tipo_curso(config.session, name="Economia", description="Economica", code="aaad", credits=5)
+    tipo_curso_5 = create_tipo_curso(config.session, name="Fisica 1", description="Fisica", code="aaae", credits=6)
+    tipo_curso_6 = create_tipo_curso(config.session, name="Electricidad", description="Fisica", code="aaaf", credits=6)
 
     requisito1 = enroll_tipo_curso_in_tipo_cursos(config.session, tipo_curso_base_id=tipo_curso_2.id, tipo_curso_id=tipo_curso_1.id)
     requisito1 = enroll_tipo_curso_in_tipo_cursos(config.session, tipo_curso_base_id=tipo_curso_3.id, tipo_curso_id=tipo_curso_2.id)

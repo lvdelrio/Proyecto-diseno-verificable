@@ -33,7 +33,7 @@ def register_profesor_in_seccion(db: Session, profesor_id: int, form_data: dict)
     errors = []
 
     for seccion_id in seccion_ids:
-        exito, mensaje = enroll_profesor_in_seccion(db.session, profesor_id, int(seccion_id))
+        exito, mensaje = enroll_profesor_in_seccion(db, profesor_id, int(seccion_id))
         if exito:
             enrolled_sections.append(mensaje)
         else:

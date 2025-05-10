@@ -42,6 +42,15 @@
                         <label class="block text-gray-700 font-medium mb-1">Descripción:</label>
                         <textarea name="descripcion" class="border p-2 rounded w-full" rows="3">{{ tipo_curso.descripcion }}</textarea>
                     </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-1">Codigo:</label>
+                        <input type="text" name="tipo_curso_code" value="{{ tipo_curso.codigo }}" class="border p-2 rounded w-full" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-1">Creditos:</label>
+                        <input type="number" name="credits" value="{{ tipo_curso.creditos }}" class="border p-2 rounded w-full" required 
+                        min="0" step="1">
+                    </div>
 
                     <button type="submit" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
                         Guardar Cambios

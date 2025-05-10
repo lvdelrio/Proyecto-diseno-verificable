@@ -6,7 +6,7 @@ def create_tipo_curso(db: Session, name: str, description: str, code: str, credi
     if id is not None:
         new_tipo_curso = TipoCurso(id=id, nombre=name, descripcion=description, codigo=code, creditos=credits)
     else:
-        new_tipo_curso= TipoCurso(nombre=name, descripcion=description, codigo=codigo, creditos=creditos)
+        new_tipo_curso= TipoCurso(nombre=name, descripcion=description, codigo=code, creditos=credits)
     db.add(new_tipo_curso)
     db.commit()
     db.refresh(new_tipo_curso)
@@ -59,6 +59,7 @@ def enroll_tipo_curso_in_tipo_cursos(db: Session, tipo_curso_base_id: int, tipo_
         return False, "Este requisito ya está asignado."
 
     create_requisito(
+        db,
         tipo_curso_id=tipo_curso_base_id,
         curso_requisito_id=tipo_curso_id
     )

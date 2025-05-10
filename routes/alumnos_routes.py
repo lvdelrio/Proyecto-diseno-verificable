@@ -79,16 +79,6 @@ def register_alumno(alumno_id):
         abort(404, description="Alumno no encontrado.")
     return redirect(url_for('Alumnos.view_alumno', alumno_id=alumno_id))
 
-@alumno_route_blueprint.route('/importar_alumnos_seccion', methods=['POST'])
-def load_alumnos_seccion():
-    data = request.json
-    if not data:
-        abort(400, description="No se recibió JSON válido.")
-
-    create_alumno_seccion_from_json(config.session, data)
-    return jsonify({"message": "Alumnos cargados correctamente"}), 201
-
-
 @alumno_route_blueprint.route('/importar_alumnos', methods=['POST'])
 def load_alumnos():
     data = request.json

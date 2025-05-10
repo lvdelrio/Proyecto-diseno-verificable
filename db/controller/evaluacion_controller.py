@@ -57,7 +57,7 @@ def get_evaluaciones_by_seccion(db: Session, categoria_id: int):
 def get_evaluaciones_by_categoria(db: Session, categoria_id: int):
     return db.query(Evaluacion).filter(Evaluacion.categoria_id == categoria_id).all()
 
-def edit_evaluacion(evaluacion_id, nombre=None, ponderacion=None, opcional=None, categoria_id=None, tipo_ponderacion=None):
+def edit_evaluacion(db: Session, evaluacion_id, nombre=None, ponderacion=None, opcional=None, categoria_id=None, tipo_ponderacion=None):
     evaluacion = get_evaluacion_by_id(db, evaluacion_id)
     if not evaluacion:
         abort(404, description="Evaluación no encontrada")
@@ -72,14 +72,14 @@ def edit_evaluacion(evaluacion_id, nombre=None, ponderacion=None, opcional=None,
         evaluacion.categoria_id = categoria_id
     if tipo_ponderacion is not None and tipo_ponderacion != evaluacion.tipo_ponderacion:
         evaluacion.tipo_ponderacion = tipo_ponderacion
-        actualizar_tipo_ponderacion_en_categoria(evaluacion.categoria_id, tipo_ponderacion)
+        actualizar_tipo_ponderacion_en_categoria(db, evaluacion.categoria_id, tipo_ponderacion)
 
     try:
-        db.session.commit()
+        db.commit()
         recalculate_categoria_ponderations(db, evaluacion.categoria_id)
         return evaluacion
     except Exception as e:
-        db.session.rollback()
+        db.rollback()
         abort(400, description=f"Error al actualizar la evaluación: {str(e)}")
 
 def delete_evaluacion(db: Session, evaluacion_id: int):
@@ -100,12 +100,12 @@ def validation_evaluacion(nueva_evaluacion, categoria_id):
         return True
     return last_evaluation.tipo_ponderacion == nueva_evaluacion.tipo_ponderacion
 
-def actualizar_tipo_ponderacion_en_categoria(categoria_id: int, nuevo_tipo: bool):
+def actualizar_tipo_ponderacion_en_categoria(db: Session, categoria_id: int, nuevo_tipo: bool):
     evaluaciones = get_evaluaciones_by_categoria(db, categoria_id)
     for evaluacion in evaluaciones:
         evaluacion.tipo_ponderacion = nuevo_tipo
     try:
-        db.session.commit()
+        db.commit()
     except Exception as e:
-        db.session.rollback()
+        db.rollback()
         abort(400, description=f"Error al actualizar tipo de ponderación en evaluaciones: {str(e)}")

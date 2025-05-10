@@ -1,0 +1,9 @@
+<form method="POST" action="{{ url_for('Secciones.edit_seccion', seccion_id=seccion.id) }}">
+    <div class="mb-4">
+        <label class="block text-gray-700 font-medium mb-1">Nombre de la Sección:</label>
+        <input type="text" name="nombre" value="{{ seccion.nombre }}" class="border p-2 rounded w-full" required>
+    </div>
+    <button type="submit" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+        Guardar Cambios
+    </button>
+</form>

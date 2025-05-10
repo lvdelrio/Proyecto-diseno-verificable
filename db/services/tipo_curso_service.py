@@ -21,14 +21,14 @@ def get_tipo_curso_and_cursos_disponibles(db: Session, tipo_curso_id: int):
     return tipo_curso_base, cursos_disponibles
 
 def register_tipo_curso_in_tipo_cursos(db: Session, tipo_curso_id: int, form_data: dict):
-    tipo_curso_by_id = get_tipo_curso_by_id(db.session, tipo_curso_id)
+    tipo_curso_by_id = get_tipo_curso_by_id(db, tipo_curso_id)
     tipo_cursos_ids = form_data.getlist("tipo_curso_ids")
 
     enrolled_tipo_cursos = []
     errors = []
 
     for tipo_id in tipo_cursos_ids:
-        exito, mensaje = enroll_tipo_curso_in_tipo_cursos(db.session, tipo_curso_id, int(tipo_id))
+        exito, mensaje = enroll_tipo_curso_in_tipo_cursos(db, tipo_curso_id, int(tipo_id))
         if exito:
             enrolled_tipo_cursos.append(mensaje)
         else:

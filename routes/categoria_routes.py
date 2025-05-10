@@ -15,16 +15,14 @@ def add_categoria():
     try:
         tipo_categoria = request.form.get('tipo_categoria')
         seccion_id = request.form.get('seccion_id')
-        ponderacion = float(request.form.get('ponderacion'))
-        curso_id = request.form.get('curso_id')
-        
+        ponderacion = float(request.form.get('ponderacion'))        
         tipo_ponderacion = request.form.get('tipo_ponderacion')
         tipo_ponderacion = True if tipo_ponderacion == 'porcentaje' else False
         
         seccion = db.session.query(Seccion).get(seccion_id)
         if not seccion:
             print('Sección no encontrada', 'error')
-            return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
+            return redirect(url_for('Secciones.view_seccion', seccion_id=seccion_id, tab='evaluaciones'))
         
         nueva_categoria = create_categoria(
             tipo_categoria=tipo_categoria,
@@ -34,12 +32,12 @@ def add_categoria():
         )
         
         print('Categoría creada exitosamente', 'success')
-        return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
+        return redirect(url_for('Secciones.view_seccion', seccion_id=seccion_id, tab='evaluaciones'))
     
     except Exception as e:
         db.session.rollback()
         print(f'Error al crear categoría: {str(e)}', 'error')
-        return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
+        return redirect(url_for('Secciones.view_seccion', seccion_id=seccion_id, tab='evaluaciones'))
 
 @categoria_blueprint.route('/categorias/<int:categoria_id>/edit', methods=['GET'])
 def edit_categoria_form(categoria_id):
@@ -47,12 +45,11 @@ def edit_categoria_form(categoria_id):
     if not categoria:
         abort(404, description="Categoría no encontrada")
 
-    curso_id = categoria.seccion.curso_id
+    seccion_id = categoria.seccion.id
     return render_template(
-        'Cursos/partials/evaluaciones/edit_categoria.html',
+        'secciones/partials/evaluaciones/edit_categoria.html',
         categoria=categoria,
-        curso_id=curso_id,
-        secciones=Seccion.query.filter_by(curso_id=curso_id).all()
+        seccion_id=seccion_id
     )
     
 
@@ -61,7 +58,7 @@ def edit_categoria_route(categoria_id):
     try:
         tipo_categoria = request.form.get('tipo_categoria')
         ponderacion = float(request.form.get('ponderacion'))
-        curso_id = request.form.get('curso_id')
+        seccion_id = request.form.get('seccion_id')
         tipo_ponderacion = request.form.get('tipo_ponderacion')
         tipo_ponderacion = True if tipo_ponderacion == 'porcentaje' else False
         
@@ -73,22 +70,23 @@ def edit_categoria_route(categoria_id):
         )
         
         print('Categoría actualizada exitosamente', 'success')
-        return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
+        return redirect(url_for('Secciones.view_seccion', seccion_id=seccion_id, tab='evaluaciones'))
     
     except Exception as e:
         db.session.rollback()
         print(f'Error al actualizar categoría: {str(e)}', 'error')
-        return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
+        return redirect(url_for('Secciones.view_seccion', seccion_id=seccion_id, tab='evaluaciones'))
 
 @categoria_blueprint.route('/categorias/<int:categoria_id>/delete', methods=['POST'])
 def delete_categoria_route(categoria_id):
     try:
-        curso_id = request.form.get('curso_id')
+        seccion_id = request.form.get('seccion_id')
+        print(seccion_id)
         delete_categoria(categoria_id)
         print('Categoría eliminada exitosamente', 'success')
-        return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
+        return redirect(url_for('Secciones.view_seccion', seccion_id=seccion_id, tab='evaluaciones'))
     
     except Exception as e:
         db.session.rollback()
         print(f'Error al eliminar categoría: {str(e)}', 'error')
-        return redirect(url_for('Cursos.view_curso', curso_id=curso_id, tab='evaluaciones'))
+        return redirect(url_for('Secciones.view_seccion', seccion_id=seccion_id, tab='evaluaciones'))

@@ -36,11 +36,7 @@
     <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div x-data="{ 
             tab: new URLSearchParams(window.location.search).get('tab') || 'info',
-            showEvaluacionPanel: false,
             showSeccionPanel: false,
-            evalTab: 'categorias',  
-            showCategoriaPanel: false,
-            showEvaluacionPanel: false
         }" x-cloak>
             
             <div class="border-b border-gray-200 mb-6">
@@ -65,10 +61,10 @@
                             class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
                         <i class="fas fa-chalkboard-teacher mr-2"></i> Profesores
                     </button>
-                    <button @click="tab='evaluacionesCurso'"
-                            :class="tab === 'evaluacionesCurso' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                    <button @click="tab='evalucaiones'"
+                            :class="tab === 'evaluaciones' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                             class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                        <i class="fas fa-clipboard-check mr-2"></i> Evaluaciones
+                        <i class="fas fa-chalkboard-teacher mr-2"></i> Evalcuaiones
                     </button>
                 </nav>
             </div>
@@ -78,11 +74,8 @@
             {% include 'cursos/partials/secciones.html' %}
             {% include 'cursos/partials/estudiantes.html' %}
             {% include 'cursos/partials/profesores.html' %}
+            {% include 'cursos/partials/evaluaciones.html' %}
             
-            <!-- Pestaña de Evaluaciones (contiene subpestañas) -->
-            <div x-show="tab === 'evaluacionesCurso'" class="bg-white shadow rounded-lg overflow-hidden">
-                {% include 'cursos/partials/evaluaciones/base.html' %}
-            </div>
         </div>
         <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
     </main>

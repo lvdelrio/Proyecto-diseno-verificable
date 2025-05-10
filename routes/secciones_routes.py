@@ -17,10 +17,10 @@ def get_secciones_by_id(curso_id):
     return redirect(url_for("Cursos.view_curso", secciones=secciones_by_curso_id))
 
 @seccion_route_blueprint.route('/seccion/<int:seccion_id>')
-def view_seccion(seccion_id):
+def view_seccion(seccion_id, tab="info"):
     seccion = get_seccion_by_id(config.session, seccion_id)
     alumnos = seccion.alumnos
-    return render_template("secciones/detalle_seccion.html", seccion=seccion)
+    return render_template("secciones/detalle_seccion.html", seccion=seccion, tab="info")
 
 @seccion_route_blueprint.route('/editar_seccion/<int:seccion_id>', methods=['POST'])
 def edit_seccion(seccion_id):

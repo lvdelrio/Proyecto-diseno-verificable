@@ -1,8 +1,13 @@
 <div x-show="tab === 'estudiantes'" class="bg-white shadow rounded-lg overflow-hidden">
+    <script type="module" src="{{ url_for('static', filename='js/components/json_upload.js') }}"></script>
+    {% from "components/json_upload.html" import json_upload_button %}
     <div class="p-6">
         <h2 class="text-xl font-bold text-gray-800 mb-6">Estudiantes Inscritos</h2>
         
         <div class="overflow-x-auto">
+            <div class="flex space-x-3 relative mb-4 justify-end items-center">
+                {{ json_upload_button('Cursos.load_alumno_in_seccion') }}
+            </div>
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>

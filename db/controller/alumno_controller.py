@@ -64,8 +64,8 @@ def enroll_alumno_in_seccion(db: Session, alumno_id: int, seccion_id: int):
     return True, "Alumno inscrito exitosamente."
 
 def create_alumno_seccion_from_json(db:Session, data:dict):
-    alumno_seccion_json = data.get("alumno_seccion", [])
-    for alumno_seccion in alumno_seccion_json:
+    alumnos_seccion_json = data.get("alumnos_seccion", [])
+    for alumno_seccion in alumnos_seccion_json:
         alumno_id = alumno_seccion["alumno_id"]
         seccion_id = alumno_seccion["seccion_id"]
         enroll_alumno_in_seccion(db, alumno_id, seccion_id)

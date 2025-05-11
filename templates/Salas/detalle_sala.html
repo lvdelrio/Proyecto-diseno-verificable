@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Sala | SGA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('Salas.get_salas') }}" class="text-gray-600 hover:text-blue-600" title="Volver a la lista de salas">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </a>
+                <h1 class="text-2xl font-bold text-gray-800">
+                    <i class="fas fa-door-open mr-2 text-red-600"></i>
+                    Detalle de Sala
+                </h1>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">{{ sala.nombre }}</h2>
+                    <form method="POST" action="{{ url_for('Salas.delete_sala_route', sala_id=sala.id) }}" onsubmit="return confirm('¿Estás seguro que deseas eliminar esta sala?');">
+                        <button type="submit" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200">
+                            <i class="fas fa-trash mr-2"></i> Eliminar
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Información General</h3>
+                            <div class="space-y-3">
+                                <div class="grid grid-cols-3 gap-4">
+                                    <div class="text-sm text-gray-500">ID:</div>
+                                    <div class="col-span-2 text-gray-800 font-medium">{{ sala.id }}</div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-4">
+                                    <div class="text-sm text-gray-500">Nombre:</div>
+                                    <div class="col-span-2 text-gray-800">{{ sala.nombre }}</div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-4">
+                                    <div class="text-sm text-gray-500">Capacidad:</div>
+                                    <div class="col-span-2 text-gray-800">{{ sala.capacidad }} personas</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Editar Sala</h3>
+                            <form action="{{ url_for('Salas.edit_sala', sala_id=sala.id) }}" method="POST">
+                                <div class="mb-4">
+                                    <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                                    <input type="text" id="nombre" name="nombre" required
+                                           class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                           value="{{ sala.nombre }}">
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="capacidad" class="block text-sm font-medium text-gray-700 mb-1">Capacidad</label>
+                                    <input type="number" id="capacidad" name="capacidad" required min="1" max="500"
+                                           class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                           value="{{ sala.capacidad }}">
+                                </div>
+                                
+                                <div class="flex justify-end">
+                                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                        Guardar Cambios
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4">Horarios Asignados</h3>
+                    <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-calendar-times text-gray-300 text-4xl mb-3"></i>
+                            <p>No hay horarios asignados a esta sala.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

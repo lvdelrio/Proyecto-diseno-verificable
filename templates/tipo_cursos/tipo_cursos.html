@@ -82,7 +82,7 @@
         
         <form action="{{ url_for('Tipo_Cursos.add_tipo_curso') }}" method="POST">
             <div class="mb-4">
-                <label for="codigo" class="block text-sm font-medium text-gray-700 mb-1">Codigo de Tipo Curso*</label>
+                <label for="codigo" class="block text-sm font-medium text-gray-700 mb-1">Código de Tipo Curso</label>
                 <input type="text" id="codigo" name="codigo" required 
                        class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             </div>
@@ -90,12 +90,6 @@
             <div class="mb-4">
                 <label for="descripcion" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
                 <textarea id="descripcion" name="descripcion" rows="3" required
-                          class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
-            </div>
-
-            <div class="mb-4">
-                <label for="tipo_curso_code" class="block text-sm font-medium text-gray-700 mb-1">Codigo</label>
-                <input type="text" id="tipo_curso_code" name="tipo_curso_code" required 
                           class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
             </div>
 

@@ -73,8 +73,7 @@ def create_tipo_cursos_from_json(db: Session, data: dict):
         tipo_curso = create_tipo_curso(
             db=db,
             id=curso_data["id"],
-            codigo=curso_data.get("codigo"),
-            code=curso_data.get("codigo"),
+            tipo_curso_code=curso_data.get("codigo"),
             description=curso_data.get("descripcion"),
             credits=curso_data.get("creditos")
         )

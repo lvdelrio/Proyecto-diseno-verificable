@@ -23,9 +23,8 @@ def view_tipo_curso(tipo_curso_id):
 def add_tipo_curso():
     tipo_curso_code = request.form.get("codigo")
     description = request.form.get("descripcion", "")
-    tipo_curso_code = request.form.get("tipo_curso_code", "")
     credits = request.form.get("credits", "")
-    tipo_curso = create_tipo_curso(config.session, tipo_curso_code, description, tipo_curso_code, credits)
+    tipo_curso = create_tipo_curso(config.session, tipo_curso_code, description, credits)
 
     return redirect(url_for("Tipo_Cursos.view_tipo_curso", tipo_curso_id=tipo_curso.id))
 

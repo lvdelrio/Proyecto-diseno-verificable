@@ -63,6 +63,22 @@ def enroll_alumno_in_seccion(db: Session, alumno_id: int, seccion_id: int):
     db.refresh(alumno)
     return True, "Alumno inscrito exitosamente."
 
+def unregister_alumno_in_seccion(db: Session, alumno_id: int, seccion_id: int):
+    alumno = get_alumno_by_id(db, alumno_id)
+    if not alumno:
+        return False, "Alumno no encontrado."
+
+    seccion = get_seccion_by_id(db, seccion_id)
+    if not seccion:
+        return False, "Sección no encontrada."
+
+    if seccion not in alumno.secciones:
+        return False, "El alumno no está inscrito en esta sección."
+
+    alumno.secciones.remove(seccion)
+    db.commit()
+    return True, "Alumno removido de la sección."
+
 def create_alumno_seccion_from_json(db:Session, data:dict):
     alumnos_seccion_json = data.get("alumnos_seccion", [])
     for alumno_seccion in alumnos_seccion_json:

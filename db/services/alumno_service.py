@@ -1,7 +1,7 @@
 from flask import abort
 from sqlalchemy.orm import Session
 from ..controller.curso_controller import get_all_cursos
-from ..controller.seccion_controller import get_all_secciones_by_curso_id
+from ..controller.seccion_controller import get_all_secciones_by_curso_id, get_seccion_by_id
 from db.models.alumno import Alumno
 from db.controller.alumno_controller import get_alumno_by_id, enroll_alumno_in_seccion
 
@@ -26,7 +26,7 @@ def get_available_cursos_con_secciones(db: Session, alumno_id):
 
     return alumno, cursos_with_secciones
 
-def registrar_alumno_in_secciones(db: Session, alumno_id: int, form_data: dict):
+def register_alumno_in_secciones(db: Session, alumno_id: int, form_data: dict):
     alumno = get_alumno_by_id(db, alumno_id)
     if not alumno:
         return None, [], ["Alumno no encontrado."]

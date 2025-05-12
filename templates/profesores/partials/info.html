@@ -1,0 +1,17 @@
+<div x-show="tab === 'info'" class="bg-white shadow rounded-lg p-6">
+    <form method="POST" action="{{ url_for('Profesores.edit_profesor', profesor_id=profesor.id) }}">
+        <div class="mb-4">
+            <label class="block text-gray-700 mb-1">Nombre:</label>
+            <input type="text" name="nombre" value="{{ profesor.nombre }}" class="border p-2 rounded w-full" required>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 mb-1">Email:</label>
+            <input type="email" name="email" value="{{ profesor.email }}" class="border p-2 rounded w-full" required>
+        </div>
+
+        <button type="submit" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+            Guardar Cambios
+        </button>
+    </form>
+</div>

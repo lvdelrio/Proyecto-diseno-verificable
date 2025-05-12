@@ -3,7 +3,7 @@ from flask import Blueprint, request, render_template, redirect, url_for, flash,
 from db.config import db as config
 from db.controller.curso_controller import get_all_cursos
 from db.controller.seccion_controller import get_all_secciones_by_curso_id
-from db.services.alumno_service import get_available_cursos_con_secciones, registrar_alumno_in_secciones
+from db.services.alumno_service import get_available_cursos_con_secciones, register_alumno_in_secciones
 from db.controller.alumno_controller import (
     get_all_alumnos,
     create_alumno,
@@ -13,7 +13,8 @@ from db.controller.alumno_controller import (
     get_paginated_alumnos,
     enroll_alumno_in_seccion,
     create_alumno_seccion_from_json,
-    create_alumnos_from_json
+    create_alumnos_from_json,
+    unregister_alumno_in_seccion
 )
 
 alumno_route_blueprint = Blueprint("Alumnos", __name__)
@@ -74,9 +75,15 @@ def delete_alumno(alumno_id):
 
 @alumno_route_blueprint.route('/inscribir_alumno/<int:alumno_id>/', methods=['POST'])
 def register_alumno(alumno_id):
-    alumno = registrar_alumno_in_secciones(config.session, alumno_id, request.form)
+    alumno = register_alumno_in_secciones(config.session, alumno_id, request.form)
     if alumno is None:
         abort(404, description="Alumno no encontrado.")
+    return redirect(url_for('Alumnos.view_alumno', alumno_id=alumno_id))
+
+@alumno_route_blueprint.route('/desinscribir_alumno/<int:seccion_id>/', methods=['POST'])
+def unregister_alumno(seccion_id):
+    alumno_id = request.form.get("alumno_id")
+    unregister_alumno_in_seccion(config.session, seccion_id, alumno_id)
     return redirect(url_for('Alumnos.view_alumno', alumno_id=alumno_id))
 
 @alumno_route_blueprint.route('/importar_alumnos', methods=['POST'])

@@ -21,6 +21,7 @@ def get_profesor_and_available_cursos_with_secciones(db: Session, profesor_id: i
 
         if available_secciones:
             cursos_with_secciones.append((curso, available_secciones))
+    print(cursos_with_secciones)
     return profesor, cursos_with_secciones
 
 def register_profesor_in_seccion(db: Session, profesor_id: int, form_data: dict):

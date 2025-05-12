@@ -21,7 +21,7 @@
                 </a>
                 <h1 class="text-2xl font-bold text-gray-800">
                     <i class="fas fa-book mr-2 text-blue-600"></i>
-                    {{ curso.tipo_curso.codigo }}
+                    {{ curso.tipo_curso.codigo }}: {{curso.tipo_curso.descripcion}}
                 </h1>
             </div>
             <form method="POST" action="{{ url_for('Cursos.delete_curso', curso_id=curso.id) }}">

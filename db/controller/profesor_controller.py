@@ -60,6 +60,22 @@ def enroll_profesor_in_seccion(db: Session, profesor_id: int, seccion_id: int):
 
     return True, "Profesor inscrito exitosamente."
 
+def unregister_profesor_in_seccion(db: Session, seccion_id: int, profesor_id: int):
+    profesor = get_profesor_by_id(db, profesor_id)
+    if not profesor:
+        return False, "Profesor no encontrado."
+
+    seccion = get_seccion_by_id(db, seccion_id)
+    if not seccion:
+        return False, "Sección no encontrada."
+
+    if seccion not in profesor.secciones:
+        return False, "El profesor no está inscrito en esta sección."
+
+    profesor.secciones.remove(seccion)
+    db.commit()
+    return True, "Profesor removido de la sección."
+
 def create_profesores_from_json(db: Session, data: dict):
     profesores_json = data.get("profesores", [])
 

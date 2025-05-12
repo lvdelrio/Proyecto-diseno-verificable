@@ -11,7 +11,8 @@ from db.controller.profesor_controller import (
     delete_profesor_by_id, 
     get_paginated_profesores, 
     enroll_profesor_in_seccion,
-    create_profesores_from_json
+    create_profesores_from_json,
+    unregister_profesor_in_seccion
 )
 
 
@@ -66,6 +67,7 @@ def delete_profesor(profesor_id):
 
 @profesor_route_blueprint.route('/inscribir_profesor/<int:profesor_id>/', methods=['POST'])
 def register_profesor(profesor_id):
+    print(request.form, profesor_id)
     register_profesor_in_seccion(config.session, profesor_id, request.form)
 
     return redirect(url_for('Profesores.view_profesor', profesor_id=profesor_id))
@@ -78,3 +80,10 @@ def load_profesores():
 
     create_profesores_from_json(config.session, data)
     return jsonify({"message": "Profesores cargados correctamente"}), 201
+
+@profesor_route_blueprint.route('/desinscribir_profesor/<int:seccion_id>/', methods=['POST'])
+def unregister_profesor(seccion_id):
+    print(request.form, seccion_id)
+    profesor_id = request.form.get("profesor_id")
+    unregister_profesor_in_seccion(config.session, seccion_id, profesor_id)
+    return redirect(url_for('Profesores.view_profesor', profesor_id=profesor_id))   

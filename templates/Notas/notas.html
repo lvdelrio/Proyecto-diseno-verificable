@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Notas | SGA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/components/slide_panel.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/components/slide_panel.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/components/json_upload.js') }}"></script>
+    
+</head>
+<body class="bg-gray-50">
+    {% from "components/json_upload.html" import json_upload_button %}
+    
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('home') }}" class="text-gray-600 hover:text-blue-600" title="Volver al menú principal">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </a>
+                <h1 class="text-2xl font-bold text-gray-800">
+                    <i class="fas fa-clipboard-list mr-2 text-blue-600"></i>
+                    Gestión de Notas
+                </h1>
+            </div>
+            <div class="flex space-x-3 relative">
+                <button data-panel-target="addNotaPanel" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
+                    <i class="fas fa-plus mr-2"></i> Nueva Nota
+                </button>
+                
+                {{ json_upload_button('Notas.load_notas') }}
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div class="mb-6 flex justify-between items-center">
+            <span class="text-sm text-gray-600">{{ notas|length }} notas registradas</span>
+        </div>
+
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="grid grid-cols-12 bg-gray-100 p-4 font-semibold text-gray-700">
+                <div class="col-span-1 text-center">#</div>
+                <div class="col-span-3">Alumno</div>
+                <div class="col-span-3">Evaluación</div>
+                <div class="col-span-2">Categoría</div>
+                <div class="col-span-1 text-center">Nota</div>
+                <div class="col-span-2 text-center">Acciones</div>
+            </div>
+            
+            {% for nota in notas %}
+            <div class="grid grid-cols-12 p-4 border-b hover:bg-gray-50 items-center">
+                <div class="col-span-1 text-center font-medium text-gray-500">{{ nota.id }}</div>
+                <div class="col-span-3 font-medium text-gray-800">
+                    {% if nota.alumno %}
+                        {{ nota.alumno.nombre }}
+                    {% else %}
+                        <span class="text-gray-400">Sin alumno asignado</span>
+                    {% endif %}
+                </div>
+                <div class="col-span-3 text-gray-600">
+                    {% if nota.evaluacion %}
+                        {{ nota.evaluacion.nombre }}
+                    {% else %}
+                        <span class="text-gray-400">Sin evaluación asignada</span>
+                    {% endif %}
+                </div>
+                <div class="col-span-2 text-gray-600">
+                    {% if nota.evaluacion and nota.evaluacion.categoria %}
+                        {{ nota.evaluacion.categoria.tipo_categoria }}
+                    {% else %}
+                        <span class="text-gray-400">Sin categoría</span>
+                    {% endif %}
+                </div>
+                <div class="col-span-1 text-center font-medium {% if nota.nota >= 4.0 %}text-green-600{% else %}text-red-600{% endif %}">
+                    {% if nota.nota is not none %}
+                        {{ "%.1f"|format(nota.nota) }}
+                    {% else %}
+                        <span class="text-gray-400">-</span>
+                    {% endif %}
+                </div>
+                <div class="col-span-2 flex justify-center space-x-2">
+                    <a href="{{ url_for('Notas.view_nota', nota_id=nota.id) }}" class="text-blue-500 hover:text-blue-700 p-2" title="Ver detalle">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <form method="POST" action="{{ url_for('Notas.delete_nota_route', nota_id=nota.id) }}" onsubmit="return confirm('¿Estás seguro que deseas eliminar esta nota?');">
+                        <button type="submit" class="text-red-500 hover:text-red-700 p-2" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+            
+            {% if not notas %}
+            <div class="p-8 text-center text-gray-500">
+                <i class="fas fa-clipboard-list text-gray-300 text-4xl mb-3"></i>
+                <p>No hay notas registradas. Agrega una nueva nota o importa desde un archivo JSON.</p>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <div id="addNotaPanel" class="slide-panel fixed top-0 right-0 h-full w-96 bg-white shadow-xl z-50 p-6 overflow-y-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-800">Agregar Nueva Nota</h2>
+            <button data-action="close-panel" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <form action="{{ url_for('Notas.add_nota') }}" method="POST">
+            <div class="mb-4">
+                <label for="alumno_id" class="block text-sm font-medium text-gray-700 mb-1">Alumno*</label>
+                <select id="alumno_id" name="alumno_id" required
+                       class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Seleccione un alumno</option>
+                    {% for alumno in alumnos %}
+                        <option value="{{ alumno.id }}">{{ alumno.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label for="evaluacion_id" class="block text-sm font-medium text-gray-700 mb-1">Evaluación*</label>
+                <select id="evaluacion_id" name="evaluacion_id" required
+                       class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Seleccione una evaluación</option>
+                    {% for evaluacion in evaluaciones %}
+                        <option value="{{ evaluacion.id }}">{{ evaluacion.nombre }} ({{ evaluacion.categoria.tipo_categoria if evaluacion.categoria else 'Sin categoría' }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label for="nota" class="block text-sm font-medium text-gray-700 mb-1">Nota*</label>
+                <input type="number" id="nota" name="nota" required min="1.0" max="7.0" step="0.1"
+                       class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                       placeholder="Ej: 5.5">
+                <p class="mt-1 text-xs text-gray-500">Ingrese un valor entre 1.0 y 7.0</p>
+            </div>
+            
+            <div class="flex justify-end space-x-3 mt-6">
+                <button type="button" data-action="close-panel" class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100">
+                    Cancelar
+                </button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    Guardar Nota
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+</body>
+</html>

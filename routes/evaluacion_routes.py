@@ -3,7 +3,6 @@ from db.config import db
 from db.controller.evaluacion_controller import (
     create_evaluacion,
     get_evaluacion_by_id,
-    get_evaluaciones_by_seccion,
     edit_evaluacion,
     delete_evaluacion, 
     create_evaluacion_con_notas

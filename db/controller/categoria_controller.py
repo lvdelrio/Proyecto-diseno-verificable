@@ -4,12 +4,16 @@ from ..config import db
 from ..models.categoria import Categoria
 from ..models.seccion import Seccion
 from ..controller.evaluacion_controller import create_evaluacion
+from ..controller.common_controller import get_categorias_by_seccion_id
 from ..utils.prorrotear import prorate_values
+from db.utils.prorrotear import recalculate_seccion_ponderations
+
+TIPO_PROCENTAJE = 1
 
 def create_categoria(tipo_categoria, seccion, ponderacion, tipo_ponderacion):
     nueva_categoria = Categoria(
         tipo_categoria=tipo_categoria,
-        id_seccion=seccion.id,
+        seccion_id=seccion.id,
         ponderacion=ponderacion, 
         tipo_ponderacion=tipo_ponderacion
     )
@@ -19,34 +23,46 @@ def create_categoria(tipo_categoria, seccion, ponderacion, tipo_ponderacion):
         return
     db.session.add(nueva_categoria)
     db.session.commit()
+    if(suma_porcentajes_from_seccion_by_id(db.session, nueva_categoria.seccion_id) > 100 and
+        nueva_categoria.tipo_ponderacion == TIPO_PROCENTAJE):
+        recalculate_seccion_ponderations(db.session, nueva_categoria.seccion_id)
     return nueva_categoria
 
 def get_categoria(categoria_id):
     return Categoria.query.get(categoria_id)
 
-def get_all_categorias_by_seccion(seccion_id):
-    return Categoria.query.filter_by(id_seccion=seccion_id).all()
+def get_all_categorias_by_seccion_id(seccion_id):
+    return Categoria.query.filter_by(seccion_id=seccion_id).all()
 
-def edit_categoria(categoria_id, tipo_categoria=None, id_seccion=None, ponderacion=None, tipo_ponderacion=None):
+def edit_categoria(categoria_id, tipo_categoria=None, seccion_id=None, ponderacion=None, tipo_ponderacion=None):
     categoria = get_categoria(categoria_id)
     if not categoria:
         abort(404, description="Categoría no encontrada")
 
     if tipo_categoria is not None:
         categoria.tipo_categoria = tipo_categoria
-    if id_seccion is not None:
-        categoria.id_seccion = id_seccion
+    if seccion_id is not None:
+        categoria.seccion_id = seccion_id
     if ponderacion is not None:
         categoria.ponderacion = ponderacion
     if tipo_ponderacion is not None and tipo_ponderacion != categoria.tipo_ponderacion:
         categoria.tipo_ponderacion = tipo_ponderacion
-        actualizar_tipo_ponderacion_en_seccion(categoria.id_seccion, tipo_ponderacion)
+        actualizar_tipo_ponderacion_en_seccion(categoria.seccion_id, tipo_ponderacion)
     try:
         db.session.commit()
+        if(suma_porcentajes_from_seccion_by_id(db.session, categoria.seccion_id) > 100 and
+            categoria.tipo_ponderacion == TIPO_PROCENTAJE):
+            print("ejecuto")
+            recalculate_seccion_ponderations(db.session, categoria.seccion_id)
         return categoria
     except Exception as e:
         db.session.rollback()
         abort(400, description=f"Error al actualizar la categoría: {str(e)}") 
+
+def suma_porcentajes_from_seccion_by_id(db: Session, seccion_id: int):
+    categorias = get_categorias_by_seccion_id(db, seccion_id)
+    suma_porcentajes = sum(categoria.ponderacion for categoria in categorias)
+    return suma_porcentajes
 
 def delete_categoria(categoria_id):
     categoria = get_categoria(categoria_id)
@@ -54,17 +70,17 @@ def delete_categoria(categoria_id):
     db.session.commit()
     return
 
-def get_last_categoria_by_seccion( seccion_id ):
-    return Categoria.query.filter_by(id_seccion=seccion_id).order_by(Categoria.id.desc()).first()
+def get_last_categoria_by_seccion_id( seccion_id ):
+    return Categoria.query.filter_by(seccion_id=seccion_id).order_by(Categoria.id.desc()).first()
 
 def validation_categoria(categoria, seccion_id):
-    last_category = get_last_categoria_by_seccion(seccion_id)
+    last_category = get_last_categoria_by_seccion_id(seccion_id)
     if last_category is None:
         return True
     return last_category.tipo_ponderacion == categoria.tipo_ponderacion
 
 def actualizar_tipo_ponderacion_en_seccion(seccion_id: int, nuevo_tipo: bool):
-    categorias = get_all_categorias_by_seccion(seccion_id)
+    categorias = get_all_categorias_by_seccion_id(seccion_id)
     for categoria in categorias:
         categoria.tipo_ponderacion = nuevo_tipo
 

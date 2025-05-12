@@ -82,8 +82,9 @@ def create_tipo_cursos_from_json(db: Session, data: dict):
     for curso_data in cursos_json:
         for req_codigo in curso_data["requisitos"]:
             enroll_tipo_curso_in_tipo_cursos(
-                tipo_curso_id=curso_data["id"],
-                curso_requisito_id=tipos_curso_map[req_codigo].id
+                db=db,
+                tipo_curso_base_id=curso_data["id"],
+                tipo_curso_id=tipos_curso_map[req_codigo].id
             )
 
 def create_requisito(db: Session, tipo_curso_id: int, curso_requisito_id: int):

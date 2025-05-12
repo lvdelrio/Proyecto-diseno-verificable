@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Nota | SGA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('Notas.get_notas') }}" class="text-gray-600 hover:text-blue-600" title="Volver a la lista de notas">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </a>
+                <h1 class="text-2xl font-bold text-gray-800">
+                    <i class="fas fa-clipboard-list mr-2 text-blue-600"></i>
+                    Detalle de Nota
+                </h1>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="p-6">
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-6">Información de la Nota</h3>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="text-sm text-gray-500">Alumno:</div>
+                            <div class="col-span-2 text-gray-800 font-medium">
+                                {% if nota.alumno %}
+                                    {{ nota.alumno.nombre }}
+                                {% else %}
+                                    <span class="text-gray-400">Sin alumno asignado</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="text-sm text-gray-500">Evaluación:</div>
+                            <div class="col-span-2 text-gray-800">
+                                {% if nota.evaluacion %}
+                                    {{ nota.evaluacion.nombre }}
+                                {% else %}
+                                    <span class="text-gray-400">Sin evaluación asignada</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="text-sm text-gray-500">Categoría (Tópico):</div>
+                            <div class="col-span-2 text-gray-800">
+                                {% if nota.evaluacion and nota.evaluacion.categoria %}
+                                    {{ nota.evaluacion.categoria.tipo_categoria }}
+                                {% else %}
+                                    <span class="text-gray-400">Sin categoría</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="text-sm text-gray-500">Nota:</div>
+                            <div class="col-span-2 text-gray-800 font-medium {% if nota.nota >= 4.0 %}text-green-600{% else %}text-red-600{% endif %}">
+                                {% if nota.nota is not none %}
+                                    {{ "%.1f"|format(nota.nota) }}
+                                {% else %}
+                                    <span class="text-gray-400">Sin calificación</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between mt-6">
+                    <a href="{{ url_for('Notas.get_notas') }}" class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100">
+                        Volver a la lista
+                    </a>
+                    
+                    <div class="flex space-x-2">
+                        <form method="POST" action="{{ url_for('Notas.delete_nota_route', nota_id=nota.id) }}" 
+                              onsubmit="return confirm('¿Estás seguro que deseas eliminar esta nota?');">
+                            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                                <i class="fas fa-trash mr-2"></i> Eliminar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-6 bg-gray-50 rounded-lg shadow-sm">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4">Editar Nota</h3>
+                    <form action="{{ url_for('Notas.edit_nota', nota_id=nota.id) }}" method="POST">
+                        <div class="flex items-end space-x-4">
+                            <div class="flex-grow">
+                                <label for="nota" class="block text-sm font-medium text-gray-700 mb-1">Nota</label>
+                                <input type="number" id="nota" name="nota" min="1.0" max="7.0" step="0.1"
+                                       class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                       value="{{ "%.1f"|format(nota.nota) if nota.nota is not none else "" }}">
+                            </div>
+                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                Guardar Cambios
+                            </button>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">Ingrese un valor entre 1.0 y 7.0</p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

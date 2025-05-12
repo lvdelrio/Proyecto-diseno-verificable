@@ -22,6 +22,9 @@ def create_nota(db: Session, alumno_id: int, evaluacion_id: int, nota: float):
     db.commit()
     return nota_existente if nota_existente else nueva_nota
 
+def get_all_notas(db: Session):
+    return db.query(Notas).all()
+
 def get_nota_by_id(db: Session, nota_id: int):
     return db.query(Notas).filter(Notas.id == nota_id).first()
 
@@ -46,9 +49,7 @@ def delete_nota(db: Session, nota_id: int):
     return False
 
 def calculate_promedio_alumno(db: Session, alumno_id: int):
-    notas = db.query(Notas).join(Evaluacion).filter(
-        Notas.alumno_id == alumno_id
-    ).all()
+    notas = get_notas_by_alumno(db, alumno_id)
     
     if not notas:
         return None
@@ -57,3 +58,38 @@ def calculate_promedio_alumno(db: Session, alumno_id: int):
     total_weighing = sum(nota.evaluacion.ponderacion for nota in notas)
     
     return total_weighted / total_weighing if total_weighing else 0
+
+def get_evaluaciones_by_categoria(db: Session, categoria_id: int):
+    return db.query(Evaluacion).filter(
+        Evaluacion.categoria_id == categoria_id
+    ).all()
+
+def extract_number_from_name(nombre):
+    last_digit = nombre.split()[-1]
+    if last_digit.isdigit():
+        return int(last_digit)
+    return 0
+
+def get_evaluacion_by_instancia(evaluaciones, instancia):
+    evaluaciones_sorted = sorted(evaluaciones, key=extract_number_from_name)
+    return evaluaciones_sorted[instancia - 1]
+
+def load_notas_from_json(db: Session, data: dict):
+    notas_data = data.get("notas", [])
+    
+    for nota_data in notas_data:
+        
+        alumno_id = nota_data.get("alumno_id")
+        categoria_id = nota_data.get("topico_id")
+        instancia = nota_data.get("instancia")  
+        nota_valor = nota_data.get("nota")
+        
+        evaluaciones = get_evaluaciones_by_categoria(db, categoria_id)
+        
+        evaluacion = get_evaluacion_by_instancia(evaluaciones, instancia)
+        try:
+            create_nota(db, alumno_id, evaluacion.id, float(nota_valor))
+        except Exception as e:
+            db.rollback()
+            print(f"Error al crear nota: {str(e)}")
+    

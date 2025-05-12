@@ -26,4 +26,4 @@ class TipoCurso(db.Model):
     )
 
     def __repr__(self):
-        return f"<Tipo de curso(id={self.id}, nombre='{self.nombre}')>"
+        return f"<Tipo de curso(id={self.id}, codigo='{self.codigo}')>"

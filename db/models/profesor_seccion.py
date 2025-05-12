@@ -13,4 +13,4 @@ class ProfesorSeccion(db.Model):
     seccion: Mapped["Seccion"] = relationship("Seccion")
 
     def __repr__(self):
-        return f"<ProfesorSeccion(id={self.id}, id_profesor={self.id_profesor}, id_seccion={self.id_seccion})>"
+        return f"<ProfesorSeccion(id={self.id}, id_profesor={self.id_profesor}, seccion_id={self.seccion_id})>"

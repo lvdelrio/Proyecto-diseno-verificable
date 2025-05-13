@@ -7,7 +7,7 @@ from ..controller.evaluacion_controller import create_evaluacion
 from ..controller.common_controller import get_categorias_by_seccion_id
 from ..utils.prorrotear import prorate_values
 from db.utils.prorrotear import recalculate_seccion_ponderations
-from ...utils.http_status import BAD_REQUEST, NOT_FOUND
+from utils.http_status import BAD_REQUEST, NOT_FOUND
 
 PERCENTAGE_TYPE = 1
 MAX_PERCENTAGE = 100

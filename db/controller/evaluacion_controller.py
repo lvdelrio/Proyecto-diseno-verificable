@@ -10,9 +10,9 @@ from db.models.alumno_seccion import AlumnoSeccion
 from ..controller.common_controller import get_all_alumno_seccion_by_categoria_id, get_evaluaciones_by_categoria_id
 from ..controller.notas_controller import create_nota
 from db.utils.prorrotear import recalculate_categoria_ponderations
-from ..controller.common_controller import get_seccion_by_id, check_curso_abierto
+from ..controller.common_controller import get_seccion_by_id
 
-from ...utils.http_status import BAD_REQUEST, NOT_FOUND
+from utils.http_status import BAD_REQUEST, NOT_FOUND
 
 PERCENTAGE_TYPE = 1
 MAX_PERCENTAGE = 100
@@ -65,7 +65,6 @@ def edit_evaluacion(db: Session, evaluacion_id, nombre=None, ponderacion=None, o
     if not evaluacion:
         abort(404, description="Evaluación no encontrada")
     
-    check_curso_abierto(db, tipo_objeto='categoria', objeto_id=categoria_id)
     if nombre is not None:
         evaluacion.nombre = nombre
     if ponderacion is not None:

@@ -40,6 +40,15 @@ def get_notas_by_alumno(db: Session, alumno_id: int):
 def get_notas_by_evaluacion(db: Session, evaluacion_id: int):
     return db.query(Notas).filter(Notas.evaluacion_id == evaluacion_id).all()
 
+def update_nota(db: Session, nota_id: int, nueva_nota: float):
+    nota = get_nota_by_id(db, nota_id)
+    if nota:
+        nota.nota = nueva_nota
+        db.commit()
+        return nota
+    return None
+
+
 def delete_nota(db: Session, nota_id: int):
     nota = get_nota_by_id(db, nota_id)
     if nota:
@@ -47,17 +56,6 @@ def delete_nota(db: Session, nota_id: int):
         db.commit()
         return True
     return False
-
-def calculate_promedio_alumno(db: Session, alumno_id: int):
-    notas = get_notas_by_alumno(db, alumno_id)
-    
-    if not notas:
-        return None
-        
-    total_weighted = sum(nota.nota * nota.evaluacion.ponderacion for nota in notas)
-    total_weighing = sum(nota.evaluacion.ponderacion for nota in notas)
-    
-    return total_weighted / total_weighing if total_weighing else 0
 
 def get_evaluaciones_by_categoria(db: Session, categoria_id: int):
     return db.query(Evaluacion).filter(
@@ -91,5 +89,4 @@ def load_notas_from_json(db: Session, data: dict):
             create_nota(db, alumno_id, evaluacion.id, float(nota_valor))
         except Exception as e:
             db.rollback()
-            print(f"Error al crear nota: {str(e)}")
     

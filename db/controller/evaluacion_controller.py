@@ -10,6 +10,7 @@ from db.models.alumno_seccion import AlumnoSeccion
 from ..controller.common_controller import get_all_alumno_seccion_by_categoria_id, get_evaluaciones_by_categoria_id
 from ..controller.notas_controller import create_nota
 from db.utils.prorrotear import recalculate_categoria_ponderations
+from ...utils.http_status import BAD_REQUEST, NOT_FOUND
 
 PERCENTAGE_TYPE = 1
 MAX_PERCENTAGE = 100
@@ -24,7 +25,7 @@ def create_evaluacion(db: Session, nombre: str, ponderacion: float, opcional: bo
     )
 
     if not validation_evaluacion(nueva_evaluacion, categoria_id):
-        abort(400, description="Error: La evaluación no es válida para la categoría.")
+        abort(BAD_REQUEST, description="Error: La evaluación no es válida para la categoría.")
         return
     db.add(nueva_evaluacion)
     db.commit()
@@ -60,7 +61,7 @@ def get_all_evaluaciones(db: Session):
 def edit_evaluacion(db: Session, evaluacion_id, nombre=None, ponderacion=None, opcional=None, categoria_id=None, tipo_ponderacion=None):
     evaluacion = get_evaluacion_by_id(db, evaluacion_id)
     if not evaluacion:
-        abort(404, description="Evaluación no encontrada")
+        abort(NOT_FOUND, description="Evaluación no encontrada")
 
     if nombre is not None:
         evaluacion.nombre = nombre
@@ -82,7 +83,7 @@ def edit_evaluacion(db: Session, evaluacion_id, nombre=None, ponderacion=None, o
         return evaluacion
     except Exception as e:
         db.rollback()
-        abort(400, description=f"Error al actualizar la evaluación: {str(e)}")
+        abort(BAD_REQUEST, description=f"Error al actualizar la evaluación: {str(e)}")
 
 def percentage_sum_from_categoria_by_id(db: Session, categoria_id: int):
     evaluaciones = get_evaluaciones_by_categoria_id(db, categoria_id)
@@ -115,4 +116,4 @@ def update_tipo_ponderacion_in_categoria(db: Session, categoria_id: int, nuevo_t
         db.commit()
     except Exception as e:
         db.rollback()
-        abort(400, description=f"Error al actualizar tipo de ponderación en evaluaciones: {str(e)}")
+        abort(BAD_REQUEST, description=f"Error al actualizar tipo de ponderación en evaluaciones: {str(e)}")

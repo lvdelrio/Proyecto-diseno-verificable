@@ -7,6 +7,7 @@ from ..controller.evaluacion_controller import create_evaluacion
 from ..controller.common_controller import get_categorias_by_seccion_id
 from ..utils.prorrotear import prorate_values
 from db.utils.prorrotear import recalculate_seccion_ponderations
+from ...utils.http_status import BAD_REQUEST, NOT_FOUND
 
 PERCENTAGE_TYPE = 1
 MAX_PERCENTAGE = 100
@@ -20,7 +21,7 @@ def create_categoria(tipo_categoria, seccion, ponderacion, tipo_ponderacion):
     )
     if not validation_categoria(nueva_categoria, seccion.id):
         db.session.rollback()
-        abort(400, description="Error: La categoría no es válida para la sección.")
+        abort(BAD_REQUEST, description="Error: La categoría no es válida para la sección.")
         return
     db.session.add(nueva_categoria)
     db.session.commit()
@@ -38,7 +39,7 @@ def get_all_categorias_by_seccion_id(seccion_id):
 def edit_categoria(categoria_id, tipo_categoria=None, seccion_id=None, ponderacion=None, tipo_ponderacion=None):
     categoria = get_categoria(categoria_id)
     if not categoria:
-        abort(404, description="Categoría no encontrada")
+        abort(NOT_FOUND, description="Categoría no encontrada")
 
     if tipo_categoria is not None:
         categoria.tipo_categoria = tipo_categoria
@@ -57,7 +58,7 @@ def edit_categoria(categoria_id, tipo_categoria=None, seccion_id=None, ponderaci
         return categoria
     except Exception as e:
         db.session.rollback()
-        abort(400, description=f"Error al actualizar la categoría: {str(e)}") 
+        abort(BAD_REQUEST, description=f"Error al actualizar la categoría: {str(e)}") 
 
 def percentage_sum_from_seccion_by_id(db: Session, seccion_id: int):
     categorias = get_categorias_by_seccion_id(db, seccion_id)
@@ -88,7 +89,7 @@ def update_tipo_ponderacion_in_seccion(seccion_id: int, nuevo_tipo: bool):
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        abort(400, description=f"Error al actualizar tipo de ponderación en la sección: {str(e)}")
+        abort(BAD_REQUEST, description=f"Error al actualizar tipo de ponderación en la sección: {str(e)}")
 
 def create_multiple_categorias_and_evaluaciones(db: Session, seccion: Seccion, evaluacion_data: dict):
     for categoria_json in evaluacion_data.get("combinacion_topicos", []):

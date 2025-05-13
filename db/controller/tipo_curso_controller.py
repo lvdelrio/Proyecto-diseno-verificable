@@ -18,9 +18,14 @@ def get_tipo_curso_by_id(db: Session, tipo_curso_id: int):
 def get_all_tipo_cursos(db: Session):
     return db.query(TipoCurso).all()
 
+def validate_requisito_tipo_curso(db, tipo_curso_base_id, tipo_curso_id):
+    return db.query(CursoRequisito).filter_by(
+        tipo_curso_id=tipo_curso_base_id,
+        curso_requisito_id=tipo_curso_id
+    ).first()
 
 def edit_tipo_curso_by_id(db: Session, tipo_curso_id: int, tipo_curso_code: str, description: str):
-    tipo_curso = db.query(TipoCurso).filter(TipoCurso.id == tipo_curso_id).first()
+    tipo_curso = get_tipo_curso_by_id(db, tipo_curso_id)
     if tipo_curso:
         tipo_curso.codigo = tipo_curso_code
         tipo_curso.descripcion = description
@@ -30,32 +35,18 @@ def edit_tipo_curso_by_id(db: Session, tipo_curso_id: int, tipo_curso_code: str,
     return None
 
 def delete_tipo_curso_by_id(db: Session, tipo_curso_id: int):
-    tipo_curso = db.query(TipoCurso).filter(TipoCurso.id == tipo_curso_id).first()
+    tipo_curso = get_tipo_curso_by_id(db, tipo_curso_id)
     if tipo_curso:
         db.delete(tipo_curso)
         db.commit()
         return True
     return False
-
-def add_requisito_tipo_curso(db: Session, tipo_curso_id: int):
-    tipo_curso = db.query(TipoCurso).filter(TipoCurso.id == tipo_curso_id).first()
-    if tipo_curso:
-        db.delete(tipo_curso)
-        db.commit()
-        return True
-    return False
-
 
 def enroll_tipo_curso_in_tipo_cursos(db: Session, tipo_curso_base_id: int, tipo_curso_id: int):
     if tipo_curso_base_id == tipo_curso_id:
         return False, "Un tipo de curso no puede ser requisito de sí mismo."
 
-    existing = db.query(CursoRequisito).filter_by(
-        tipo_curso_id=tipo_curso_base_id,
-        curso_requisito_id=tipo_curso_id
-    ).first()
-
-    if existing:
+    if validate_requisito_tipo_curso(db, tipo_curso_base_id, tipo_curso_id):
         return False, "Este requisito ya está asignado."
 
     create_requisito(

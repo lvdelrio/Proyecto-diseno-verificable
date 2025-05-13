@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from ..models.curso import Curso
-
+from flask import abort
 def create_curso(db: Session, tipo_curso_id: int, fecha_impartida: int, semestre_impartido: str, id: int = None):
     if id is not None:
         new_curso = Curso(id=id, 
@@ -27,7 +27,7 @@ def edit_curso_by_id(db: Session, curso_id: int, tipo_curso_id: int, fecha_impar
     curso = get_curso_by_id(db, curso_id)
     if curso:
         if curso.cerrado:
-            raise ValueError("El curso está cerrado y no se puede editar.")
+            abort(403, description="El curso está cerrado y ya no se puede modificar")
         
         curso.tipo_curso_id=tipo_curso_id
         curso.fecha_impartida=fecha_impartida

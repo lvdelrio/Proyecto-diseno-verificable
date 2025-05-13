@@ -55,7 +55,7 @@ def load_alumno_in_seccion():
         abort(400, description="No se recibió JSON válido.")
     
     create_alumno_seccion_from_json(config.session, data)
-    return jsonify({"message": "Cursos cargados correctamente"}), 201
+    return jsonify({"message": "Alumnos inscritos correctamente"}), 201
 
 @curso_route_blueprint.route('/curso/<int:curso_id>/toggle_estado', methods=['POST'])
 def toggle_curso_estado(curso_id):

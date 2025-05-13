@@ -58,6 +58,5 @@ def load_notas():
     data = request.json
     if not data:
         abort(400, description="No se recibió JSON válido.")
-    print(f"Data recibida: {data}")
     load_notas_from_json(config.session, data)
     return jsonify({"message": "Notas importadas exitosamente."}), 201

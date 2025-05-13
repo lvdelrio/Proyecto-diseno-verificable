@@ -18,7 +18,6 @@ PERCENTAGE_TYPE = 1
 MAX_PERCENTAGE = 100
 
 def create_evaluacion(db: Session, nombre: str, ponderacion: float, opcional: bool, categoria_id: int = None, tipo_ponderacion: bool = False):
-    check_curso_abierto(db, tipo_objeto='categoria', objeto_id=categoria_id)
     nueva_evaluacion = Evaluacion(
         nombre=nombre,
         ponderacion=ponderacion,
@@ -96,7 +95,6 @@ def percentage_sum_from_categoria_by_id(db: Session, categoria_id: int):
 
 def delete_evaluacion(db: Session, evaluacion_id: int):
     evaluacion = get_evaluacion_by_id(db, evaluacion_id)
-    check_curso_abierto(db, tipo_objeto='categoria', objeto_id=evaluacion.categoria_id)
     if evaluacion:
         db.delete(evaluacion)
         db.commit()

@@ -14,8 +14,9 @@ def recalculate_categoria_ponderations(db: Session, categoria_id: int):
     if not evaluaciones:
         return 
     total_ponderacion = sum(e.ponderacion for e in evaluaciones)
+    excess_ponderacion = abs(total_ponderacion - 100.0)
 
-    if abs(total_ponderacion - 100.0) < 0.01:
+    if excess_ponderacion < 0.01:
         return 
     nuevos_valores = prorate_values([e.ponderacion for e in evaluaciones])
     for evaluacion, nuevo_valor in zip(evaluaciones, nuevos_valores):
@@ -25,12 +26,12 @@ def recalculate_categoria_ponderations(db: Session, categoria_id: int):
 
 def recalculate_seccion_ponderations(db: Session, seccion_id: int):
     categorias = get_categorias_by_seccion_id(db, seccion_id)
-    print(categorias)
     if not categorias:
         return 
     total_ponderacion = sum(e.ponderacion for e in categorias)
+    excess_ponderacion = abs(total_ponderacion - 100.0)
 
-    if abs(total_ponderacion - 100.0) < 0.01:
+    if excess_ponderacion < 0.01:
         return 
     nuevos_valores = prorate_values([e.ponderacion for e in categorias])
     for categoria, nuevo_valor in zip(categorias, nuevos_valores):

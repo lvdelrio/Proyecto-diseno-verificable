@@ -36,7 +36,6 @@ def add_categoria():
     
     except Exception as e:
         db.session.rollback()
-        print(f'Error al crear categoría: {str(e)}', 'error')
         return redirect(url_for('Secciones.view_seccion', seccion_id=seccion_id, tab='evaluaciones'))
 
 @categoria_blueprint.route('/categorias/<int:categoria_id>/edit', methods=['GET'])
@@ -74,19 +73,16 @@ def edit_categoria_route(categoria_id):
     
     except Exception as e:
         db.session.rollback()
-        print(f'Error al actualizar categoría: {str(e)}', 'error')
         return redirect(url_for('Secciones.view_seccion', seccion_id=seccion_id, tab='evaluaciones'))
 
 @categoria_blueprint.route('/categorias/<int:categoria_id>/delete', methods=['POST'])
 def delete_categoria_route(categoria_id):
     try:
         seccion_id = request.form.get('seccion_id')
-        print(seccion_id)
         delete_categoria(categoria_id)
         print('Categoría eliminada exitosamente', 'success')
         return redirect(url_for('Secciones.view_seccion', seccion_id=seccion_id, tab='evaluaciones'))
     
     except Exception as e:
         db.session.rollback()
-        print(f'Error al eliminar categoría: {str(e)}', 'error')
         return redirect(url_for('Secciones.view_seccion', seccion_id=seccion_id, tab='evaluaciones'))

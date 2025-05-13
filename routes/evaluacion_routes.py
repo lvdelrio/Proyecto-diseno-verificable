@@ -21,15 +21,14 @@ def add_evaluacion():
         seccion_id = request.form.get('seccion_id')
         tipo_ponderacion = request.form.get('tipo_ponderacion')
         tipo_ponderacion = True if tipo_ponderacion == 'porcentaje' else False
-
-        if any(value is None or (isinstance(value, str) and value.strip() == '') for value in [categoria_id, nombre, ponderacion, seccion_id]) or tipo_ponderacion is None:
-            print('Faltan campos obligatorios', 'error')
+        #CHANGE HER THIS LINE IS TOO LONG BUT DECIDED TO CHANGE WHEN WE ADD ERROR RESOLUTION
+        if any(value is None or (isinstance(value, str) and value.strip() == '')
+            for value in [categoria_id, nombre, ponderacion, seccion_id]) or tipo_ponderacion is None:
             return redirect(url_for('Secciones.view_seccion', seccion_id=seccion_id, tab='evaluaciones'))
         
         try:
             ponderacion = float(ponderacion)
         except ValueError:
-            print('La ponderación debe ser un número válido', 'error')
             return redirect(url_for('Secciones.view_seccion', seccion_id=seccion_id, tab='evaluaciones'))
         
         nueva_evaluacion = create_evaluacion(
@@ -41,12 +40,10 @@ def add_evaluacion():
             tipo_ponderacion=tipo_ponderacion
         )
         
-        print('Evaluación creada exitosamente', 'success')
         return redirect(url_for('Secciones.view_seccion', seccion_id=seccion_id, tab='evaluaciones'))
     
     except Exception as e:
         db.session.rollback()
-        print(f'Error al crear evaluación: {str(e)}', 'error')
         return redirect(url_for('Secciones.view_seccion', seccion_id=seccion_id, tab='evaluaciones'))
 
 @evaluacion_blueprint.route('/evaluaciones/<int:evaluacion_id>/notas')
@@ -76,7 +73,6 @@ def delete_evaluacion_route(evaluacion_id):
         db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
     
-    
 @evaluacion_blueprint.route('/evaluaciones/<int:evaluacion_id>/edit', methods=['GET'])
 def edit_evaluacion_form(evaluacion_id):
     evaluacion = get_evaluacion_by_id(db.session, evaluacion_id)
@@ -96,8 +92,9 @@ def edit_evaluacion_route(evaluacion_id):
     categoria_id = request.form.get('categoria_id')
     tipo_ponderacion = request.form.get('tipo_ponderacion')
     tipo_ponderacion = True if tipo_ponderacion == 'porcentaje' else False
-
-    if any(value is None or (isinstance(value, str) and value.strip() == '') for value in [categoria_id, nombre, ponderacion, seccion_id]) or tipo_ponderacion is None:
+    #CHANGE HER THIS LINE IS TOO LONG BUT DECIDED TO CHANGE WHEN WE ADD ERROR RESOLUTION
+    if any(value is None or (isinstance(value, str) and value.strip() == '')
+        for value in [categoria_id, nombre, ponderacion, seccion_id]) or tipo_ponderacion is None:
         abort(400, description="Faltan campos obligatorios")
 
     try:

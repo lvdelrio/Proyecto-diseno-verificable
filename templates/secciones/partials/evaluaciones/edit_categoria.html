@@ -27,8 +27,6 @@
                     </div>
                 </div>
                 <div x-data="{ tipo: '{{ 'porcentaje' if categoria.tipo_ponderacion == 1 else 'peso' }}' }" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-
-                    <!-- Label changes depending on tipo_ponderacion -->
                     <div>
                         <label for="ponderacion" class="block text-sm font-medium text-gray-700 mb-1">
                             Ponderación <span x-show="tipo === 'porcentaje'"> (%)</span><span x-show="tipo === 'peso'"> <i class="fa-solid fa-weight-hanging"></i></span>
@@ -40,8 +38,6 @@
                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                required>
                     </div>
-                
-                    <!-- Tipo de Ponderación selector -->
                     <div>
                         <label for="tipo_ponderacion" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Ponderación</label>
                         <select id="tipo_ponderacion" name="tipo_ponderacion"

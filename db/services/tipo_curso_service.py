@@ -28,8 +28,8 @@ def register_tipo_curso_in_tipo_cursos(db: Session, tipo_curso_id: int, form_dat
     errors = []
 
     for tipo_id in tipo_cursos_ids:
-        exito, mensaje = enroll_tipo_curso_in_tipo_cursos(db, tipo_curso_id, int(tipo_id))
-        if exito:
-            enrolled_tipo_cursos.append(mensaje)
+        success, message = enroll_tipo_curso_in_tipo_cursos(db, tipo_curso_id, int(tipo_id))
+        if success:
+            enrolled_tipo_cursos.append(message)
         else:
-            errors.append(mensaje)
+            errors.append(message)

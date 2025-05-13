@@ -21,21 +21,18 @@ def get_profesor_and_available_cursos_with_secciones(db: Session, profesor_id: i
 
         if available_secciones:
             cursos_with_secciones.append((curso, available_secciones))
-    print(cursos_with_secciones)
     return profesor, cursos_with_secciones
 
 def register_profesor_in_seccion(db: Session, profesor_id: int, form_data: dict):
     profesor = get_profesor_by_id(db, profesor_id)
 
-    seccion_ids = form_data.getlist("seccion_ids")
-    print("Secciones seleccionadas:", seccion_ids)
-
+    seccion_ids = int(form_data.getlist("seccion_ids"))
     enrolled_sections = []
     errors = []
 
     for seccion_id in seccion_ids:
-        exito, mensaje = enroll_profesor_in_seccion(db, profesor_id, int(seccion_id))
-        if exito:
-            enrolled_sections.append(mensaje)
+        success, message = enroll_profesor_in_seccion(db, profesor_id, seccion_ids)
+        if success:
+            enrolled_sections.append(message)
         else:
-            errors.append(mensaje)
+            errors.append(message)

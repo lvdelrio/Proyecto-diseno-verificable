@@ -8,7 +8,8 @@ from ..controller.common_controller import get_categorias_by_seccion_id
 from ..utils.prorrotear import prorate_values
 from db.utils.prorrotear import recalculate_seccion_ponderations
 
-TIPO_PROCENTAJE = 1
+PERCENTAGE_TYPE = 1
+MAX_PERCENTAGE = 100
 
 def create_categoria(tipo_categoria, seccion, ponderacion, tipo_ponderacion):
     nueva_categoria = Categoria(
@@ -23,8 +24,8 @@ def create_categoria(tipo_categoria, seccion, ponderacion, tipo_ponderacion):
         return
     db.session.add(nueva_categoria)
     db.session.commit()
-    if(suma_porcentajes_from_seccion_by_id(db.session, nueva_categoria.seccion_id) > 100 and
-        nueva_categoria.tipo_ponderacion == TIPO_PROCENTAJE):
+    if(percentage_sum_from_seccion_by_id(db.session, nueva_categoria.seccion_id)
+        > MAX_PERCENTAGE and nueva_categoria.tipo_ponderacion == PERCENTAGE_TYPE):
         recalculate_seccion_ponderations(db.session, nueva_categoria.seccion_id)
     return nueva_categoria
 
@@ -47,22 +48,21 @@ def edit_categoria(categoria_id, tipo_categoria=None, seccion_id=None, ponderaci
         categoria.ponderacion = ponderacion
     if tipo_ponderacion is not None and tipo_ponderacion != categoria.tipo_ponderacion:
         categoria.tipo_ponderacion = tipo_ponderacion
-        actualizar_tipo_ponderacion_en_seccion(categoria.seccion_id, tipo_ponderacion)
+        update_tipo_ponderacion_in_seccion(categoria.seccion_id, tipo_ponderacion)
     try:
         db.session.commit()
-        if(suma_porcentajes_from_seccion_by_id(db.session, categoria.seccion_id) > 100 and
-            categoria.tipo_ponderacion == TIPO_PROCENTAJE):
-            print("ejecuto")
+        if(percentage_sum_from_seccion_by_id(db.session, categoria.seccion_id)
+            > MAX_PERCENTAGE and categoria.tipo_ponderacion == PERCENTAGE_TYPE):
             recalculate_seccion_ponderations(db.session, categoria.seccion_id)
         return categoria
     except Exception as e:
         db.session.rollback()
         abort(400, description=f"Error al actualizar la categoría: {str(e)}") 
 
-def suma_porcentajes_from_seccion_by_id(db: Session, seccion_id: int):
+def percentage_sum_from_seccion_by_id(db: Session, seccion_id: int):
     categorias = get_categorias_by_seccion_id(db, seccion_id)
-    suma_porcentajes = sum(categoria.ponderacion for categoria in categorias)
-    return suma_porcentajes
+    percentage_sum = sum(categoria.ponderacion for categoria in categorias)
+    return percentage_sum
 
 def delete_categoria(categoria_id):
     categoria = get_categoria(categoria_id)
@@ -74,12 +74,12 @@ def get_last_categoria_by_seccion_id( seccion_id ):
     return Categoria.query.filter_by(seccion_id=seccion_id).order_by(Categoria.id.desc()).first()
 
 def validation_categoria(categoria, seccion_id):
-    last_category = get_last_categoria_by_seccion_id(seccion_id)
-    if last_category is None:
+    last_categoria = get_last_categoria_by_seccion_id(seccion_id)
+    if last_categoria is None:
         return True
-    return last_category.tipo_ponderacion == categoria.tipo_ponderacion
+    return last_categoria.tipo_ponderacion == categoria.tipo_ponderacion
 
-def actualizar_tipo_ponderacion_en_seccion(seccion_id: int, nuevo_tipo: bool):
+def update_tipo_ponderacion_in_seccion(seccion_id: int, nuevo_tipo: bool):
     categorias = get_all_categorias_by_seccion_id(seccion_id)
     for categoria in categorias:
         categoria.tipo_ponderacion = nuevo_tipo

@@ -2,8 +2,11 @@ from sqlalchemy.orm import Session
 from db.models.notas import Notas
 from db.models.alumno import Alumno
 from db.models.evaluacion import Evaluacion
+from ..controller.common_controller import check_curso_abierto
+
 
 def create_nota(db: Session, alumno_id: int, evaluacion_id: int, nota: float):
+    check_curso_abierto(db, tipo_objeto='evaluacion', objeto_id=evaluacion_id)
     nota_existente = db.query(Notas).filter(
         Notas.alumno_id == alumno_id,
         Notas.evaluacion_id == evaluacion_id
@@ -51,6 +54,7 @@ def update_nota(db: Session, nota_id: int, nueva_nota: float):
 
 def delete_nota(db: Session, nota_id: int):
     nota = get_nota_by_id(db, nota_id)
+    check_curso_abierto(db, tipo_objeto='evaluacion', objeto_id=nota.evaluacion_id)
     if nota:
         db.delete(nota)
         db.commit()

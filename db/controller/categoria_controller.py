@@ -6,6 +6,7 @@ from ..models.seccion import Seccion
 from ..controller.evaluacion_controller import create_evaluacion
 from ..controller.common_controller import get_categorias_by_seccion_id
 from ..utils.prorrotear import prorate_values
+from ..controller.common_controller import get_seccion_by_id, check_curso_abierto
 from db.utils.prorrotear import recalculate_seccion_ponderations
 from ...utils.http_status import BAD_REQUEST, NOT_FOUND
 
@@ -13,6 +14,7 @@ PERCENTAGE_TYPE = 1
 MAX_PERCENTAGE = 100
 
 def create_categoria(tipo_categoria, seccion, ponderacion, tipo_ponderacion):
+    check_curso_abierto(db.session, tipo_objeto='seccion', objeto_id=seccion.id)
     nueva_categoria = Categoria(
         tipo_categoria=tipo_categoria,
         seccion_id=seccion.id,
@@ -41,6 +43,8 @@ def edit_categoria(categoria_id, tipo_categoria=None, seccion_id=None, ponderaci
     if not categoria:
         abort(NOT_FOUND, description="Categoría no encontrada")
 
+    check_curso_abierto(db, tipo_objeto='seccion', objeto_id=seccion_id)
+
     if tipo_categoria is not None:
         categoria.tipo_categoria = tipo_categoria
     if seccion_id is not None:
@@ -66,6 +70,7 @@ def percentage_sum_from_seccion_by_id(db: Session, seccion_id: int):
     return percentage_sum
 
 def delete_categoria(categoria_id):
+    check_curso_abierto(db, tipo_objeto='categoria', objeto_id=categoria_id)
     categoria = get_categoria(categoria_id)
     db.session.delete(categoria)
     db.session.commit()

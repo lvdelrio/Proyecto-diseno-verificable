@@ -10,12 +10,15 @@ from db.models.alumno_seccion import AlumnoSeccion
 from ..controller.common_controller import get_all_alumno_seccion_by_categoria_id, get_evaluaciones_by_categoria_id
 from ..controller.notas_controller import create_nota
 from db.utils.prorrotear import recalculate_categoria_ponderations
+from ..controller.common_controller import get_seccion_by_id, check_curso_abierto
+
 from ...utils.http_status import BAD_REQUEST, NOT_FOUND
 
 PERCENTAGE_TYPE = 1
 MAX_PERCENTAGE = 100
 
 def create_evaluacion(db: Session, nombre: str, ponderacion: float, opcional: bool, categoria_id: int = None, tipo_ponderacion: bool = False):
+    check_curso_abierto(db, tipo_objeto='categoria', objeto_id=categoria_id)
     nueva_evaluacion = Evaluacion(
         nombre=nombre,
         ponderacion=ponderacion,
@@ -61,8 +64,9 @@ def get_all_evaluaciones(db: Session):
 def edit_evaluacion(db: Session, evaluacion_id, nombre=None, ponderacion=None, opcional=None, categoria_id=None, tipo_ponderacion=None):
     evaluacion = get_evaluacion_by_id(db, evaluacion_id)
     if not evaluacion:
-        abort(NOT_FOUND, description="Evaluación no encontrada")
-
+        abort(404, description="Evaluación no encontrada")
+    
+    check_curso_abierto(db, tipo_objeto='categoria', objeto_id=categoria_id)
     if nombre is not None:
         evaluacion.nombre = nombre
     if ponderacion is not None:
@@ -92,6 +96,7 @@ def percentage_sum_from_categoria_by_id(db: Session, categoria_id: int):
 
 def delete_evaluacion(db: Session, evaluacion_id: int):
     evaluacion = get_evaluacion_by_id(db, evaluacion_id)
+    check_curso_abierto(db, tipo_objeto='categoria', objeto_id=evaluacion.categoria_id)
     if evaluacion:
         db.delete(evaluacion)
         db.commit()

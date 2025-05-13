@@ -1,7 +1,7 @@
-from flask import Blueprint, request, render_template, redirect, url_for, abort, jsonify
+from flask import Blueprint, request, render_template, redirect, url_for, abort, jsonify, flash
 from db.config import db as config
 from db.controller.tipo_curso_controller import get_all_tipo_cursos
-from db.controller.curso_controller import get_all_cursos, create_curso, get_curso_by_id, edit_curso_by_id, delete_curso_by_id, create_cursos_from_json
+from db.controller.curso_controller import get_all_cursos, create_curso, get_curso_by_id, edit_curso_by_id, delete_curso_by_id, create_cursos_from_json, cerrar_curso, abrir_curso
 from db.controller.alumno_controller import create_alumno_seccion_from_json
 curso_route_blueprint = Blueprint("Cursos", __name__)
 
@@ -56,3 +56,16 @@ def load_alumno_in_seccion():
     
     create_alumno_seccion_from_json(config.session, data)
     return jsonify({"message": "Cursos cargados correctamente"}), 201
+
+@curso_route_blueprint.route('/curso/<int:curso_id>/toggle_estado', methods=['POST'])
+def toggle_curso_estado(curso_id):
+    curso = get_curso_by_id(config.session, curso_id)
+    if not curso:
+        abort(404, description="Curso no encontrado")
+    
+    if curso.cerrado:
+        abrir_curso(config.session, curso_id)
+    else:
+        cerrar_curso(config.session, curso_id)
+    
+    return redirect(url_for("Cursos.view_curso", curso_id=curso_id))

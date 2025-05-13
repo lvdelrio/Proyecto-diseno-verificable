@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from ..models.profesor import Profesor
 from ..models.seccion import Seccion
-from ..controller.common_controller import get_seccion_by_id, get_profesor_by_id
+from ..controller.common_controller import get_seccion_by_id, get_profesor_by_id, check_curso_abierto
 
 def create_profesor(db: Session, nombre: str, email: str, id: int = None):
     if id is not None:
@@ -43,6 +43,7 @@ def get_paginated_profesores(session, page=1, per_page=10):
     )
 
 def enroll_profesor_in_seccion(db: Session, profesor_id: int, seccion_id: int):
+    check_curso_abierto(db, tipo_objeto='seccion', objeto_id=seccion_id)
     profesor = get_profesor_by_id(db, profesor_id)
     if not profesor:
         return False, "Profesor no encontrado."
@@ -57,7 +58,6 @@ def enroll_profesor_in_seccion(db: Session, profesor_id: int, seccion_id: int):
     profesor.secciones.append(seccion)
     db.commit()
     db.refresh(profesor)
-
     return True, "Profesor inscrito exitosamente."
 
 def unregister_profesor_in_seccion(db: Session, seccion_id: int, profesor_id: int):

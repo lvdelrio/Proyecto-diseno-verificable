@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from ..models.alumno import Alumno
 from ..models.seccion import Seccion
 from ..models.alumno_seccion import AlumnoSeccion
-from ..controller.common_controller import get_seccion_by_id
+from ..controller.common_controller import get_seccion_by_id, check_curso_abierto
 
 def create_alumno(db: Session, name: str, email: str, fecha_ingreso: str = None, id: int = None):
 
@@ -54,7 +54,9 @@ def get_paginated_alumnos(session, page=1, per_page=10):
 def enroll_alumno_in_seccion(db: Session, alumno_id: int, seccion_id: int):
     alumno = get_alumno_by_id(db, alumno_id)
     seccion = get_seccion_by_id(db, seccion_id)
-
+    
+    check_curso_abierto(db, tipo_objeto='seccion', objeto_id=seccion_id)
+        
     if seccion in alumno.secciones:
         return False, "El alumno ya está inscrito en esta sección."
 

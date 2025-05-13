@@ -9,9 +9,10 @@ from ..controller.profesor_controller import enroll_profesor_in_seccion
 from ..controller.categoria_controller import create_multiple_categorias_and_evaluaciones
 from ..controller.evaluacion_controller import create_evaluacion
 from ..controller.curso_controller import get_curso_by_id
-from ..controller.common_controller import get_seccion_by_id
+from ..controller.common_controller import get_seccion_by_id, check_curso_abierto
 
 def create_seccion(db: Session, curso_id: int, nombre: str, id: int = None):
+    check_curso_abierto(db, curso_id=curso_id)
     curso = get_curso_by_id(db, curso_id)
     if not curso_id:
         return None
@@ -38,6 +39,7 @@ def get_all_secciones(db: Session):
 
 def edit_seccion_by_id(db: Session, seccion_id: int, nombre: str):
     seccion = get_seccion_by_id(db, seccion_id)
+    check_curso_abierto(db, curso_id=seccion.curso_id)
     if seccion:
         seccion.nombre = nombre
         db.commit()
@@ -47,6 +49,7 @@ def edit_seccion_by_id(db: Session, seccion_id: int, nombre: str):
 
 def delete_seccion_by_id(db: Session, seccion_id: int):
     seccion = get_seccion_by_id(db, seccion_id)
+    check_curso_abierto(db, curso_id=seccion.curso_id)
     if seccion:
         db.delete(seccion)
         db.commit()

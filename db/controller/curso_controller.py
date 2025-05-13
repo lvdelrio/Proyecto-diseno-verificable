@@ -26,6 +26,9 @@ def get_all_cursos(db: Session):
 def edit_curso_by_id(db: Session, curso_id: int, tipo_curso_id: int, fecha_impartida: int, semestre_impartido: str):
     curso = get_curso_by_id(db, curso_id)
     if curso:
+        if curso.cerrado:
+            raise ValueError("El curso está cerrado y no se puede editar.")
+        
         curso.tipo_curso_id=tipo_curso_id
         curso.fecha_impartida=fecha_impartida
         curso.semestre_impartido = semestre_impartido
@@ -41,6 +44,24 @@ def delete_curso_by_id(db: Session, curso_id: int):
         db.commit()
         return True
     return False
+
+def cerrar_curso(db: Session, curso_id: int):
+    curso = get_curso_by_id(db, curso_id)
+    if curso:
+        curso.cerrado = True
+        db.commit()
+        db.refresh(curso)
+        return curso
+    return None
+
+def abrir_curso(db: Session, curso_id: int):
+    curso = get_curso_by_id(db, curso_id)
+    if curso:
+        curso.cerrado = False
+        db.commit()
+        db.refresh(curso)
+        return curso
+    return None
 
 def create_cursos_from_json(db: Session, data: dict):
     if not data or "instancias" not in data:

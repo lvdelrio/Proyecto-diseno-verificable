@@ -21,17 +21,18 @@ def view_tipo_curso(tipo_curso_id):
 
 @tipo_curso_route_blueprint.route('/agregar_tipo_curso', methods=['POST'])
 def add_tipo_curso():
-    name = request.form.get("nombre")
+    tipo_curso_code = request.form.get("codigo")
     description = request.form.get("descripcion", "")
-    tipo_curso = create_tipo_curso(config.session, name, description)
+    credits = request.form.get("credits", "")
+    tipo_curso = create_tipo_curso(config.session, tipo_curso_code, description, credits)
 
     return redirect(url_for("Tipo_Cursos.view_tipo_curso", tipo_curso_id=tipo_curso.id))
 
 @tipo_curso_route_blueprint.route('/editar_tipo_curso/<int:tipo_curso_id>', methods=['POST'])
 def edit_tipo_curso(tipo_curso_id):
-    name = request.form["nombre"]
+    tipo_curso_code = request.form["codigo"]
     description = request.form["descripcion"]
-    tipo_curso = edit_tipo_curso_by_id(config.session, tipo_curso_id, name, description)
+    tipo_curso = edit_tipo_curso_by_id(config.session, tipo_curso_id, tipo_curso_code, description)
     
     return redirect(url_for("Tipo_Cursos.get_tipo_cursos"))
 

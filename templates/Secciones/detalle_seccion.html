@@ -1,85 +1,95 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ seccion.nombre }} | SGA</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.x/dist/cdn.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         [x-cloak] { display: none !important; }
+        .slide-panel { transition: transform 0.3s ease-in-out; transform: translateX(100%); }
+        .slide-panel.active { transform: translateX(0); }
     </style>
-    <title>{{ seccion.nombre }}</title>
 </head>
-<body class="bg-gray-100 p-10">
-    <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
-
-        <a href="{{ url_for('Cursos.view_curso', curso_id=seccion.curso.id) }}" class="inline-block mb-4 text-blue-500 hover:underline">
-            Volver a lista
-        </a>
-
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-blue-600">{{ seccion.nombre }}</h1>
-
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('Cursos.view_curso', curso_id=seccion.curso.id) }}" class="text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </a>
+                <h1 class="text-2xl font-bold text-gray-800">
+                    <i class="fas fa-layer-group mr-2 text-blue-600"></i>
+                    {{ seccion.nombre }}
+                </h1>
+            </div>
             <form method="POST" action="{{ url_for('Secciones.delete_seccion', seccion_id=seccion.id) }}">
-                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                    Eliminar Seccion
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                        onclick="return confirm('¿Estás seguro de eliminar esta sección?')">
+                    <i class="fas fa-trash mr-2"></i> Eliminar Sección
                 </button>
             </form>
         </div>
+    </header>
 
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div x-data="{ tab: new URLSearchParams(window.location.search).get('tab') || 'info' }" x-cloak>
-            <div class="flex border-b mb-4">
-                <button @click="tab='info'" class="px-4 py-2" :class="tab === 'info' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Información</button>
-                <button @click="tab='estudiantes'" class="px-4 py-2" :class="tab === 'estudiantes' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Estudiantes</button>
-                <button @click="tab='profesores'" class="px-4 py-2" :class="tab === 'profesores' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Profesores</button>
-                <button @click="tab='tests'" class="px-4 py-2" :class="tab === 'tests' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600'">Evaluaciones</button>
-            </div>
+            <div x-data="{ 
+                tab: new URLSearchParams(window.location.search).get('tab') || 'info',
+                showEvaluacionPanel: false,
+                showSeccionPanel: false,
+                evalTab: 'categorias',  
+                showCategoriaPanel: false,
+                showEvaluacionPanel: false
+            }" x-cloak>
+            
+                <!-- Tab Navigation -->
+                <div class="border-b border-gray-200 mb-6">
+                    <nav class="-mb-px flex space-x-8">
+                        <button @click="tab='info'"
+                                :class="tab === 'info' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                            <i class="fas fa-info-circle mr-2"></i> Información
+                        </button>
+                        <button @click="tab='estudiantes'"
+                                :class="tab === 'estudiantes' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                            <i class="fas fa-users mr-2"></i> Estudiantes
+                        </button>
+                        <button @click="tab='profesores'"
+                                :class="tab === 'profesores' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                            <i class="fas fa-chalkboard-teacher mr-2"></i> Profesores
+                        </button>
+                        <button @click="tab='evaluaciones'"
+                                :class="tab === 'evaluaciones' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                            <i class="fas fa-clipboard-check mr-2"></i> Evaluaciones
+                        </button>
+                    </nav>
+                </div>
 
-            <div x-show="tab === 'info'">
-                <form method="POST" action="{{ url_for('Secciones.edit_seccion', seccion_id=seccion.id) }}">
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-medium mb-1">Nombre de la Seccion:</label>
-                        <input type="text" name="nombre" value="{{ seccion.nombre }}" class="border p-2 rounded w-full" required>
-                    </div>
-                    <button type="submit" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                        Guardar Cambios
-                    </button>
-                </form>
-            </div>
-
-            <div x-show="tab === 'estudiantes'">
-                <h2 class="text-xl font-bold text-gray-800 mb-3">Estudiantes</h2>
-                <ul class="space-y-2">
-                    {% for estudiante in seccion.alumnos %}
-
-                        <li class="bg-gray-200 p-3 rounded">{{ estudiante.nombre }}</li>
-                    {% else %}
-                        <p class="text-gray-500">No hay estudiantes aún.</p>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div x-show="tab === 'profesores'">
-                <h2 class="text-xl font-bold text-gray-800 mb-3">Profesores</h2>
-                <ul class="space-y-2">
-                    {% for profesor in seccion.profesores %}
-                        <li class="bg-gray-200 p-3 rounded">{{ profesor.nombre }}</li>
-                    {% else %}
-                        <p class="text-gray-500">No hay profesores aún.</p>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div x-show="tab === 'tests'">
-                <h2 class="text-xl font-bold text-gray-800 mb-3">Evaluaciones</h2>
-                <ul class="space-y-2">
-                    {% for test in seccion.evaluaciones %}
-                        <li class="bg-gray-200 p-3 rounded">{{ test.titulo }}</li>
-                    {% else %}
-                        <p class="text-gray-500">No hay evaluaciones aún.</p>
-                    {% endfor %}
-                </ul>
+                <!-- Tab Content Partials -->
+                <div x-show="tab === 'info'" class="bg-white shadow rounded-lg overflow-hidden p-6">
+                    {% include 'secciones/partials/info.html' %}
+                </div>
+                <div x-show="tab === 'estudiantes'" class="bg-white shadow rounded-lg overflow-hidden p-6">
+                    {% include 'secciones/partials/estudiantes.html' %}
+                </div>
+                <div x-show="tab === 'profesores'" class="bg-white shadow rounded-lg overflow-hidden p-6">
+                    {% include 'secciones/partials/profesores.html' %}
+                </div>
+                <div x-show="tab === 'evaluaciones'" class="bg-white shadow rounded-lg overflow-hidden p-6">
+                    {% include 'secciones/partials/evaluaciones/base.html' %}
+                </div>
             </div>
         </div>
+    </main>
 
-    </div>
+    <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+    <script src="https://unpkg.com/alpinejs@3.x/dist/cdn.min.js" defer></script>
 </body>
 </html>

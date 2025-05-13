@@ -13,4 +13,4 @@ class AlumnoSeccion(db.Model):
     seccion: Mapped["Seccion"] = relationship("Seccion", overlaps="alumnos,secciones")
 
     def __repr__(self):
-        return f"<AlumnoSeccion(id={self.id}, id_alumno={self.id_alumno}, id_seccion={self.id_seccion})>"
+        return f"<AlumnoSeccion(id={self.id}, id_alumno={self.id_alumno}, seccion_id={self.seccion_id})>"

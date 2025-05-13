@@ -2,11 +2,11 @@ from sqlalchemy.orm import Session
 from ..models.tipo_curso import TipoCurso
 from ..models.requisitos import CursoRequisito
 
-def create_tipo_curso(db: Session, name: str, description: str, code: str, credits: int, id: int = None):
+def create_tipo_curso(db: Session, tipo_curso_code: str, description: str, credits: int, id: int = None):
     if id is not None:
-        new_tipo_curso = TipoCurso(id=id, nombre=name, descripcion=description, codigo=code, creditos=credits)
+        new_tipo_curso = TipoCurso(id=id, codigo=tipo_curso_code, descripcion=description, creditos=credits)
     else:
-        new_tipo_curso= TipoCurso(nombre=name, descripcion=description, codigo=codigo, creditos=creditos)
+        new_tipo_curso= TipoCurso(codigo=tipo_curso_code, descripcion=description, creditos=credits)
     db.add(new_tipo_curso)
     db.commit()
     db.refresh(new_tipo_curso)
@@ -19,10 +19,10 @@ def get_all_tipo_cursos(db: Session):
     return db.query(TipoCurso).all()
 
 
-def edit_tipo_curso_by_id(db: Session, tipo_curso_id: int, name: str, description: str):
+def edit_tipo_curso_by_id(db: Session, tipo_curso_id: int, tipo_curso_code: str, description: str):
     tipo_curso = db.query(TipoCurso).filter(TipoCurso.id == tipo_curso_id).first()
     if tipo_curso:
-        tipo_curso.nombre = name
+        tipo_curso.codigo = tipo_curso_code
         tipo_curso.descripcion = description
         db.commit()
         db.refresh(tipo_curso)
@@ -59,6 +59,7 @@ def enroll_tipo_curso_in_tipo_cursos(db: Session, tipo_curso_base_id: int, tipo_
         return False, "Este requisito ya está asignado."
 
     create_requisito(
+        db,
         tipo_curso_id=tipo_curso_base_id,
         curso_requisito_id=tipo_curso_id
     )
@@ -72,8 +73,7 @@ def create_tipo_cursos_from_json(db: Session, data: dict):
         tipo_curso = create_tipo_curso(
             db=db,
             id=curso_data["id"],
-            name=curso_data.get("nombre"),
-            code=curso_data.get("codigo"),
+            tipo_curso_code=curso_data.get("codigo"),
             description=curso_data.get("descripcion"),
             credits=curso_data.get("creditos")
         )
@@ -82,8 +82,9 @@ def create_tipo_cursos_from_json(db: Session, data: dict):
     for curso_data in cursos_json:
         for req_codigo in curso_data["requisitos"]:
             enroll_tipo_curso_in_tipo_cursos(
-                tipo_curso_id=curso_data["id"],
-                curso_requisito_id=tipos_curso_map[req_codigo].id
+                db=db,
+                tipo_curso_base_id=curso_data["id"],
+                tipo_curso_id=tipos_curso_map[req_codigo].id
             )
 
 def create_requisito(db: Session, tipo_curso_id: int, curso_requisito_id: int):

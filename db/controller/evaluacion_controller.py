@@ -7,9 +7,12 @@ from db.models.notas import Notas
 from db.models.alumno import Alumno
 from db.models.categoria import Categoria
 from db.models.alumno_seccion import AlumnoSeccion
-from ..controller.common_controller import get_all_alumno_seccion_by_categoria_id, get_evaluaciones_by_categoria
+from ..controller.common_controller import get_all_alumno_seccion_by_categoria_id, get_evaluaciones_by_categoria_id
 from ..controller.notas_controller import create_nota
 from db.utils.prorrotear import recalculate_categoria_ponderations
+
+PERCENTAGE_TYPE = 1
+MAX_PERCENTAGE = 100
 
 def create_evaluacion(db: Session, nombre: str, ponderacion: float, opcional: bool, categoria_id: int = None, tipo_ponderacion: bool = False):
     nueva_evaluacion = Evaluacion(
@@ -26,6 +29,9 @@ def create_evaluacion(db: Session, nombre: str, ponderacion: float, opcional: bo
     db.add(nueva_evaluacion)
     db.commit()
     db.refresh(nueva_evaluacion)
+    if(percentage_sum_from_categoria_by_id(db, nueva_evaluacion.categoria_id) > MAX_PERCENTAGE and
+           nueva_evaluacion.tipo_ponderacion == PERCENTAGE_TYPE):
+            recalculate_categoria_ponderations(db, nueva_evaluacion.categoria_id)
     return nueva_evaluacion
 
 def create_evaluacion_con_notas(db: Session, nombre: str, ponderacion: float, opcional: bool, categoria_id: int = None, tipo_ponderacion: bool = False):
@@ -51,13 +57,7 @@ def get_evaluacion_by_id(db: Session, evaluacion_id: int):
 def get_all_evaluaciones(db: Session):
     return db.query(Evaluacion).all()
 
-def get_evaluaciones_by_seccion(db: Session, categoria_id: int):
-    return db.query(Evaluacion).filter(Evaluacion.categoria_id == categoria_id).all()
-
-def get_evaluaciones_by_categoria(db: Session, categoria_id: int):
-    return db.query(Evaluacion).filter(Evaluacion.categoria_id == categoria_id).all()
-
-def edit_evaluacion(evaluacion_id, nombre=None, ponderacion=None, opcional=None, categoria_id=None, tipo_ponderacion=None):
+def edit_evaluacion(db: Session, evaluacion_id, nombre=None, ponderacion=None, opcional=None, categoria_id=None, tipo_ponderacion=None):
     evaluacion = get_evaluacion_by_id(db, evaluacion_id)
     if not evaluacion:
         abort(404, description="Evaluación no encontrada")
@@ -72,15 +72,22 @@ def edit_evaluacion(evaluacion_id, nombre=None, ponderacion=None, opcional=None,
         evaluacion.categoria_id = categoria_id
     if tipo_ponderacion is not None and tipo_ponderacion != evaluacion.tipo_ponderacion:
         evaluacion.tipo_ponderacion = tipo_ponderacion
-        actualizar_tipo_ponderacion_en_categoria(evaluacion.categoria_id, tipo_ponderacion)
+        update_tipo_ponderacion_in_categoria(db, evaluacion.categoria_id, tipo_ponderacion)
 
     try:
-        db.session.commit()
-        recalculate_categoria_ponderations(db, evaluacion.categoria_id)
+        db.commit()
+        if(percentage_sum_from_categoria_by_id(db, evaluacion.categoria_id) > MAX_PERCENTAGE and
+           evaluacion.tipo_ponderacion == PERCENTAGE_TYPE):
+            recalculate_categoria_ponderations(db, evaluacion.categoria_id)
         return evaluacion
     except Exception as e:
-        db.session.rollback()
+        db.rollback()
         abort(400, description=f"Error al actualizar la evaluación: {str(e)}")
+
+def percentage_sum_from_categoria_by_id(db: Session, categoria_id: int):
+    evaluaciones = get_evaluaciones_by_categoria_id(db, categoria_id)
+    percentage_sum = sum(evaluacion.ponderacion for evaluacion in evaluaciones)
+    return percentage_sum
 
 def delete_evaluacion(db: Session, evaluacion_id: int):
     evaluacion = get_evaluacion_by_id(db, evaluacion_id)
@@ -90,22 +97,22 @@ def delete_evaluacion(db: Session, evaluacion_id: int):
         return True
     return False
 
-def get_last_evaluation_by_category(category_id):
-    last_evaluation = Evaluacion.query.filter_by(categoria_id=category_id).order_by(Evaluacion.id.desc()).first()
-    return last_evaluation
+def get_last_evaluacion_by_category(category_id):
+    last_evaluacion = Evaluacion.query.filter_by(categoria_id=category_id).order_by(Evaluacion.id.desc()).first()
+    return last_evaluacion
 
 def validation_evaluacion(nueva_evaluacion, categoria_id):
-    last_evaluation = get_last_evaluation_by_category(categoria_id)
-    if last_evaluation is None:
+    last_evaluacion = get_last_evaluacion_by_category(categoria_id)
+    if last_evaluacion is None:
         return True
-    return last_evaluation.tipo_ponderacion == nueva_evaluacion.tipo_ponderacion
+    return last_evaluacion.tipo_ponderacion == nueva_evaluacion.tipo_ponderacion
 
-def actualizar_tipo_ponderacion_en_categoria(categoria_id: int, nuevo_tipo: bool):
-    evaluaciones = get_evaluaciones_by_categoria(db, categoria_id)
+def update_tipo_ponderacion_in_categoria(db: Session, categoria_id: int, nuevo_tipo: bool):
+    evaluaciones = get_evaluaciones_by_categoria_id(db, categoria_id)
     for evaluacion in evaluaciones:
         evaluacion.tipo_ponderacion = nuevo_tipo
     try:
-        db.session.commit()
+        db.commit()
     except Exception as e:
-        db.session.rollback()
+        db.rollback()
         abort(400, description=f"Error al actualizar tipo de ponderación en evaluaciones: {str(e)}")

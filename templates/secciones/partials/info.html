@@ -1,0 +1,40 @@
+<div x-show="tab === 'info'">
+    <form method="POST" action="{{ url_for('Secciones.edit_seccion', seccion_id=seccion.id) }}">
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Curso</label>
+            <div class="mt-1 block w-full bg-gray-100 border border-gray-300 rounded-md py-2 px-3 text-gray-800">
+                {{ seccion.curso.tipo_curso.codigo }}
+            </div>
+        </div>
+        
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+            <div class="mt-1 block w-full bg-gray-100 border border-gray-300 rounded-md py-2 px-3 text-gray-700">
+                {{ seccion.curso.tipo_curso.descripcion }}
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Año de ejecución</label>
+            <div class="mt-1 block w-full bg-gray-100 border border-gray-300 rounded-md py-2 px-3 text-gray-700">
+                {{ seccion.curso.fecha_impartida }}
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Semestre de ejecución</label>
+            <div class="mt-1 block w-full bg-gray-100 border border-gray-300 rounded-md py-2 px-3 text-gray-700">
+                {{ seccion.curso.semestre_impartido }}
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre de la sección</label>
+            <input type="text" name="nombre" value="{{ seccion.nombre }}" class="border p-2 rounded w-full" required>
+        </div>
+
+        <button type="submit" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+            Guardar Cambios
+        </button>
+    </form>
+</div>

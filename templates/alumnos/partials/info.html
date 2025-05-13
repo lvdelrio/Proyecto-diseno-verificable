@@ -1,0 +1,24 @@
+<div x-show="tab === 'info'" class="bg-white shadow rounded-lg p-6">
+    <form method="POST" action="{{ url_for('Alumnos.edit_alumno', alumno_id=alumno.id) }}">
+        <div class="mb-4">
+            <label class="block text-gray-700 mb-1">Nombre:</label>
+            <input type="text" name="nombre" value="{{ alumno.nombre }}" class="border p-2 rounded w-full" required>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 mb-1">Email:</label>
+            <input type="email" name="email" value="{{ alumno.email }}" class="border p-2 rounded w-full" required>
+        </div>
+
+        <div class="mb-6">
+            <label class="block text-gray-700 mb-1">Fecha de Ingreso:</label>
+            <input type="date" name="fecha_ingreso"
+                   value="{% if alumno.fecha_ingreso %}{{ alumno.fecha_ingreso.strftime('%Y-%m-%d') }}{% endif %}"
+                   class="border p-2 rounded w-full">
+        </div>
+
+        <button type="submit" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+            Guardar Cambios
+        </button>
+    </form>
+</div>

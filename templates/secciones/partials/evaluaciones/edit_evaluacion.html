@@ -12,28 +12,26 @@
         <div class="bg-white shadow rounded-lg p-6">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl font-bold text-gray-800">Editar Evaluación: {{ evaluacion.nombre }}</h2>
-                <a href="{{ url_for('Cursos.view_curso', curso_id=curso.id, tab='evaluaciones') }}" 
+                <a href="{{ url_for('Secciones.view_seccion', seccion_id=seccion.id, tab='evaluaciones') }}" 
                    class="text-gray-600 hover:text-gray-800 transition duration-300 ease-in-out">
                     <i class="fas fa-times text-2xl"></i>
                 </a>
             </div>
             <form method="POST" action="{{ url_for('Evaluaciones.edit_evaluacion_route', evaluacion_id=evaluacion.id) }}" class="space-y-6">
-                <input type="hidden" name="curso_id" value="{{ curso.id }}">
+                <input type="hidden" name="seccion_id" value="{{ seccion.id }}">
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                         <label for="categoria_id" class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
                         <select id="categoria_id" name="categoria_id" 
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
-                            {% for seccion in curso.secciones %}
-                                <optgroup label="{{ seccion.nombre }}">
-                                    {% for categoria in seccion.categorias %}
-                                        <option value="{{ categoria.id }}" 
-                                            {% if categoria.id == evaluacion.categoria_id %}selected{% endif %}>
-                                            {{ categoria.tipo_categoria }}
-                                        </option>
-                                    {% endfor %}
-                                </optgroup>
-                            {% endfor %}
+                            <optgroup label="{{ seccion.nombre }}">
+                                {% for categoria in seccion.categorias %}
+                                    <option value="{{ categoria.id }}" 
+                                        {% if categoria.id == evaluacion.categoria_id %}selected{% endif %}>
+                                        {{ categoria.tipo_categoria }}
+                                    </option>
+                                {% endfor %}
+                            </optgroup>
                         </select>
                     </div>
                     <div>
@@ -43,19 +41,28 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                    <div>
-                        <label for="ponderacion" class="block text-sm font-medium text-gray-700 mb-1">Ponderación</label>
-                        <input id="ponderacion" type="number" name="ponderacion" min="0.01" max="100" step="0.01" 
-                               value="{{ evaluacion.ponderacion }}"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
-                    </div>
-                    <div>
-                        <label for="tipo_ponderacion" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Ponderación</label>
-                        <select id="tipo_ponderacion" name="tipo_ponderacion" 
-                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                            <option value="porcentaje" {% if evaluacion.tipo_ponderacion == 'porcentaje' %}selected{% endif %}>Porcentaje</option>
-                            <option value="peso" {% if evaluacion.tipo_ponderacion == 'peso' %}selected{% endif %}>Peso</option>
-                        </select>
+                    <div x-data="{ tipo: '{{ 'porcentaje' if evaluacion.tipo_ponderacion == 1 else 'peso' }}' }" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                            <label for="ponderacion" class="block text-sm font-medium text-gray-700 mb-1">
+                                Ponderación <span x-show="tipo === 'porcentaje'"> (%)</span><span x-show="tipo === 'peso'"> <i class="fa-solid fa-weight-hanging"></i></span>
+                            </label>
+                            <input id="ponderacion" type="number" name="ponderacion" min="0.01"
+                                :max="tipo === 'porcentaje' ? 100 : null"
+                                step="0.01"
+                                value="{{ evaluacion.ponderacion }}"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                required>
+                        </div>
+                    
+                        <div>
+                            <label for="tipo_ponderacion" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Ponderación</label>
+                            <select id="tipo_ponderacion" name="tipo_ponderacion"
+                                    x-model="tipo"
+                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                <option value="porcentaje">Porcentaje</option>
+                                <option value="peso">Peso</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="flex items-center">
                         <input id="opcional" type="checkbox" name="opcional" 
@@ -65,7 +72,7 @@
                     </div>
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
-                    <a href="{{ url_for('Cursos.view_curso', curso_id=curso.id, tab='evaluaciones') }}" 
+                    <a href="{{ url_for('Secciones.view_seccion', seccion_id=seccion.id, tab='evaluaciones') }}" 
                        class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition duration-300 ease-in-out">
                         Cancelar
                     </a>

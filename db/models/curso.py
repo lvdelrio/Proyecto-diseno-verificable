@@ -15,4 +15,4 @@ class Curso(db.Model):
     notas_finales = db.relationship("NotasFinales", back_populates="curso")
 
     def __repr__(self):
-        return f"<Curso(id={self.id}, nombre='{self.nombre}')>"
+        return f"<Curso(id={self.id}, codigo='{self.tipo_curso.codigo}')>"

@@ -9,6 +9,7 @@ from db.controller.alumno_controller import get_all_alumnos
 from db.controller.sala_controller import get_all_salas
 from routes.utils.horario import assign_section_to_schedule, export_schedule_to_csv
 
+CREDITOS_DEFAULT = 0
 
 schedule_route_blueprint = Blueprint("Schedule", __name__)
 
@@ -24,7 +25,7 @@ def create_horario():
     schedule_by_section = defaultdict(lambda: {
         "Sección": "",
         "Curso": "",
-        "Créditos": 0,
+        "Créditos": CREDITOS_DEFAULT,
         "Profesor(es)": "",
         "Sala": "",
         "Lunes": "",
@@ -43,8 +44,6 @@ def create_horario():
             room_occupancy, teacher_occupancy,
             student_occupancy, schedule_by_section
         )
-        if not success:
-            print(f"[!] No se pudo asignar sección {seccion.nombre} (ID {seccion.id})")
 
     filepath = export_schedule_to_csv(schedule_by_section)
     return jsonify({"status": "ok", "mensaje": "Horario generado", "archivo": filepath})

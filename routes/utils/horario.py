@@ -44,13 +44,13 @@ def is_block_conflicted(seccion,
                 return True
     return False
 
-def assign_section_to_schedule(seccion,
+def assign_section_to_horario(seccion,
                                 credit_hours,
                                 rooms,
                                 room_occupancy,
                                 teacher_occupancy,
                                 student_occupancy,
-                                schedule_dict):
+                                horario_dict):
     for room in rooms:
         if len(seccion.alumnos) > room.capacidad:
             continue
@@ -75,7 +75,7 @@ def assign_section_to_schedule(seccion,
                         student_occupancy.setdefault(student.id, set()).add(block)
 
                 sec_id = str(seccion.id)
-                schedule_dict[sec_id].update({
+                horario_dict[sec_id].update({
                     "Sección": seccion.nombre,
                     "Curso": seccion.curso.tipo_curso.descripcion,
                     "Créditos": credit_hours,
@@ -86,11 +86,15 @@ def assign_section_to_schedule(seccion,
                 return True
     return False
 
-def export_schedule_to_csv(schedule_dict):
+def export_horario_to_csv(horario_dict):
     os.makedirs(EXPORT_FOLDER, exist_ok=True)
     filename = f"horario_tabular_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
     filepath = os.path.join(EXPORT_FOLDER, filename)
 
-    df = pd.DataFrame(schedule_dict.values())
+    df = pd.DataFrame(horario_dict.values())
     df.to_csv(filepath, index=False)
     return filepath
+
+def table_title():
+    print("Seccion excluidas del horario:")
+    print("SECCION ID   |   CODIGO CURSO    |   DESCRIPCION CURSO   |   CREDITOS")

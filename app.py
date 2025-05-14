@@ -21,6 +21,8 @@ from routes.horario_routes import horario_route_blueprint
 
 load_dotenv()
 
+DEBUG_ACCEPTANCE = 'true'
+
 app = Flask(__name__)
 
 app.register_blueprint(curso_route_blueprint, url_prefix="")
@@ -61,7 +63,7 @@ def empty_db():
         return jsonify({"error": "No permitido fuera de debug mode."}), 403
 
     confirm = request.args.get('confirm')
-    if confirm != 'true':
+    if confirm != DEBUG_ACCEPTANCE:
         return jsonify({"advertencia": "Agregar '?confirm=true' para confirmar la limpieza."}), 400
 
     session = config.session

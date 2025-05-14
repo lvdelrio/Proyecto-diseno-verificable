@@ -98,3 +98,6 @@ def export_horario_to_csv(horario_dict):
 def table_title():
     print("Seccion excluidas del horario:")
     print("SECCION ID   |   CODIGO CURSO    |   DESCRIPCION CURSO   |   CREDITOS")
+
+def row_display_format(id, codigo, descripcion, creditos):
+    print("  |   ", id, "  |   ", codigo, "  |   ", descripcion, "    |   ", creditos)

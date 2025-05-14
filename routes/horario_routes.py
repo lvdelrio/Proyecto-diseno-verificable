@@ -7,7 +7,7 @@ from db.controller.seccion_controller import get_all_secciones
 from db.controller.profesor_controller import get_all_profesores
 from db.controller.alumno_controller import get_all_alumnos
 from db.controller.sala_controller import get_all_salas
-from routes.utils.horario import assign_section_to_horario, export_horario_to_csv, table_title
+from routes.utils.horario import assign_section_to_horario, export_horario_to_csv, table_title, row_display_format
 
 CREDITOS_DEFAULT = 0
 
@@ -46,7 +46,10 @@ def create_horario():
             student_occupancy, horario_by_section
         )
         if(not success):
-            print("  |   ", seccion.id, "  |   ", seccion.curso.tipo_curso.codigo, "  |   ", seccion.curso.tipo_curso.descripcion, "    |   ", seccion.curso.tipo_curso.creditos)
+            row_display_format(seccion.id,
+                                seccion.curso.tipo_curso.codigo,
+                                seccion.curso.tipo_curso.descripcion,
+                                seccion.curso.tipo_curso.creditos)
 
     filepath = export_horario_to_csv(horario_by_section)
     return jsonify({"status": "ok", "mensaje": "Horario generado", "archivo": filepath})

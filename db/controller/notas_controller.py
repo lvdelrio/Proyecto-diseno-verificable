@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from db.models.notas import Notas
 from db.models.alumno import Alumno
 from db.models.evaluacion import Evaluacion
+import traceback
 
 INDEX = 1
 
@@ -78,10 +79,10 @@ def load_notas_from_json(db: Session, data: dict):
     for nota_data in notas_data:
         alumno_id = nota_data.get("alumno_id")
         categoria_id = nota_data.get("topico_id")
-        instancia = nota_data.get("instancia")  
+        evaluacion_id = nota_data.get("instancia")  
         nota_valor = nota_data.get("nota")
         evaluaciones = get_evaluaciones_by_categoria(db, categoria_id)
-        evaluacion = get_evaluacion_by_instancia(evaluaciones, instancia)
+        evaluacion = get_evaluacion_by_instancia(evaluaciones, evaluacion_id)
         try:
             create_nota(db, alumno_id, evaluacion.id, float(nota_valor))
         except Exception as e:

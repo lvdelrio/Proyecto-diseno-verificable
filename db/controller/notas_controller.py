@@ -59,7 +59,7 @@ def load_notas_from_json(db: Session, data: dict):
         evaluacion_id = nota_data.get("instancia")  
         nota_valor = nota_data.get("nota")
         evaluaciones = get_evaluaciones_by_categoria_id(db, categoria_id)
-        evaluacion = get_evaluacion_by_instancia(evaluaciones, instancia)
+        evaluacion = get_evaluacion_by_instancia(evaluaciones, evaluacion_id)
         try:
             create_nota(db, alumno_id, evaluacion.id, float(nota_valor))
         except Exception as e:

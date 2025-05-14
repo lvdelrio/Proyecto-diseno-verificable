@@ -10,6 +10,7 @@ from ..controller.categoria_controller import create_multiple_categorias_and_eva
 from ..controller.evaluacion_controller import create_evaluacion
 from ..controller.curso_controller import get_curso_by_id
 from ..controller.common_controller import get_seccion_by_id
+from ..services.curso_service import check_curso_cerrado
 
 def create_seccion(db: Session, curso_id: int, nombre: str, id: int = None):
     curso = get_curso_by_id(db, curso_id)
@@ -66,6 +67,8 @@ def create_secciones_from_json(db: Session, data: dict):
     db.commit()
 
 def process_seccion_and_relations( db: Session, seccion_data: dict):
+    curso_id = seccion_data.get("instancia_curso")
+    check_curso_cerrado(db, curso_id=curso_id)
     seccion = create_seccion(
         db,
         id=seccion_data["id"],

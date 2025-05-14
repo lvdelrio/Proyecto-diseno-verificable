@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from db.config import db as config
 from db import db, init_db
 from db.seeds import seed_database
+from db.db_events import register_events
 
 from routes.cursos_routes import curso_route_blueprint
 from routes.profesores_routes import profesor_route_blueprint
@@ -35,6 +36,8 @@ app.register_blueprint(nota_route_blueprint, url_prefix="")
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5000"]}})
 
 init_db(app)
+with app.app_context():
+    register_events()
 
 @app.before_request
 def create_tables():

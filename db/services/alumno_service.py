@@ -4,12 +4,13 @@ from ..controller.curso_controller import get_all_cursos
 from ..controller.seccion_controller import get_all_secciones_by_curso_id, get_seccion_by_id
 from db.models.alumno import Alumno
 from db.controller.alumno_controller import get_alumno_by_id, enroll_alumno_in_seccion
+from utils.http_status import BAD_REQUEST, NOT_FOUND
 
 def get_available_cursos_con_secciones(db: Session, alumno_id):
     alumno = get_alumno_by_id(db.session, alumno_id)
 
     if alumno is None:
-        abort(404, description="Alumno no encontrado.")
+        abort(NOT_FOUND, description="Alumno no encontrado.")
 
     registered_cursos_ids = {seccion.curso_id for seccion in alumno.secciones}
 

@@ -2,6 +2,7 @@ from flask import Blueprint, request,  redirect, url_for, render_template, abort
 from db.config import db as config
 from db.controller.common_controller import get_seccion_by_id
 from db.controller.seccion_controller import create_seccion, get_all_secciones_by_curso_id, get_all_secciones, edit_seccion_by_id, delete_seccion_by_id, curso_from_seccion_id, create_secciones_from_json
+from http import HTTPStatus
 
 seccion_route_blueprint = Blueprint("Secciones", __name__)
 
@@ -40,7 +41,7 @@ def delete_seccion(seccion_id):
 def importar_secciones():
     data = request.json
     if not data:
-        abort(400, description="No se recibió JSON válido.")
+        abort(HTTPStatus.BAD_REQUEST, description="No se recibió JSON válido.")
 
     create_secciones_from_json(config.session, data)
     return jsonify({"message": "Secciones cargadas correctamente"}), 201

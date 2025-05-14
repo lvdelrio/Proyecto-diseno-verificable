@@ -1,12 +1,13 @@
 from flask import abort
 from sqlalchemy.orm import Session
 from ..controller.tipo_curso_controller import get_tipo_curso_by_id, get_all_tipo_cursos, enroll_tipo_curso_in_tipo_cursos
+from utils.http_status import BAD_REQUEST, NOT_FOUND
 
 def get_tipo_curso_and_cursos_disponibles(db: Session, tipo_curso_id: int):
     tipo_curso_base = get_tipo_curso_by_id(db.session, tipo_curso_id)
 
     if tipo_curso_base is None:
-        abort(404, description="Tipo curso no encontrado.")
+        abort(NOT_FOUND, description="Tipo curso no encontrado.")
 
     tipo_cursos_inscritos_ids = {
         requisito.curso_requisito.id

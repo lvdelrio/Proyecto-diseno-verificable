@@ -14,7 +14,7 @@ from db.controller.profesor_controller import (
     create_profesores_from_json,
     unregister_profesor_in_seccion
 )
-
+from http import HTTPStatus
 
 profesor_route_blueprint = Blueprint("Profesores", __name__)
 
@@ -75,7 +75,7 @@ def register_profesor(profesor_id):
 def load_profesores():
     data = request.json
     if not data:
-        abort(400, description="No se recibió JSON válido.")
+        abort(HTTPStatus.BAD_REQUEST, description="No se recibió JSON válido.")
 
     create_profesores_from_json(config.session, data)
     return jsonify({"message": "Profesores cargados correctamente"}), 201

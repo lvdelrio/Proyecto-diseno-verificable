@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, abort
 from db.controller.sala_controller import create_sala, get_all_salas, get_sala_by_id, delete_sala, load_salas_from_json, edit_sala_by_id
 from db.config import db as config
+from http import HTTPStatus
 
 sala_route_blueprint = Blueprint("Salas", __name__)
 
@@ -15,7 +16,7 @@ def add_sala():
 def view_sala(sala_id):
     sala = get_sala_by_id(config.session, sala_id)
     if not sala:
-        abort(404, description="Sala no encontrada")
+        abort(HTTPStatus.NOT_FOUND, description="Sala no encontrada")
     return render_template("Salas/detalle_sala.html", sala=sala)
 
 @sala_route_blueprint.route("/sala/<int:sala_id>", methods=["GET"])

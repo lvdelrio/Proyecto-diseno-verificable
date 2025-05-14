@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from ..models.curso import Curso
-
+from flask import abort
+from utils.http_status import BAD_REQUEST, NOT_FOUND, FORBIDDEN
 def create_curso(db: Session, tipo_curso_id: int, fecha_impartida: int, semestre_impartido: str, id: int = None):
     if id is not None:
         new_curso = Curso(id=id, 
@@ -26,6 +27,9 @@ def get_all_cursos(db: Session):
 def edit_curso_by_id(db: Session, curso_id: int, tipo_curso_id: int, fecha_impartida: int, semestre_impartido: str):
     curso = get_curso_by_id(db, curso_id)
     if curso:
+        if curso.cerrado:
+            abort(FORBIDDEN, description="El curso está cerrado y ya no se puede modificar")
+        
         curso.tipo_curso_id=tipo_curso_id
         curso.fecha_impartida=fecha_impartida
         curso.semestre_impartido = semestre_impartido
@@ -41,6 +45,24 @@ def delete_curso_by_id(db: Session, curso_id: int):
         db.commit()
         return True
     return False
+
+def close_curso(db: Session, curso_id: int):
+    curso = get_curso_by_id(db, curso_id)
+    if curso:
+        curso.cerrado = True
+        db.commit()
+        db.refresh(curso)
+        return curso
+    return None
+
+def open_curso(db: Session, curso_id: int):
+    curso = get_curso_by_id(db, curso_id)
+    if curso:
+        curso.cerrado = False
+        db.commit()
+        db.refresh(curso)
+        return curso
+    return None
 
 def create_cursos_from_json(db: Session, data: dict):
     if not data or "instancias" not in data:

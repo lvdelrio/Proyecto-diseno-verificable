@@ -4,7 +4,7 @@ from db.models.alumno import Alumno
 from db.controller.alumno_controller import get_alumno_by_id
 from db.models.notas_finales import NotasFinales
 from .notas_controller import get_notas_by_alumno
-from ...utils.http_status import BAD_REQUEST, NOT_FOUND
+from utils.http_status import BAD_REQUEST, NOT_FOUND
 
 NOTA_MINIMA = 1
 

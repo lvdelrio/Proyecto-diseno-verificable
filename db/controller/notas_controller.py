@@ -3,6 +3,8 @@ from db.models.notas import Notas
 from db.models.alumno import Alumno
 from db.models.evaluacion import Evaluacion
 
+INDEX = 1
+
 def create_nota(db: Session, alumno_id: int, evaluacion_id: int, nota: float):
     nota_existente = db.query(Notas).filter(
         Notas.alumno_id == alumno_id,
@@ -62,14 +64,14 @@ def get_evaluaciones_by_categoria(db: Session, categoria_id: int):
 
 def extract_number_from_name(evaluacion):
     nombre_evaluacion = evaluacion.nombre
-    last_digit = nombre_evaluacion.split()[-1]
+    last_digit = nombre_evaluacion.split()[-INDEX]
     if last_digit.isdigit():
         return int(last_digit)
     return 0
 
 def get_evaluacion_by_instancia(evaluaciones, instancia):
     evaluaciones_sorted = sorted(evaluaciones, key=extract_number_from_name)
-    return evaluaciones_sorted[instancia - 1]
+    return evaluaciones_sorted[instancia - INDEX]
 
 def load_notas_from_json(db: Session, data: dict):
     notas_data = data.get("notas", [])

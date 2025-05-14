@@ -2,14 +2,13 @@ from sqlalchemy.orm import Session
 from db.models.notas import Notas
 from db.models.alumno import Alumno
 from db.models.evaluacion import Evaluacion
-
+import traceback
 
 def create_nota(db: Session, alumno_id: int, evaluacion_id: int, nota: float):
     nota_existente = db.query(Notas).filter(
         Notas.alumno_id == alumno_id,
         Notas.evaluacion_id == evaluacion_id
     ).first()
-    
     if nota_existente:
         nota_existente.nota = nota
     else:
@@ -19,7 +18,6 @@ def create_nota(db: Session, alumno_id: int, evaluacion_id: int, nota: float):
             nota=nota
         )
         db.add(nueva_nota)
-    
     db.commit()
     return nota_existente if nota_existente else nueva_nota
 
@@ -76,7 +74,6 @@ def get_evaluacion_by_instancia(evaluaciones, instancia):
 
 def load_notas_from_json(db: Session, data: dict):
     notas_data = data.get("notas", [])
-    
     for nota_data in notas_data:
         
         alumno_id = nota_data.get("alumno_id")
@@ -90,5 +87,5 @@ def load_notas_from_json(db: Session, data: dict):
         try:
             create_nota(db, alumno_id, evaluacion.id, float(nota_valor))
         except Exception as e:
-            db.rollback()
+            db.rollback()   
     

@@ -57,7 +57,7 @@ def obtener_curso_id_from_notas(target):
     if hasattr(target, 'evaluacion') and target.evaluacion:
         return obtener_curso_id_from_evaluacion(target.evaluacion)
     if hasattr(target, 'evaluacion_id'):
-        evaluacion = get_evaluacion_by_id(target.evaluacion_id)
+        evaluacion = get_evaluacion_by_id(session, target.evaluacion_id)
         return obtener_curso_id_from_evaluacion(evaluacion) if evaluacion else None
     return None
 

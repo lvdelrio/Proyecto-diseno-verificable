@@ -4,7 +4,6 @@ from db.config import db as config
 from db.controller.tipo_curso_controller import get_all_tipo_cursos
 from db.controller.curso_controller import get_all_cursos
 from db.controller.seccion_controller import get_all_secciones
-from db.controller.profesor_controller import get_all_profesores
 from db.controller.alumno_controller import get_all_alumnos
 from db.controller.sala_controller import get_all_salas
 from routes.utils.horario import assign_section_to_horario, export_horario_to_csv, table_title, row_display_format

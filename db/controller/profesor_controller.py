@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from ..models.profesor import Profesor
-from ..models.seccion import Seccion
 from ..controller.common_controller import get_seccion_by_id, get_profesor_by_id
 def create_profesor(db: Session, nombre: str, email: str, id: int = None):
     if id is not None:
@@ -11,10 +10,6 @@ def create_profesor(db: Session, nombre: str, email: str, id: int = None):
     db.commit()
     db.refresh(new_profesor)
     return new_profesor
-
-def get_all_profesores(db: Session):
-    return db.query(Profesor).all()
-
 
 def edit_profesor_by_id(db: Session, profesor_id: int, nombre: str, email: str):
     profesor = get_profesor_by_id(db, profesor_id)

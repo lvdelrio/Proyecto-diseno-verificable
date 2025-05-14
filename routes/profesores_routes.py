@@ -5,7 +5,6 @@ from db.controller.seccion_controller import get_all_secciones_by_curso_id
 from db.controller.common_controller import get_profesor_by_id
 from db.services.profesor_service import get_profesor_and_available_cursos_with_secciones, register_profesor_in_seccion
 from db.controller.profesor_controller import (
-    get_all_profesores, 
     create_profesor, 
     edit_profesor_by_id, 
     delete_profesor_by_id, 

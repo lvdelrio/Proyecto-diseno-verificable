@@ -5,9 +5,7 @@ from db.controller.evaluacion_controller import (
     get_evaluacion_by_id,
     edit_evaluacion,
     delete_evaluacion, 
-    create_evaluacion_con_notas
 )
-from db.controller.notas_controller import get_notas_by_evaluacion
 from utils.http_status import BAD_REQUEST, NOT_FOUND, BAD_REQUEST
 
 evaluacion_blueprint = Blueprint("Evaluaciones", __name__)

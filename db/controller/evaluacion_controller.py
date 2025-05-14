@@ -1,16 +1,10 @@
 from sqlalchemy.orm import Session
 from flask import abort
-from datetime import datetime
 from db.config import db
 from db.models.evaluacion import Evaluacion
-from db.models.notas import Notas
-from db.models.alumno import Alumno
-from db.models.categoria import Categoria
-from db.models.alumno_seccion import AlumnoSeccion
 from ..controller.common_controller import get_all_alumno_seccion_by_categoria_id, get_evaluaciones_by_categoria_id
 from ..controller.notas_controller import create_nota
 from db.utils.prorrotear import recalculate_categoria_ponderations
-from ..controller.common_controller import get_seccion_by_id
 from utils.http_status import BAD_REQUEST, NOT_FOUND
 
 PERCENTAGE_TYPE = 1

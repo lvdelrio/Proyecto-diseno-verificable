@@ -11,8 +11,6 @@ from db.controller.alumno_controller import (
     edit_alumno_by_id,
     delete_alumno_by_id,
     get_paginated_alumnos,
-    enroll_alumno_in_seccion,
-    create_alumno_seccion_from_json,
     create_alumnos_from_json,
     unregister_alumno_in_seccion
 )

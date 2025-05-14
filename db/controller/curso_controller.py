@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from ..models.curso import Curso
 from flask import abort
 from utils.http_status import BAD_REQUEST, NOT_FOUND, FORBIDDEN
+
 def create_curso(db: Session, tipo_curso_id: int, fecha_impartida: int, semestre_impartido: str, id: int = None):
     if id is not None:
         new_curso = Curso(id=id, 
@@ -22,7 +23,6 @@ def get_curso_by_id(db: Session, curso_id: int):
 
 def get_all_cursos(db: Session):
     return db.query(Curso).all()
-
 
 def edit_curso_by_id(db: Session, curso_id: int, tipo_curso_id: int, fecha_impartida: int, semestre_impartido: str):
     curso = get_curso_by_id(db, curso_id)

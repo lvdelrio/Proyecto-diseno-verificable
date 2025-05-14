@@ -17,9 +17,6 @@ def get_seccion_by_id(db: Session, new_seccion: int):
 def get_profesor_by_id(db: Session, profesor_id: int):
     return db.query(Profesor).filter(Profesor.id == profesor_id).first()
 
-def get_alumno_seccion_by_id(db: Session, alumno_seccion_id: int):
-    return db.query(AlumnoSeccion).filter(AlumnoSeccion.id == alumno_seccion_id).first()
-
 def get_all_alumno_seccion_by_categoria_id(db: Session, categoria_id: int):
     return db.query(AlumnoSeccion).filter(AlumnoSeccion.categoria_id == categoria_id).all()
 

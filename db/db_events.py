@@ -77,4 +77,3 @@ def register_events():
         event.listen(model, 'before_update', verificar_curso_abierto)
         event.listen(model, 'before_delete', verificar_curso_abierto)
     
-    print("Eventos SQLAlchemy para verificar cursos cerrados registrados correctamente")

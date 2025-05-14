@@ -7,6 +7,7 @@ from db.controller.categoria_controller import (
     delete_categoria
 )
 from db.models.seccion import Seccion
+from utils.http_status import BAD_REQUEST, NOT_FOUND
 
 categoria_blueprint = Blueprint("Categorias", __name__)
 
@@ -42,7 +43,7 @@ def add_categoria():
 def edit_categoria_form(categoria_id):
     categoria = get_categoria(categoria_id)
     if not categoria:
-        abort(404, description="Categoría no encontrada")
+        abort(NOT_FOUND, description="Categoría no encontrada")
 
     seccion_id = categoria.seccion.id
     return render_template(

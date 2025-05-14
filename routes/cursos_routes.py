@@ -1,8 +1,10 @@
 from flask import Blueprint, request, render_template, redirect, url_for, abort, jsonify, flash
 from db.config import db as config
 from db.controller.tipo_curso_controller import get_all_tipo_cursos
-from db.controller.curso_controller import get_all_cursos, create_curso, get_curso_by_id, edit_curso_by_id, delete_curso_by_id, create_cursos_from_json, cerrar_curso, abrir_curso
+from db.controller.curso_controller import get_all_cursos, create_curso, get_curso_by_id, edit_curso_by_id, delete_curso_by_id, create_cursos_from_json, close_curso, open_curso
 from db.controller.alumno_controller import create_alumno_seccion_from_json
+from utils.http_status import BAD_REQUEST, NOT_FOUND
+
 curso_route_blueprint = Blueprint("Cursos", __name__)
 
 @curso_route_blueprint.route('/cursos', methods=['GET'])
@@ -31,7 +33,7 @@ def edit_curso(curso_id):
     imparted_fecha = request.form["fecha_impartida"]
     imparted_semester = request.form["semestre_impartido"]
     curso = edit_curso_by_id(config.session, curso_id, curso.tipo_curso.id, imparted_fecha, imparted_semester)
-    
+
     return redirect(url_for("Cursos.get_cursos"))
 
 @curso_route_blueprint.route('/borrar_curso/<int:curso_id>', methods=['POST'])
@@ -43,8 +45,7 @@ def delete_curso(curso_id):
 def load_cursos():
     data = request.json
     if not data:
-        abort(400, description="No se recibió JSON válido.")
-
+        abort(BAD_REQUEST, description="No se recibió JSON válido.")
     create_cursos_from_json(config.session, data)
     return jsonify({"message": "Cursos cargados correctamente"}), 201
 
@@ -52,8 +53,7 @@ def load_cursos():
 def load_alumno_in_seccion():
     data = request.json
     if not data:
-        abort(400, description="No se recibió JSON válido.")
-    
+        abort(BAD_REQUEST, description="No se recibió JSON válido.")
     create_alumno_seccion_from_json(config.session, data)
     return jsonify({"message": "Alumnos inscritos correctamente"}), 201
 
@@ -61,11 +61,9 @@ def load_alumno_in_seccion():
 def toggle_curso_estado(curso_id):
     curso = get_curso_by_id(config.session, curso_id)
     if not curso:
-        abort(404, description="Curso no encontrado")
-    
+        abort(NOT_FOUND, description="Curso no encontrado")
     if curso.cerrado:
-        abrir_curso(config.session, curso_id)
+        open_curso(config.session, curso_id)
     else:
-        cerrar_curso(config.session, curso_id)
-    
+        close_curso(config.session, curso_id)
     return redirect(url_for("Cursos.view_curso", curso_id=curso_id))

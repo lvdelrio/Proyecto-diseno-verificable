@@ -8,6 +8,7 @@ from db.controller.evaluacion_controller import (
     create_evaluacion_con_notas
 )
 from db.controller.notas_controller import get_notas_by_evaluacion
+from utils.http_status import BAD_REQUEST, NOT_FOUND, BAD_REQUEST
 
 evaluacion_blueprint = Blueprint("Evaluaciones", __name__)
 
@@ -21,7 +22,6 @@ def add_evaluacion():
         seccion_id = request.form.get('seccion_id')
         tipo_ponderacion = request.form.get('tipo_ponderacion')
         tipo_ponderacion = True if tipo_ponderacion == 'porcentaje' else False
-        #CHANGE HER THIS LINE IS TOO LONG BUT DECIDED TO CHANGE WHEN WE ADD ERROR RESOLUTION
         if any(value is None or (isinstance(value, str) and value.strip() == '')
             for value in [categoria_id, nombre, ponderacion, seccion_id]) or tipo_ponderacion is None:
             return redirect(url_for('Secciones.view_seccion', seccion_id=seccion_id, tab='evaluaciones'))
@@ -77,7 +77,7 @@ def delete_evaluacion_route(evaluacion_id):
 def edit_evaluacion_form(evaluacion_id):
     evaluacion = get_evaluacion_by_id(db.session, evaluacion_id)
     if not evaluacion:
-        abort(404, description="Evaluación no encontrada")
+        abort(NOT_FOUND, description="Evaluación no encontrada")
 
     return render_template('Secciones/partials/evaluaciones/edit_evaluacion.html', evaluacion=evaluacion, seccion=evaluacion.categoria.seccion)
 
@@ -95,12 +95,12 @@ def edit_evaluacion_route(evaluacion_id):
     #CHANGE HER THIS LINE IS TOO LONG BUT DECIDED TO CHANGE WHEN WE ADD ERROR RESOLUTION
     if any(value is None or (isinstance(value, str) and value.strip() == '')
         for value in [categoria_id, nombre, ponderacion, seccion_id]) or tipo_ponderacion is None:
-        abort(400, description="Faltan campos obligatorios")
+        abort(BAD_REQUEST, description="Faltan campos obligatorios")
 
     try:
         ponderacion = float(ponderacion)
     except ValueError:
-        abort(400, description="La ponderación debe ser un número válido")
+        abort(BAD_REQUEST, description="La ponderación debe ser un número válido")
 
 
     evaluacion = edit_evaluacion(
@@ -114,6 +114,6 @@ def edit_evaluacion_route(evaluacion_id):
     )
 
     if not evaluacion:
-        abort(404, description="Evaluación no encontrada")
+        abort(NOT_FOUND, description="Evaluación no encontrada")
 
     return redirect(url_for('Secciones.view_seccion', seccion_id=seccion_id, tab='evaluaciones'))

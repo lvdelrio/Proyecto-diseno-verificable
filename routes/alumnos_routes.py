@@ -16,7 +16,7 @@ from db.controller.alumno_controller import (
     create_alumnos_from_json,
     unregister_alumno_in_seccion
 )
-
+from utils.http_status import BAD_REQUEST, NOT_FOUND
 alumno_route_blueprint = Blueprint("Alumnos", __name__)
 
 @alumno_route_blueprint.route('/alumnos')
@@ -42,7 +42,7 @@ def get_alumnos(pagina=1):
 def view_alumno(alumno_id):
     alumno, cursos_with_secciones = get_available_cursos_con_secciones(config, alumno_id)
     if alumno is None:
-        abort(404, description="Alumno no encontrado.")
+        abort(NOT_FOUND, description="Alumno no encontrado.")
 
     return render_template(
         "Alumnos/detalle_alumno.html",
@@ -77,7 +77,7 @@ def delete_alumno(alumno_id):
 def register_alumno(alumno_id):
     alumno = register_alumno_in_secciones(config.session, alumno_id, request.form)
     if alumno is None:
-        abort(404, description="Alumno no encontrado.")
+        abort(NOT_FOUND, description="Alumno no encontrado.")
     return redirect(url_for('Alumnos.view_alumno', alumno_id=alumno_id))
 
 @alumno_route_blueprint.route('/desinscribir_alumno/<int:seccion_id>/', methods=['POST'])
@@ -90,7 +90,7 @@ def unregister_alumno(seccion_id):
 def load_alumnos():
     data = request.json
     if not data:
-        abort(400, description="No se recibió JSON válido.")
+        abort(BAD_REQUEST, description="No se recibió JSON válido.")
 
     create_alumnos_from_json(config.session, data)
     return jsonify({"message": "Alumnos cargados correctamente"}), 201

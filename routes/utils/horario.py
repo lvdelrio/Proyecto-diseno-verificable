@@ -28,7 +28,7 @@ def is_block_conflicted(seccion,
                         duration,
                         room_occupancy,
                         teacher_occupancy,
-                        student_occupancy): 
+                        student_occupancy):
     for hour in range(start_hour, start_hour + duration):
         if hour == MORNING_HOUR_FINISH:
             return True
@@ -99,5 +99,5 @@ def table_title():
     print("Seccion excluidas del horario:")
     print("SECCION ID   |   CODIGO CURSO    |   DESCRIPCION CURSO   |   CREDITOS")
 
-def row_display_format(id, codigo, descripcion, creditos):
-    print("  |   ", id, "  |   ", codigo, "  |   ", descripcion, "    |   ", creditos)
+def row_display_format(seccion_id, codigo, descripcion, creditos):
+    print("  |   ", seccion_id, "  |   ", codigo, "  |   ", descripcion, "    |   ", creditos)

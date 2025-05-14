@@ -1,4 +1,4 @@
-<div x-show="tab === 'secciones'" class="bg-white shadow rounded-lg overflow-hidden">
+<div x-show="tab === 'secciones'" class="bg-white shadow overflow-hidden sm:rounded-lg p-6 min-h-[300px]">
     <script type="module" src="{{ url_for('static', filename='js/components/json_upload.js') }}"></script>
     {% from "components/json_upload.html" import json_upload_button %}
     <div class="p-6">

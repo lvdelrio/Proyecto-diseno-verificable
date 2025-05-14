@@ -15,7 +15,7 @@ class Seccion(db.Model):
     alumnos: Mapped[list["Alumno"]] = relationship(
                                                 "Alumno",
                                                 secondary="alumno_seccion",
-                                                back_populates="secciones"
+                                                back_populates="secciones",
                                             )
     profesores: Mapped[list["Profesor"]] = relationship(
                                                 "Profesor",

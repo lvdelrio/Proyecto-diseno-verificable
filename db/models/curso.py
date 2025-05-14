@@ -13,7 +13,7 @@ class Curso(db.Model):
 
     tipo_curso: Mapped["TipoCurso"] = relationship(back_populates="cursos") 
     secciones = db.relationship("Seccion", back_populates="curso", cascade="all, delete-orphan")
-    notas_finales = db.relationship("NotasFinales", back_populates="curso")
+    notas_finales = db.relationship("NotasFinales", back_populates="curso", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Curso(id={self.id}, codigo='{self.tipo_curso.codigo}')>"

@@ -20,15 +20,11 @@ def get_secciones_by_id(curso_id):
 @seccion_route_blueprint.route('/seccion/<int:seccion_id>')
 def view_seccion(seccion_id, tab="info"):
     seccion = get_seccion_by_id(config.session, seccion_id)
-    alumnos = seccion.alumnos
     return render_template("secciones/detalle_seccion.html", seccion=seccion, tab="info")
 
 @seccion_route_blueprint.route('/editar_seccion/<int:seccion_id>', methods=['POST'])
 def edit_seccion(seccion_id):
-    nombre = request.form["nombre"]
     curso_id = curso_from_seccion_id(config.session, seccion_id)
-    seccion = edit_seccion_by_id(config.session, seccion_id, nombre)
-    
     return redirect(url_for("Cursos.view_curso", curso_id=curso_id))
 
 @seccion_route_blueprint.route('/borrar_seccion/<int:seccion_id>', methods=['POST'])

@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Float, Boolean
 from sqlalchemy.orm import relationship, Mapped
 from  ..config import db
-from sqlalchemy import DateTime
 
 class Evaluacion(db.Model):
     __tablename__ = "evaluaciones"

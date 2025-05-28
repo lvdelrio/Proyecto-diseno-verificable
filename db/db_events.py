@@ -1,24 +1,25 @@
 from flask import abort
 from sqlalchemy import event
 from sqlalchemy.exc import IntegrityError
-from .models.curso import Curso
+from utils.http_status import FORBIDDEN
 from .models.seccion import Seccion
 from .models.categoria import Categoria
 from .models.evaluacion import Evaluacion
 from .models.notas import Notas
 from .models.alumno_seccion import AlumnoSeccion
 from .models.profesor_seccion import ProfesorSeccion
-from .config import db 
-from .controller.common_controller import get_seccion_by_id 
+from .config import db
+from .controller.common_controller import get_seccion_by_id
 from .controller.categoria_controller import get_categoria
 from .controller.evaluacion_controller import get_evaluacion_by_id
-from utils.http_status import FORBIDDEN
+from .controller.curso_controller import get_curso_by_id
+
 session = db.session
 
-def verificar_curso_abierto(mapper, connection, target):
+def verificar_curso_abierto(target):
     curso_id = get_curso_id(target)
     if curso_id:
-        curso = session.query(Curso).filter_by(id=curso_id).first()
+        curso = get_curso_by_id(session, curso_id)
         if curso and curso.cerrado:
             abort(FORBIDDEN, description=(
                 f"El curso id {curso_id} está cerrado y no se puede modificar"))

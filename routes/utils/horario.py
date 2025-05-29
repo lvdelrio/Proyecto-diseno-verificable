@@ -95,7 +95,7 @@ def export_horario_to_csv(horario_dict):
     df.to_csv(filepath, index=False)
     return filepath
 
-def table_title():
+def print_excluded_seccion_header():
     print("Seccion excluidas del horario:")
     print("SECCION ID   |   CODIGO CURSO    |   DESCRIPCION CURSO   |   CREDITOS")
 

@@ -8,7 +8,7 @@ from db.controller.evaluacion_controller import get_evaluacion_by_id
 @event.listens_for(Notas, 'after_insert')
 @event.listens_for(Notas, 'after_update')
 @event.listens_for(Notas, 'after_delete')
-def nota_changed(mapper, connection, target):
+def handle_nota_change(mapper, connection, target):
     db = Session(bind=connection)
     evaluacion = get_evaluacion_by_id(db, target.evaluacion_id)
     curso_id = evaluacion.categoria.seccion.curso_id

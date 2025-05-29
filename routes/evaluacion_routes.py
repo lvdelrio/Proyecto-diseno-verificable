@@ -6,6 +6,7 @@ from db.controller.evaluacion_controller import (
     edit_evaluacion,
     delete_evaluacion, 
 )
+from routes.utils.transform_methods import transform_to_float
 from utils.http_status import BAD_REQUEST, NOT_FOUND, BAD_REQUEST
 
 evaluacion_blueprint = Blueprint("Evaluaciones", __name__)
@@ -18,7 +19,7 @@ def add_evaluacion():
         if not is_valid_evaluacion_data(form_data):
             return redirect_to_seccion_view(form_data['seccion_id'])
         
-        ponderacion = parse_ponderacion(form_data['ponderacion'])
+        ponderacion = transform_to_float(form_data['ponderacion'])
         if ponderacion is None:
             return redirect_to_seccion_view(form_data['seccion_id'])
         
@@ -57,14 +58,6 @@ def is_valid_evaluacion_data(form_data):
             return False
     
     return form_data['tipo_ponderacion'] is not None
-
-
-def parse_ponderacion(ponderacion_str):
-    try:
-        return float(ponderacion_str)
-    except ValueError:
-        return None
-
 
 def redirect_to_seccion_view(seccion_id):
     return redirect(url_for(SECCIONES_VIEW, seccion_id=seccion_id, tab='evaluaciones'))
@@ -115,7 +108,6 @@ def edit_evaluacion_route(evaluacion_id):
     categoria_id = request.form.get('categoria_id')
     tipo_ponderacion = request.form.get('tipo_ponderacion')
     tipo_ponderacion = True if tipo_ponderacion == 'porcentaje' else False
-    #CHANGE HER THIS LINE IS TOO LONG BUT DECIDED TO CHANGE WHEN WE ADD ERROR RESOLUTION
     if any(value is None or (isinstance(value, str) and value.strip() == '')
         for value in [categoria_id, nombre, ponderacion, seccion_id]) or tipo_ponderacion is None:
         abort(BAD_REQUEST, description="Faltan campos obligatorios")

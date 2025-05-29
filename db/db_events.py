@@ -16,7 +16,7 @@ from .controller.curso_controller import get_curso_by_id
 
 session = db.session
 
-def verificar_curso_abierto(target):
+def verificar_curso_abierto(mapper, connection, target):
     curso_id = get_curso_id(target)
     if curso_id:
         curso = get_curso_by_id(session, curso_id)

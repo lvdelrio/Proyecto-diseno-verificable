@@ -6,7 +6,7 @@ from db.controller.curso_controller import get_all_cursos
 from db.controller.seccion_controller import get_all_secciones
 from db.controller.alumno_controller import get_all_alumnos
 from db.controller.sala_controller import get_all_salas
-from routes.utils.horario import assign_section_to_horario, export_horario_to_csv, table_title, row_display_format
+from routes.utils.horario import assign_section_to_horario, export_horario_to_csv, print_excluded_seccion_header, row_display_format
 
 CREDITOS_DEFAULT = 0
 
@@ -34,7 +34,7 @@ def create_horario():
         "Viernes": ""
     })
 
-    table_title()
+    print_excluded_seccion_header()
     for seccion in secciones:
         if not seccion.curso or not seccion.curso.tipo_curso:
             continue

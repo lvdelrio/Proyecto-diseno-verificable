@@ -7,6 +7,7 @@ from db.controller.evaluacion_controller import get_all_evaluaciones
 from http import HTTPStatus
 
 nota_route_blueprint = Blueprint("Notas", __name__)
+GET_NOTAS = "Notas.get_notas"
 
 @nota_route_blueprint.route('/notas', methods=['GET'])
 def get_notas():
@@ -22,9 +23,7 @@ def get_notas():
 @nota_route_blueprint.route('/nota/<int:nota_id>')
 def view_nota(nota_id):
     nota = get_nota_by_id(config.session, nota_id)
-    if not nota:
-        abort(HTTPStatus.NOT_FOUND, description="Nota no encontrada")
-    
+    check_nota_exists(nota)
     return render_template("Notas/detalle_nota.html", nota=nota)
 
 @nota_route_blueprint.route('/agregar_nota', methods=['POST'])
@@ -32,27 +31,23 @@ def add_nota():
     alumno_id = request.form.get("alumno_id")
     evaluacion_id = request.form.get("evaluacion_id")
     nota_valor = request.form.get("nota")
-    nota = create_nota(config.session, alumno_id, evaluacion_id, nota_valor)
-    return redirect(url_for("Notas.get_notas"))
+    create_nota(config.session, alumno_id, evaluacion_id, nota_valor)
+    return redirect(url_for(GET_NOTAS))
 
 @nota_route_blueprint.route('/editar_nota/<int:nota_id>', methods=['POST'])
 def edit_nota(nota_id):
     nota = get_nota_by_id(config.session, nota_id)
-    if not nota:
-        abort(HTTPStatus.NOT_FOUND, description="Nota no encontrada")
-    
+    check_nota_exists(nota)
     nota_valor = request.form.get("nota")
-    updated_nota = create_nota(config.session, nota.alumno_id, nota.evaluacion_id, nota_valor)
-    return redirect(url_for("Notas.get_notas"))
+    create_nota(config.session, nota.alumno_id, nota.evaluacion_id, nota_valor)
+    return redirect(url_for(GET_NOTAS))
 
 @nota_route_blueprint.route('/borrar_nota/<int:nota_id>', methods=['POST'])
 def delete_nota_route(nota_id):
     nota = get_nota_by_id(config.session, nota_id)
-    if not nota:
-        abort(HTTPStatus.NOT_FOUND, description="Nota no encontrada")
-    
+    check_nota_exists(nota)
     delete_nota(config.session, nota_id)
-    return redirect(url_for("Notas.get_notas"))
+    return redirect(url_for(GET_NOTAS))
 
 @nota_route_blueprint.route('/importar_notas', methods=['POST'])
 def load_notas():
@@ -61,3 +56,7 @@ def load_notas():
         abort(HTTPStatus.BAD_REQUEST, description="No se recibió JSON válido.")
     load_notas_from_json(config.session, data)
     return jsonify({"message": "Notas importadas exitosamente."}), 201
+
+def check_nota_exists(nota):
+    if not nota:
+        abort(HTTPStatus.NOT_FOUND, description="Nota no encontrada")

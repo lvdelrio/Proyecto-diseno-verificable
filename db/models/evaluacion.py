@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Float, Boolean
 from sqlalchemy.orm import relationship, Mapped
-from  ..config import db
+from  db.config import db
 
 class Evaluacion(db.Model):
     __tablename__ = "evaluaciones"
@@ -9,8 +9,11 @@ class Evaluacion(db.Model):
     nombre = db.Column(String(20), index=True)
     ponderacion = db.Column(Float, index=True)
     opcional = db.Column(Integer, index=True)
-    categoria_id = db.Column(Integer, ForeignKey("categoria.id", ondelete="CASCADE"), nullable = True)
+    categoria_id = db.Column(
+        Integer,
+        ForeignKey("categoria.id", ondelete="CASCADE"),
+        nullable=True
+    )
     tipo_ponderacion = db.Column(Boolean)
-    
     categoria: Mapped["Categoria"] = relationship("Categoria", back_populates="evaluaciones")
     notas: Mapped[list["Notas"]] = relationship("Notas", back_populates="evaluacion")

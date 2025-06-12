@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Float
+from sqlalchemy import Integer, ForeignKey, Float
 from sqlalchemy.orm import relationship, Mapped
-from  ..config import db
-from sqlalchemy import DateTime
+from db.config import db
 
 class Notas(db.Model):
     __tablename__ = "notas"
@@ -10,6 +9,5 @@ class Notas(db.Model):
     alumno_id = db.Column(Integer, ForeignKey("alumnos.id"), nullable=True)
     evaluacion_id = db.Column(Integer, ForeignKey("evaluaciones.id"), nullable=True)
     nota = db.Column(Float)
-    
     alumno: Mapped["Alumno"] = relationship(back_populates="notas")
     evaluacion: Mapped["Evaluacion"] = relationship("Evaluacion", back_populates="notas")

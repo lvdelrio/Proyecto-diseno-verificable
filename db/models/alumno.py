@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Integer, String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from  ..config import db
 from sqlalchemy import DateTime
+from  db.config import db
 
 class Alumno(db.Model):
     __tablename__ = "alumnos"
@@ -12,7 +12,8 @@ class Alumno(db.Model):
     fecha_ingreso: Mapped[DateTime] = mapped_column(DateTime)
 
     notas: Mapped[list["Notas"]] = relationship("Notas", back_populates="alumno")
-    notas_finales: Mapped[list["NotasFinales"]] = relationship("NotasFinales", back_populates="alumno")
+    notas_finales: Mapped[list["NotasFinales"]] = relationship("NotasFinales",
+                                                               back_populates="alumno")
     secciones: Mapped[list["Seccion"]] = relationship(
                                             "Seccion",
                                             secondary="alumno_seccion"
@@ -22,6 +23,5 @@ class Alumno(db.Model):
         back_populates="alumno",
         cascade="all, delete-orphan"
     )
-    
     def __repr__(self):
         return f"<Alumno(id={self.id}, nombre='{self.nombre}')>"

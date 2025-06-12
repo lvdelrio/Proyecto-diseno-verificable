@@ -1,17 +1,15 @@
 from datetime import datetime
 from flask import abort
 from sqlalchemy.orm import Session
-from ..models.alumno import Alumno
-from ..models.seccion import Seccion
-from ..models.alumno_seccion import AlumnoSeccion
-from ..controller.common_controller import get_seccion_by_id
-from ..services.curso_service import check_curso_cerrado
+from db.models.alumno import Alumno
+from db.controller.common_controller import get_seccion_by_id
+from db.services.curso_service import check_curso_cerrado
 
-def create_alumno(db: Session, name: str, email: str, fecha_ingreso: str = None, id: int = None):
-
-    fecha_ingreso_dt = datetime.strptime(fecha_ingreso, '%Y-%m-%d').date() if fecha_ingreso else None
-    if id is not None:
-        new_user = Alumno(id=id, nombre=name, email=email, fecha_ingreso=fecha_ingreso_dt)
+def create_alumno(db: Session, name: str, email: str,
+                fecha_ingreso: str = None, alumno_id: int = None):
+    fecha_ingreso_dt=datetime.strptime(fecha_ingreso, '%Y-%m-%d').date() if fecha_ingreso else None
+    if alumno_id is not None:
+        new_user = Alumno(id=alumno_id, nombre=name, email=email, fecha_ingreso=fecha_ingreso_dt)
     else:
         new_user = Alumno(nombre=name, email=email, fecha_ingreso=fecha_ingreso_dt)
     db.add(new_user)
@@ -93,9 +91,8 @@ def create_alumnos_from_json(db: Session, data: dict):
     for alumno in alumnos_json:
         create_alumno(
             db=db,
-            id=alumno["id"],
+            alumno_id=alumno["id"],
             name=alumno.get("nombre"),
             email=alumno.get("correo"),
             fecha_ingreso=f"{alumno.get('anio_ingreso')}-01-01"
         )
-

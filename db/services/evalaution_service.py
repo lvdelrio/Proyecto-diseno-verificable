@@ -1,4 +1,4 @@
-from ..utils.extract_number import extract_number_from_name
+from db.utils.extract_number import extract_number_from_name
 
 INDEX = 1
 

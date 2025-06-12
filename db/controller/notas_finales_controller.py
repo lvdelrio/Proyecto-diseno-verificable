@@ -30,7 +30,6 @@ def create_nota_final(db: Session, alumno_id: int, nota_final: float, curso_id: 
         db.rollback()
         abort(HTTPStatus.BAD_REQUEST, description=f"Error al guardar la nota final: {str(e)}")
 
-
 def update_nota_final(db: Session, alumno_id: int, curso_id: int):
     nota_final = calculate_average_nota_alumno(db, alumno_id)
     nota_final_obj = get_nota_final(db, alumno_id, curso_id)
@@ -64,7 +63,7 @@ def get_notas_finales_by_curso(db: Session, curso_id: int):
 def calculate_average_nota_alumno(db: Session, alumno_id: int):
     notas = get_notas_by_alumno(db, alumno_id)
     if not notas:
-        return None       
+        return None
     total = sum(nota.nota * nota.evaluacion.ponderacion for nota in notas)
     total_ponderation = sum(nota.evaluacion.ponderacion for nota in notas)
     return total / total_ponderation if total_ponderation else NOTA_MINIMA

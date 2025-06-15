@@ -7,6 +7,7 @@ from db.controller.evaluacion_controller import create_evaluacion
 from db.controller.common_controller import get_categorias_by_seccion_id
 from db.utils.prorrotear import prorate_values
 from db.utils.prorrotear import recalculate_seccion_ponderations
+from db.utils.math_methods import percentage_sum_from_seccion_by_id
 from utils.http_status import BAD_REQUEST, NOT_FOUND
 
 PERCENTAGE_TYPE = 1
@@ -61,15 +62,13 @@ def edit_categoria(categoria_id, tipo_categoria=None, seccion_id=None,
         db.session.rollback()
         abort(BAD_REQUEST, description=f"Error al actualizar la categoría: {str(e)}")
 
-def percentage_sum_from_seccion_by_id(session: Session, seccion_id: int):
-    categorias = get_categorias_by_seccion_id(session, seccion_id)
-    percentage_sum = sum(categoria.ponderacion for categoria in categorias)
-    return percentage_sum
-
 def delete_categoria(categoria_id):
     categoria = get_categoria(categoria_id)
-    db.session.delete(categoria)
-    db.session.commit()
+    if categoria:
+        db.session.delete(categoria)
+        db.session.commit()
+        return True
+    return False
 
 def get_last_categoria_by_seccion_id( seccion_id ):
     return Categoria.query.filter_by(seccion_id=seccion_id).order_by(Categoria.id.desc()).first()

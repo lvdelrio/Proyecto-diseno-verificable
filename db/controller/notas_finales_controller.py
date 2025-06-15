@@ -4,8 +4,8 @@ from flask import abort
 from db.controller.alumno_controller import get_alumno_by_id
 from db.models.notas_finales import NotasFinales
 from db.controller.notas_controller import get_notas_by_alumno
+from db.utils.math_methods import calculate_average_from_notas
 
-NOTA_MINIMA = 1
 def create_nota_final(db: Session, alumno_id: int, nota_final: float, curso_id: int = None):
     alumno = get_alumno_by_id(db, alumno_id)
     if not alumno:
@@ -62,8 +62,4 @@ def get_notas_finales_by_curso(db: Session, curso_id: int):
 
 def calculate_average_nota_alumno(db: Session, alumno_id: int):
     notas = get_notas_by_alumno(db, alumno_id)
-    if not notas:
-        return None
-    total = sum(nota.nota * nota.evaluacion.ponderacion for nota in notas)
-    total_ponderation = sum(nota.evaluacion.ponderacion for nota in notas)
-    return total / total_ponderation if total_ponderation else NOTA_MINIMA
+    return calculate_average_from_notas(notas)

@@ -3,7 +3,6 @@ from db.models.evaluacion import Evaluacion
 from db.controller.common_controller import (get_evaluaciones_by_categoria_id,
                                               get_categorias_by_seccion_id)
 
-
 def prorate_values(valores: list[float]):
     suma_actual = sum(valores)
     if suma_actual == 0:

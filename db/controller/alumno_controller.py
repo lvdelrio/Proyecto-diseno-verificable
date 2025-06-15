@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import abort
+from flask import abort, flash
 from sqlalchemy.orm import Session
 from db.models.alumno import Alumno
 from db.controller.common_controller import get_seccion_by_id
@@ -88,6 +88,9 @@ def create_alumno_seccion_from_json(db:Session, data:dict):
 
 def create_alumnos_from_json(db: Session, data: dict):
     alumnos_json = data.get("alumnos", [])
+    if not alumnos_json:
+        flash("No se encontraron alumnos en el JSON proporcionado.", "error")
+        return False
     for alumno in alumnos_json:
         create_alumno(
             db=db,

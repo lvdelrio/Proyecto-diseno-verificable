@@ -29,6 +29,7 @@ def register_profesor_in_seccion(db: Session, profesor_id: int, form_data: dict)
     seccion_ids = int(form_data.getlist("seccion_ids"))
     enrolled_sections = []
     errors = []
+    #Pylint dice (E1133:not-an-iterable) pero si transforma correctamente la lista de ids a ints.
     #seccion_ids es una lista de ids en int.
     for seccion_id in seccion_ids:
         success, message = enroll_profesor_in_seccion(db, profesor_id, seccion_ids)

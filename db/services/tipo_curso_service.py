@@ -5,7 +5,6 @@ from db.controller.tipo_curso_controller import (get_tipo_curso_by_id,
                                                  get_all_tipo_cursos,
                                                  enroll_tipo_curso_in_tipo_cursos)
 
-
 def get_tipo_curso_and_cursos_disponibles(db: Session, tipo_curso_id: int):
     tipo_curso_base = get_tipo_curso_by_id(db.session, tipo_curso_id)
 

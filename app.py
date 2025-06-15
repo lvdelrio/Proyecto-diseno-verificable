@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, current_app
+from flask import Flask, render_template, request, jsonify, current_app
 from flask_cors import CORS
 from dotenv import load_dotenv
 from db.config import db as config
@@ -37,7 +37,6 @@ app.register_blueprint(sala_route_blueprint, url_prefix="")
 app.register_blueprint(nota_route_blueprint, url_prefix="")
 app.register_blueprint(horario_route_blueprint, url_prefix="")
 
-
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5000"]}})
 
 init_db(app)
@@ -69,9 +68,6 @@ def empty_db():
     session = config.session
     result = reset_database(session)
     return jsonify(result)
-
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)

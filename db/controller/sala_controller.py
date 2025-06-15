@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from ..models.salas import Sala
+from db.models.salas import Sala
 
 def create_sala(db: Session, nombre: str, capacidad: int):
     sala = Sala(nombre=nombre, capacidad=capacidad)

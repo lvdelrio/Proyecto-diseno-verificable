@@ -1,6 +1,6 @@
 from sqlalchemy import Integer, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from ..config import db
+from db.config import db
 
 class ProfesorSeccion(db.Model):
     __tablename__ = "profesor_seccion"
@@ -13,4 +13,8 @@ class ProfesorSeccion(db.Model):
     seccion: Mapped["Seccion"] = relationship("Seccion")
 
     def __repr__(self):
-        return f"<ProfesorSeccion(id={self.id}, id_profesor={self.id_profesor}, seccion_id={self.seccion_id})>"
+        return (
+            f"<ProfesorSeccion(id={self.id}, "
+            f"id_profesor={self.id_profesor}, "
+            f"seccion_id={self.seccion_id})>"
+        )

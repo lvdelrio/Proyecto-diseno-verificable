@@ -1,6 +1,6 @@
-from ..config import db
-from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy import Integer, String, Text
 from sqlalchemy.orm import relationship, mapped_column, Mapped
+from db.config import db
 
 class TipoCurso(db.Model):
     __tablename__ = 'tipo_cursos'

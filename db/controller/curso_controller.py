@@ -1,17 +1,18 @@
-from sqlalchemy.orm import Session
-from ..models.curso import Curso
+from http import HTTPStatus
 from flask import abort
-from utils.http_status import BAD_REQUEST, NOT_FOUND, FORBIDDEN
+from sqlalchemy.orm import Session
+from db.models.curso import Curso
 
-def create_curso(db: Session, tipo_curso_id: int, fecha_impartida: int, semestre_impartido: str, id: int = None):
-    if id is not None:
-        new_curso = Curso(id=id, 
-                        tipo_curso_id=tipo_curso_id, 
-                        fecha_impartida=fecha_impartida, 
+def create_curso(db: Session, tipo_curso_id: int, fecha_impartida: int,
+                  semestre_impartido: str, curso_id: int = None):
+    if curso_id is not None:
+        new_curso = Curso(id=curso_id,
+                        tipo_curso_id=tipo_curso_id,
+                        fecha_impartida=fecha_impartida,
                         semestre_impartido=semestre_impartido)
     else:
-        new_curso = Curso(tipo_curso_id=tipo_curso_id, 
-                          fecha_impartida=fecha_impartida, 
+        new_curso = Curso(tipo_curso_id=tipo_curso_id,
+                          fecha_impartida=fecha_impartida,
                           semestre_impartido=semestre_impartido)
     db.add(new_curso)
     db.commit()
@@ -24,12 +25,13 @@ def get_curso_by_id(db: Session, curso_id: int):
 def get_all_cursos(db: Session):
     return db.query(Curso).all()
 
-def edit_curso_by_id(db: Session, curso_id: int, tipo_curso_id: int, fecha_impartida: int, semestre_impartido: str):
+def edit_curso_by_id(db: Session, curso_id: int, tipo_curso_id: int,
+                      fecha_impartida: int, semestre_impartido: str):
     curso = get_curso_by_id(db, curso_id)
     if curso:
         if curso.cerrado:
-            abort(FORBIDDEN, description="El curso está cerrado y ya no se puede modificar")
-        
+            abort(HTTPStatus.FORBIDDEN,
+                  description="El curso está cerrado y ya no se puede modificar")
         curso.tipo_curso_id=tipo_curso_id
         curso.fecha_impartida=fecha_impartida
         curso.semestre_impartido = semestre_impartido
@@ -71,7 +73,7 @@ def create_cursos_from_json(db: Session, data: dict):
     for instancia in instancias_json:
         create_curso(
             db=db,
-            id=instancia["id"],
+            curso_id=instancia["id"],
             tipo_curso_id=instancia.get("curso_id"),
             fecha_impartida=data.get("año"),
             semestre_impartido=data.get("semestre")

@@ -1,6 +1,6 @@
-from ..config import db
-from sqlalchemy import Integer, String, Text, Float, ForeignKey
+from sqlalchemy import Integer, Float, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from db.config import db
 class NotasFinales(db.Model):
     __tablename__ = 'notas_finales'
 

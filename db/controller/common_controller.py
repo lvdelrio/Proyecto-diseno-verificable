@@ -1,15 +1,10 @@
 from flask import abort
 from sqlalchemy.orm import Session
-from ..models.seccion import Seccion
-from ..models.profesor import Profesor
-from ..models.alumno_seccion import AlumnoSeccion
-from ..models.evaluacion import Evaluacion
-from ..models.curso import Curso
-from ..models.categoria import Categoria
-from ..models.notas import Notas
-from ..models.profesor_seccion import ProfesorSeccion
-from ..models.categoria import Categoria
-from ..controller.curso_controller import get_curso_by_id
+from db.models.seccion import Seccion
+from db.models.profesor import Profesor
+from db.models.alumno_seccion import AlumnoSeccion
+from db.models.evaluacion import Evaluacion
+from db.models.categoria import Categoria
 
 def get_seccion_by_id(db: Session, new_seccion: int):
     return db.query(Seccion).filter(Seccion.id == new_seccion).first()

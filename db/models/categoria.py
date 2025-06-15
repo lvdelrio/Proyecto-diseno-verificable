@@ -1,6 +1,6 @@
 from sqlalchemy import Integer, String, ForeignKey, Float, Boolean
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from ..config import db
+from db.config import db
 
 class Categoria(db.Model):
     __tablename__ = "categoria"
@@ -12,7 +12,9 @@ class Categoria(db.Model):
     tipo_ponderacion: Mapped[bool] = mapped_column(Boolean, default=False)
 
     seccion: Mapped["Seccion"] = relationship("Seccion", back_populates="categorias")
-    evaluaciones: Mapped[list["Evaluacion"]] = relationship("Evaluacion", back_populates="categoria", cascade="all, delete-orphan")
+    evaluaciones: Mapped[list["Evaluacion"]] = relationship("Evaluacion",
+                                                            back_populates="categoria",
+                                                            cascade="all, delete-orphan")
 
     def __repr__(self):
         return (f"<Categoria (id={self.id}, tipo_categoria='{self.tipo_categoria}', "

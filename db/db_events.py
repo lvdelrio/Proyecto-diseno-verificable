@@ -1,7 +1,6 @@
+from http import HTTPStatus
 from flask import abort
 from sqlalchemy import event
-from sqlalchemy.exc import IntegrityError
-from utils.http_status import FORBIDDEN
 from .models.seccion import Seccion
 from .models.categoria import Categoria
 from .models.evaluacion import Evaluacion
@@ -21,7 +20,7 @@ def verificar_curso_abierto(mapper, connection, target):
     if curso_id:
         curso = get_curso_by_id(session, curso_id)
         if curso and curso.cerrado:
-            abort(FORBIDDEN, description=(
+            abort(HTTPStatus.FORBIDDEN, description=(
                 f"El curso id {curso_id} está cerrado y no se puede modificar"))
 
 def get_curso_id(target):

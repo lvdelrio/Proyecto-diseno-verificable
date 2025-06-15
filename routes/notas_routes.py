@@ -1,10 +1,12 @@
+from http import HTTPStatus
 from flask import Blueprint, request, render_template, redirect, url_for, abort, jsonify
 from db.config import db as config
-from db.controller.notas_controller import (create_nota, get_nota_by_id, get_all_notas,
-                                        delete_nota, load_notas_from_json)
+from db.controller.notas_controller import (
+    create_nota, get_nota_by_id, get_all_notas,
+    delete_nota, load_notas_from_json
+    )
 from db.controller.alumno_controller import get_all_alumnos
 from db.controller.evaluacion_controller import get_all_evaluaciones
-from http import HTTPStatus
 
 nota_route_blueprint = Blueprint("Notas", __name__)
 GET_NOTAS = "Notas.get_notas"
@@ -14,10 +16,10 @@ def get_notas():
     notas = get_all_notas(config.session)
     alumnos = get_all_alumnos(config.session)
     evaluaciones = get_all_evaluaciones(config.session)
-    
-    return render_template("Notas/notas.html", 
-                          notas=notas, 
-                          alumnos=alumnos, 
+
+    return render_template("Notas/notas.html",
+                          notas=notas,
+                          alumnos=alumnos,
                           evaluaciones=evaluaciones)
 
 @nota_route_blueprint.route('/nota/<int:nota_id>')

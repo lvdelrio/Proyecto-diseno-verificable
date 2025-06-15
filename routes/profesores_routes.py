@@ -1,19 +1,18 @@
+from http import HTTPStatus
 from flask import Blueprint, request, render_template, redirect, url_for, abort, jsonify
 from db.config import db as config
-from db.controller.curso_controller import get_all_cursos
-from db.controller.seccion_controller import get_all_secciones_by_curso_id
-from db.controller.common_controller import get_profesor_by_id
-from db.services.profesor_service import get_profesor_and_available_cursos_with_secciones, register_profesor_in_seccion
+from db.services.profesor_service import (
+    get_profesor_and_available_cursos_with_secciones,
+    register_profesor_in_seccion
+    )
 from db.controller.profesor_controller import (
-    create_profesor, 
-    edit_profesor_by_id, 
-    delete_profesor_by_id, 
-    get_paginated_profesores, 
-    enroll_profesor_in_seccion,
+    create_profesor,
+    edit_profesor_by_id,
+    delete_profesor_by_id,
+    get_paginated_profesores,
     create_profesores_from_json,
     unregister_profesor_in_seccion
 )
-from http import HTTPStatus
 
 profesor_route_blueprint = Blueprint("Profesores", __name__)
 
@@ -23,22 +22,23 @@ def get_profesores(pagina=1):
     profesores_per_page = 10
 
     result_paging = get_paginated_profesores(
-        session=config.session,  
+        session=config.session,
         page=pagina,
         per_page=profesores_per_page
     )
-    
+
     return render_template(
         "Profesores/profesores.html",
-        profesores=result_paging.items,        
-        pagina_actual=pagina,                      
-        total_paginas=result_paging.pages,    
-        total_profesores=result_paging.total   
+        profesores=result_paging.items,
+        pagina_actual=pagina,
+        total_paginas=result_paging.pages,
+        total_profesores=result_paging.total
     )
 
 @profesor_route_blueprint.route('/profesor/<int:profesor_id>')
 def view_profesor(profesor_id):
-    profesor, cursos_with_secciones = get_profesor_and_available_cursos_with_secciones(config, profesor_id)
+    profesor, cursos_with_secciones = get_profesor_and_available_cursos_with_secciones(config,
+                                                                                       profesor_id)
     return render_template(
         "Profesores/detalle_profesor.html",
         profesor=profesor,
@@ -83,4 +83,4 @@ def load_profesores():
 def unregister_profesor(seccion_id):
     profesor_id = request.form.get("profesor_id")
     unregister_profesor_in_seccion(config.session, seccion_id, profesor_id)
-    return redirect(url_for('Profesores.view_profesor', profesor_id=profesor_id))   
+    return redirect(url_for('Profesores.view_profesor', profesor_id=profesor_id))

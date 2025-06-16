@@ -1,5 +1,5 @@
-from ..config import db
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy.orm import relationship, Mapped
+from db.config import db
 
 class Profesor(db.Model):
     __tablename__ = 'profesores'

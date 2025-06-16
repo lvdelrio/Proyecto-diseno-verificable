@@ -1,12 +1,13 @@
 from flask import abort
 from sqlalchemy.orm import Session
-from ..config import db
-from ..models.categoria import Categoria
-from ..models.seccion import Seccion
-from ..controller.evaluacion_controller import create_evaluacion
-from ..controller.common_controller import get_categorias_by_seccion_id
-from ..utils.prorrotear import prorate_values
+from db.config import db
+from db.models.categoria import Categoria
+from db.models.seccion import Seccion
+from db.controller.evaluacion_controller import create_evaluacion
+from db.controller.common_controller import get_categorias_by_seccion_id
+from db.utils.prorrotear import prorate_values
 from db.utils.prorrotear import recalculate_seccion_ponderations
+from db.utils.math_methods import percentage_sum_from_seccion_by_id
 from utils.http_status import BAD_REQUEST, NOT_FOUND
 
 PERCENTAGE_TYPE = 1
@@ -16,7 +17,7 @@ def create_categoria(tipo_categoria, seccion, ponderacion, tipo_ponderacion):
     nueva_categoria = Categoria(
         tipo_categoria=tipo_categoria,
         seccion_id=seccion.id,
-        ponderacion=ponderacion, 
+        ponderacion=ponderacion,
         tipo_ponderacion=tipo_ponderacion
     )
     if not validation_categoria(nueva_categoria, seccion.id):
@@ -36,7 +37,8 @@ def get_categoria(categoria_id):
 def get_all_categorias_by_seccion_id(seccion_id):
     return Categoria.query.filter_by(seccion_id=seccion_id).all()
 
-def edit_categoria(categoria_id, tipo_categoria=None, seccion_id=None, ponderacion=None, tipo_ponderacion=None):
+def edit_categoria(categoria_id, tipo_categoria=None, seccion_id=None,
+                    ponderacion=None, tipo_ponderacion=None):
     categoria = get_categoria(categoria_id)
     if not categoria:
         abort(NOT_FOUND, description="Categoría no encontrada")
@@ -58,18 +60,15 @@ def edit_categoria(categoria_id, tipo_categoria=None, seccion_id=None, ponderaci
         return categoria
     except Exception as e:
         db.session.rollback()
-        abort(BAD_REQUEST, description=f"Error al actualizar la categoría: {str(e)}") 
-
-def percentage_sum_from_seccion_by_id(db: Session, seccion_id: int):
-    categorias = get_categorias_by_seccion_id(db, seccion_id)
-    percentage_sum = sum(categoria.ponderacion for categoria in categorias)
-    return percentage_sum
+        abort(BAD_REQUEST, description=f"Error al actualizar la categoría: {str(e)}")
 
 def delete_categoria(categoria_id):
     categoria = get_categoria(categoria_id)
-    db.session.delete(categoria)
-    db.session.commit()
-    return
+    if categoria:
+        db.session.delete(categoria)
+        db.session.commit()
+        return True
+    return False
 
 def get_last_categoria_by_seccion_id( seccion_id ):
     return Categoria.query.filter_by(seccion_id=seccion_id).order_by(Categoria.id.desc()).first()
@@ -89,9 +88,11 @@ def update_tipo_ponderacion_in_seccion(seccion_id: int, nuevo_tipo: bool):
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        abort(BAD_REQUEST, description=f"Error al actualizar tipo de ponderación en la sección: {str(e)}")
+        abort(BAD_REQUEST, description=
+        f"Error al actualizar tipo de ponderación en la sección: {str(e)}")
 
-def create_multiple_categorias_and_evaluaciones(db: Session, seccion: Seccion, evaluacion_data: dict):
+def create_multiple_categorias_and_evaluaciones(session: Session, seccion: Seccion,
+                                                evaluacion_data: dict):
     for categoria_json in evaluacion_data.get("combinacion_topicos", []):
         categoria = create_categoria(
             seccion=seccion,
@@ -108,7 +109,7 @@ def create_multiple_categorias_and_evaluaciones(db: Session, seccion: Seccion, e
                 valores = prorate_values( evaluacion_topico["valores"] )
             for i in range(evaluacion_topico["cantidad"]):
                 create_evaluacion(
-                    db,
+                    session,
                     nombre=f"{categoria.tipo_categoria} {i + 1}",
                     ponderacion=valores[i],
                     opcional=not evaluacion_topico["obligatorias"][i],

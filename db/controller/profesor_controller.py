@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
-from ..models.profesor import Profesor
-from ..controller.common_controller import get_seccion_by_id, get_profesor_by_id
-def create_profesor(db: Session, nombre: str, email: str, id: int = None):
-    if id is not None:
-        new_profesor = Profesor(id=id, nombre=nombre, email=email)
+from db.models.profesor import Profesor
+from db.controller.common_controller import get_seccion_by_id, get_profesor_by_id
+def create_profesor(db: Session, nombre: str, email: str, profesor_id: int = None):
+    if profesor_id is not None:
+        new_profesor = Profesor(id=profesor_id, nombre=nombre, email=email)
     else:
         new_profesor= Profesor(nombre=nombre, email=email)
     db.add(new_profesor)
@@ -75,7 +75,7 @@ def create_profesores_from_json(db: Session, data: dict):
     for profesor in profesores_json:
         create_profesor(
             db=db,
-            id=profesor["id"],
+            profesor_id=profesor["id"],
             nombre=profesor.get("nombre"),
             email=profesor.get("correo")
         )

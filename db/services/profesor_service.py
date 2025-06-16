@@ -1,15 +1,15 @@
+from http import HTTPStatus
 from flask import abort
 from sqlalchemy.orm import Session
-from ..controller.curso_controller import get_all_cursos
-from ..controller.seccion_controller import get_all_secciones_by_curso_id
-from ..controller.common_controller import get_profesor_by_id
-from ..controller.profesor_controller import enroll_profesor_in_seccion
-from utils.http_status import BAD_REQUEST, NOT_FOUND
+from db.controller.curso_controller import get_all_cursos
+from db.controller.seccion_controller import get_all_secciones_by_curso_id
+from db.controller.common_controller import get_profesor_by_id
+from db.controller.profesor_controller import enroll_profesor_in_seccion
 
 def get_profesor_and_available_cursos_with_secciones(db: Session, profesor_id: int):
     profesor = get_profesor_by_id(db.session, profesor_id)
     if profesor is None:
-        abort(NOT_FOUND, description="Profesor no encontrado.")
+        abort(HTTPStatus.NOT_FOUND, description="Profesor no encontrado.")
 
     profesor_seccion_ids = {seccion.id for seccion in profesor.secciones}
 
@@ -29,7 +29,8 @@ def register_profesor_in_seccion(db: Session, profesor_id: int, form_data: dict)
     seccion_ids = int(form_data.getlist("seccion_ids"))
     enrolled_sections = []
     errors = []
-
+    #Pylint dice (E1133:not-an-iterable) pero si transforma correctamente la lista de ids a ints.
+    #seccion_ids es una lista de ids en int.
     for seccion_id in seccion_ids:
         success, message = enroll_profesor_in_seccion(db, profesor_id, seccion_ids)
         if success:

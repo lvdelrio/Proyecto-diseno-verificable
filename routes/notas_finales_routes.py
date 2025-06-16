@@ -1,7 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for
-from db.config import db as config
-
-
+from flask import Blueprint, redirect, url_for
 
 nota_final_route_blueprint  = Blueprint("Notas_Finales", __name__)
 

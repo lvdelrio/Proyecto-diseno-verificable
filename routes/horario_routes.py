@@ -1,12 +1,14 @@
-from flask import Blueprint, jsonify
 from collections import defaultdict
+from flask import Blueprint, jsonify
 from db.config import db as config
-from db.controller.tipo_curso_controller import get_all_tipo_cursos
-from db.controller.curso_controller import get_all_cursos
 from db.controller.seccion_controller import get_all_secciones
-from db.controller.alumno_controller import get_all_alumnos
 from db.controller.sala_controller import get_all_salas
-from routes.utils.horario import assign_section_to_horario, export_horario_to_csv, print_excluded_seccion_header, row_display_format
+from routes.utils.horario import (
+    assign_section_to_horario,
+    export_horario_to_csv,
+    print_excluded_seccion_header,
+    row_display_format
+    )
 
 CREDITOS_DEFAULT = 0
 
@@ -44,7 +46,7 @@ def create_horario():
             room_occupancy, teacher_occupancy,
             student_occupancy, horario_by_section
         )
-        if(not success):
+        if not success:
             row_display_format(seccion.id,
                                 seccion.curso.tipo_curso.codigo,
                                 seccion.curso.tipo_curso.descripcion,

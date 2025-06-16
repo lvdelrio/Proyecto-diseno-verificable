@@ -1,12 +1,15 @@
 from sqlalchemy.orm import Session
-from ..models.tipo_curso import TipoCurso
-from ..models.requisitos import CursoRequisito
+from db.models.tipo_curso import TipoCurso
+from db.models.requisitos import CursoRequisito
 
-def create_tipo_curso(db: Session, tipo_curso_code: str, description: str, credits: int, id: int = None):
-    if id is not None:
-        new_tipo_curso = TipoCurso(id=id, codigo=tipo_curso_code, descripcion=description, creditos=credits)
+def create_tipo_curso(db: Session, tipo_curso_code: str, description: str,
+                      tipo_curso_credits: int, tipo_curso_id: int = None):
+    if tipo_curso_id is not None:
+        new_tipo_curso = TipoCurso(id=tipo_curso_id, codigo=tipo_curso_code,
+                                   descripcion=description, creditos=tipo_curso_credits)
     else:
-        new_tipo_curso= TipoCurso(codigo=tipo_curso_code, descripcion=description, creditos=credits)
+        new_tipo_curso= TipoCurso(codigo=tipo_curso_code, descripcion=description,
+                                  creditos=tipo_curso_credits)
     db.add(new_tipo_curso)
     db.commit()
     db.refresh(new_tipo_curso)
@@ -63,10 +66,10 @@ def create_tipo_cursos_from_json(db: Session, data: dict):
     for curso_data in cursos_json:
         tipo_curso = create_tipo_curso(
             db=db,
-            id=curso_data["id"],
+            tipo_curso_id=curso_data["id"],
             tipo_curso_code=curso_data.get("codigo"),
             description=curso_data.get("descripcion"),
-            credits=curso_data.get("creditos")
+            tipo_curso_credits=curso_data.get("creditos")
         )
         tipos_curso_map[curso_data["codigo"]] = tipo_curso
 
@@ -79,7 +82,7 @@ def create_tipo_cursos_from_json(db: Session, data: dict):
             )
 
 def create_requisito(db: Session, tipo_curso_id: int, curso_requisito_id: int):
-    nuevo_requisito = CursoRequisito(tipo_curso_id=tipo_curso_id, 
+    nuevo_requisito = CursoRequisito(tipo_curso_id=tipo_curso_id,
                                      curso_requisito_id=curso_requisito_id)
     db.add(nuevo_requisito)
     db.commit()

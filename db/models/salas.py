@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Integer, String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from ..config import db
+from db.config import db
 
 class Sala(db.Model):
     __tablename__ = 'salas'

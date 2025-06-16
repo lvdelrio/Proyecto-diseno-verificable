@@ -9,6 +9,7 @@ from db.controller.evaluacion_controller import get_evaluacion_by_id
 @event.listens_for(Notas, 'after_delete')
 # Los argumentos mapper, connection y target son necesarios para el evento de SQLAlchemy.
 # a pesar que no se usan directamente en la función, son parte del evento.
+# Se tienen que definir para que SQLAlchemy pueda llamar a la función correctamente.
 def handle_nota_change(mapper, connection, target):
     db = Session(bind=connection)
     evaluacion = get_evaluacion_by_id(db, target.evaluacion_id)

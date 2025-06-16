@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from flask import abort
+from flask import abort, flash
 from sqlalchemy.orm import Session
 from db.models.curso import Curso
 
@@ -68,7 +68,8 @@ def open_curso(db: Session, curso_id: int):
 
 def create_cursos_from_json(db: Session, data: dict):
     if not data or "instancias" not in data:
-        raise ValueError("No se recibió JSON válido o no contiene 'instancias'.")
+        flash("No se recibió JSON válido o no contiene 'instancias'.", "error")
+        return False
     instancias_json = data.get("instancias", [])
     for instancia in instancias_json:
         create_curso(

@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from flask import flash
 from db.models.tipo_curso import TipoCurso
 from db.models.requisitos import CursoRequisito
 
@@ -62,7 +63,9 @@ def enroll_tipo_curso_in_tipo_cursos(db: Session, tipo_curso_base_id: int, tipo_
 def create_tipo_cursos_from_json(db: Session, data: dict):
     cursos_json = data.get("cursos", [])
     tipos_curso_map = {}
-
+    if not cursos_json:
+        flash("No se encontraron tipo de cursos para cargar en el JSON proporcionado.", "error")
+        return
     for curso_data in cursos_json:
         tipo_curso = create_tipo_curso(
             db=db,

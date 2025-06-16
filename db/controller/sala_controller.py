@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from flask import flash
 from db.models.salas import Sala
 
 def create_sala(db: Session, nombre: str, capacidad: int):
@@ -34,9 +35,12 @@ def edit_sala_by_id(db: Session, sala_id: int, nombre: str, capacidad: int):
 
 def load_salas_from_json(db: Session, data: dict):
     sala_data = data.get("salas", [])
+    if not sala_data:
+        flash("No se encontraron salas para cargar en el JSON proporcionado.", "error")
+        return
     for sala in sala_data:
         create_sala(
             db,
-            nombre=sala["nombre"],
-            capacidad=sala["capacidad"]
+            nombre=sala.get("nombre"),
+            capacidad=sala.get("capacidad")
         )

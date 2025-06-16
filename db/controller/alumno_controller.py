@@ -79,6 +79,9 @@ def unregister_alumno_in_seccion(db: Session, alumno_id: int, seccion_id: int):
 
 def create_alumno_seccion_from_json(db:Session, data:dict):
     alumnos_seccion_json = data.get("alumnos_seccion", [])
+    if not alumnos_seccion_json:
+        flash("No se encontraron inscripciones de alumnos en el JSON proporcionado.", "error")
+        return False
     for alumno_seccion in alumnos_seccion_json:
         alumno_id = alumno_seccion["alumno_id"]
         seccion_id = alumno_seccion["seccion_id"]

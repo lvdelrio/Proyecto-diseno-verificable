@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from flask import flash
 from db.models.notas import Notas
 from db.services.evalaution_service import get_evaluacion_by_instancia
 from db.controller.common_controller import get_evaluaciones_by_categoria_id
@@ -48,6 +49,9 @@ def delete_nota(db: Session, nota_id: int):
 
 def load_notas_from_json(db: Session, data: dict):
     notas_data = data.get("notas", [])
+    if not notas_data:
+        flash("No se encontraron notas para cargar en el JSON proporcionado.", "error")
+        return
     for nota_data in notas_data:
         alumno_id = nota_data.get("alumno_id")
         categoria_id = nota_data.get("topico_id")

@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from flask import flash
 from db.models.seccion import Seccion
 from db.controller.profesor_controller import enroll_profesor_in_seccion
 from db.controller.categoria_controller import create_multiple_categorias_and_evaluaciones
@@ -56,6 +57,9 @@ def curso_from_seccion_id(db: Session, seccion_id: int):
 
 def create_secciones_from_json(db: Session, data: dict):
     secciones_json = data.get("secciones", [])
+    if not secciones_json:
+        flash("No se encontraron secciones para cargar en el JSON proporcionado.", "error")
+        return
     for seccion_data in secciones_json:
         process_seccion_and_relations(db, seccion_data)
     db.commit()

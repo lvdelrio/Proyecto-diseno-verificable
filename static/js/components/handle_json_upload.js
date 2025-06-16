@@ -13,5 +13,5 @@ export async function handleServerError(response) {
 export function handleUploadError(error) {
     alert('Error: ' + error.message);
     console.error('Error:', error);
+    window.location.reload();
 }
-

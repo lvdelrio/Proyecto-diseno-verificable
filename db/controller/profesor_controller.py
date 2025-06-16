@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from flask import flash
 from db.models.profesor import Profesor
 from db.controller.common_controller import get_seccion_by_id, get_profesor_by_id
 def create_profesor(db: Session, nombre: str, email: str, profesor_id: int = None):
@@ -71,7 +72,9 @@ def unregister_profesor_in_seccion(db: Session, seccion_id: int, profesor_id: in
 
 def create_profesores_from_json(db: Session, data: dict):
     profesores_json = data.get("profesores", [])
-
+    if not profesores_json:
+        flash("No se encontraron profesores para cargar en el JSON proporcionado.", "error")
+        return
     for profesor in profesores_json:
         create_profesor(
             db=db,

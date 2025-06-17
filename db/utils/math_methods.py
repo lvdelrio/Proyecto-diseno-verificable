@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from collections import defaultdict
 from db.controller.common_controller import get_categorias_by_seccion_id
 NOTA_MINIMA = 1
+NO_PONDERACION = 0
 
 def percentage_sum_from_seccion_by_id(session: Session, seccion_id: int):
     categorias = get_categorias_by_seccion_id(session, seccion_id)
@@ -39,7 +40,7 @@ def calculate_average_from_notas(notas, curso_id):
         sum_eval = sum(n.nota * n.evaluacion.ponderacion for n in notas_de_categoria)
         sum_ponderacion = sum(n.evaluacion.ponderacion for n in notas_de_categoria)
 
-        if sum_ponderacion == 0:
+        if sum_ponderacion == NO_PONDERACION:
             continue
 
         promedio_categoria = sum_eval / sum_ponderacion

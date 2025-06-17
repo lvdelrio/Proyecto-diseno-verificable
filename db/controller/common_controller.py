@@ -46,7 +46,7 @@ def get_notas_finales_by_seccion_id(db: Session, seccion_id: int):
         .all()
     )
 
-def test_print_datos_report(db: Session, alumno_id: int):
+def get_alumno_report_data_by_alumno_id(db: Session, alumno_id: int):
     return (
         db.query(
             TipoCurso.codigo,

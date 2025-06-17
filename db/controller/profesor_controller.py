@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
-from flask import flash
 from db.models.profesor import Profesor
 from db.controller.common_controller import get_seccion_by_id, get_profesor_by_id
+from db.utils.json_validator import validate_json
+
 def create_profesor(db: Session, nombre: str, email: str, profesor_id: int = None):
     if profesor_id is not None:
         new_profesor = Profesor(id=profesor_id, nombre=nombre, email=email)
@@ -71,10 +72,11 @@ def unregister_profesor_in_seccion(db: Session, seccion_id: int, profesor_id: in
     return True, "Profesor removido de la sección."
 
 def create_profesores_from_json(db: Session, data: dict):
+    json_is_valid, message = validate_json(data, "profesores")
+    if not json_is_valid:
+        return False, message
+
     profesores_json = data.get("profesores", [])
-    if not profesores_json:
-        flash("No se encontraron profesores para cargar en el JSON proporcionado.", "error")
-        return
     for profesor in profesores_json:
         create_profesor(
             db=db,
@@ -82,3 +84,4 @@ def create_profesores_from_json(db: Session, data: dict):
             nombre=profesor.get("nombre"),
             email=profesor.get("correo")
         )
+    return True, f"{len(profesores_json)} Profesores cargados correctamente"

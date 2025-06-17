@@ -54,5 +54,9 @@ def delete_sala_route(sala_id):
 @sala_route_blueprint.route("/importar_salas", methods=["POST"])
 def load_salas():
     data = request.get_json()
-    load_salas_from_json(config.session, data)
-    return jsonify({"message": "Salas importadas exitosamente."}), 201
+    if not data:
+        return jsonify({"message": "JSON vacío o inválido"}), HTTPStatus.BAD_REQUEST
+    success, message = load_salas_from_json(config.session, data)
+    if not success:
+        return jsonify({"message": message}), HTTPStatus.BAD_REQUEST
+    return jsonify({"message": message}), HTTPStatus.CREATED

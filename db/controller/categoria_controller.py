@@ -4,7 +4,6 @@ from db.config import db
 from db.models.categoria import Categoria
 from db.models.seccion import Seccion
 from db.controller.evaluacion_controller import create_evaluacion
-from db.controller.common_controller import get_categorias_by_seccion_id
 from db.utils.prorrotear import prorate_values
 from db.utils.prorrotear import recalculate_seccion_ponderations
 from db.utils.math_methods import percentage_sum_from_seccion_by_id

@@ -50,17 +50,23 @@ def delete_curso(curso_id):
 def load_cursos():
     data = request.json
     if not data:
-        abort(HTTPStatus.BAD_REQUEST, description="No se recibió JSON válido.")
-    create_cursos_from_json(config.session, data)
-    return jsonify({"message": "Cursos cargados correctamente"}), 201
+        return jsonify({"message": "JSON vacío o inválido"}), HTTPStatus.BAD_REQUEST
 
-@curso_route_blueprint.route("/imporar_alumno_in_seccion", methods=["POST"])
+    success, message = create_cursos_from_json(config.session, data)
+    if not success:
+        return jsonify({"message": message}), HTTPStatus.BAD_REQUEST
+    return jsonify({"message": message}), HTTPStatus.CREATED
+
+@curso_route_blueprint.route("/importar_alumno_in_seccion", methods=["POST"])
 def load_alumno_in_seccion():
     data = request.json
     if not data:
-        abort(HTTPStatus.BAD_REQUEST, description="No se recibió JSON válido.")
-    create_alumno_seccion_from_json(config.session, data)
-    return jsonify({"message": "Alumnos inscritos correctamente"}), 201
+        return jsonify({"message": "JSON vacío o inválido"}), HTTPStatus.BAD_REQUEST
+
+    success, message = create_alumno_seccion_from_json(config.session, data)
+    if not success:
+        return jsonify({"message": message}), HTTPStatus.BAD_REQUEST
+    return jsonify({"message": message}), HTTPStatus.CREATED
 
 @curso_route_blueprint.route('/curso/<int:curso_id>/toggle_estado', methods=['POST'])
 def toggle_curso_estado(curso_id):

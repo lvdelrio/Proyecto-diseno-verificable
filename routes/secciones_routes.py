@@ -41,11 +41,13 @@ def delete_seccion(seccion_id):
     delete_seccion_by_id(config.session, seccion_id)
     return redirect(url_for(CURSOS_VIEW, curso_id=curso_id, tab="secciones"))
 
-@seccion_route_blueprint.route( '/importar_secciones', methods=['POST'] )
+@seccion_route_blueprint.route('/importar_secciones', methods=['POST'])
 def importar_secciones():
     data = request.json
     if not data:
-        abort(HTTPStatus.BAD_REQUEST, description="No se recibió JSON válido.")
+        return jsonify({"message": "JSON vacío o inválido"}), HTTPStatus.BAD_REQUEST
 
-    create_secciones_from_json(config.session, data)
-    return jsonify({"message": "Secciones cargadas correctamente"}), 201
+    success, message = create_secciones_from_json(config.session, data)
+    if not success:
+        return jsonify({"message": message}), HTTPStatus.BAD_REQUEST
+    return jsonify({"message": message}), HTTPStatus.CREATED

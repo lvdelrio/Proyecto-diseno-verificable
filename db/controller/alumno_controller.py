@@ -1,9 +1,10 @@
 from datetime import datetime
-from flask import abort, flash
+from flask import flash
 from sqlalchemy.orm import Session
 from db.models.alumno import Alumno
 from db.controller.common_controller import get_seccion_by_id
 from db.services.curso_service import check_curso_cerrado
+from db.utils.json_validator import validate_json
 
 def create_alumno(db: Session, name: str, email: str,
                 fecha_ingreso: str = None, alumno_id: int = None):
@@ -77,23 +78,26 @@ def unregister_alumno_in_seccion(db: Session, alumno_id: int, seccion_id: int):
     db.commit()
     return True, "Alumno removido de la sección."
 
-def create_alumno_seccion_from_json(db:Session, data:dict):
-    alumnos_seccion_json = data.get("alumnos_seccion", [])
-    if not alumnos_seccion_json:
-        flash("No se encontraron inscripciones de alumnos en el JSON proporcionado.", "error")
-        return False
-    for alumno_seccion in alumnos_seccion_json:
+def create_alumno_seccion_from_json(db, data):
+    json_is_valid, message = validate_json(data, 'alumnos_seccion')
+    if not json_is_valid:
+        return False, message
+    alumnos_seccion = data.get("alumnos_seccion", [])
+    
+    for alumno_seccion in alumnos_seccion:
         alumno_id = alumno_seccion["alumno_id"]
         seccion_id = alumno_seccion["seccion_id"]
         curso_id_of_seccion = get_seccion_by_id(db, seccion_id).curso_id
         check_curso_cerrado(db, curso_id=curso_id_of_seccion)
         enroll_alumno_in_seccion(db, alumno_id, seccion_id)
+    return True, f"{len(alumnos_seccion)} alumnos inscritos correctamente"
 
 def create_alumnos_from_json(db: Session, data: dict):
+    json_is_valid, message = validate_json(data, 'alumnos')
+    if not json_is_valid:
+        return False, message
     alumnos_json = data.get("alumnos", [])
-    if not alumnos_json:
-        flash("No se encontraron alumnos en el JSON proporcionado.", "error")
-        return False
+
     for alumno in alumnos_json:
         create_alumno(
             db=db,
@@ -102,3 +106,4 @@ def create_alumnos_from_json(db: Session, data: dict):
             email=alumno.get("correo"),
             fecha_ingreso=f"{alumno.get('anio_ingreso')}-01-01"
         )
+    return True, f"{len(alumnos_json)} alumnos cargados correctamente"

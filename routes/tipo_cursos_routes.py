@@ -59,7 +59,9 @@ def register_tipo_curso(tipo_curso_id):
 def load_tipo_cursos():
     data = request.json
     if not data:
-        abort(HTTPStatus, description="No se recibió JSON válido.")
+        return jsonify({"message": "JSON vacío o inválido"}), HTTPStatus.BAD_REQUEST,
 
-    create_tipo_cursos_from_json(config.session, data)
-    return jsonify({"message": "Tipos de cursos cargados correctamente"}), 201
+    success, message = create_tipo_cursos_from_json(config.session, data)
+    if not success:
+        return jsonify({"message": message}), HTTPStatus.BAD_REQUEST,
+    return jsonify({"message": message}), HTTPStatus.CREATED

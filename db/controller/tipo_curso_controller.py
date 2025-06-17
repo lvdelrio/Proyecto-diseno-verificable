@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from flask import flash
 from db.models.tipo_curso import TipoCurso
 from db.models.requisitos import CursoRequisito
+from db.utils.json_validator import validate_json
 
 def create_tipo_curso(db: Session, tipo_curso_code: str, description: str,
                       tipo_curso_credits: int, tipo_curso_id: int = None):
@@ -60,12 +60,14 @@ def enroll_tipo_curso_in_tipo_cursos(db: Session, tipo_curso_base_id: int, tipo_
     )
     return True, "Requisito agregado exitosamente."
 
-def create_tipo_cursos_from_json(db: Session, data: dict):
-    cursos_json = data.get("cursos", [])
+def create_tipo_cursos_from_json(db, data):
+    json_is_valid, message = validate_json(data, 'tipo_cursos')
+    if not json_is_valid:
+        return False, message
+
+    cursos_json = data["cursos"]
     tipos_curso_map = {}
-    if not cursos_json:
-        flash("No se encontraron tipo de cursos para cargar en el JSON proporcionado.", "error")
-        return
+
     for curso_data in cursos_json:
         tipo_curso = create_tipo_curso(
             db=db,
@@ -83,6 +85,8 @@ def create_tipo_cursos_from_json(db: Session, data: dict):
                 tipo_curso_base_id=curso_data["id"],
                 tipo_curso_id=tipos_curso_map[req_codigo].id
             )
+
+    return True, f"{len(cursos_json)} tipos de cursos cargados correctamente"
 
 def create_requisito(db: Session, tipo_curso_id: int, curso_requisito_id: int):
     nuevo_requisito = CursoRequisito(tipo_curso_id=tipo_curso_id,

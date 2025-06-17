@@ -55,10 +55,14 @@ def delete_nota_route(nota_id):
 def load_notas():
     data = request.json
     if not data:
-        abort(HTTPStatus.BAD_REQUEST, description="No se recibió JSON válido.")
-    load_notas_from_json(config.session, data)
-    return jsonify({"message": "Notas importadas exitosamente."}), 201
+        return jsonify({"message": "JSON vacío o inválido"}), 400
+
+    success, message = load_notas_from_json(config.session, data)
+    if not success:
+        return jsonify({"message": message}), 400
+    return jsonify({"message": message}), 201
 
 def check_nota_exists(nota):
     if not nota:
-        abort(HTTPStatus.NOT_FOUND, description="Nota no encontrada")
+        return False
+    return True

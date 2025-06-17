@@ -74,10 +74,12 @@ def register_profesor(profesor_id):
 def load_profesores():
     data = request.json
     if not data:
-        abort(HTTPStatus.BAD_REQUEST, description="No se recibió JSON válido.")
+        return jsonify({"message": "JSON vacío o inválido"}), HTTPStatus.BAD_REQUEST
 
-    create_profesores_from_json(config.session, data)
-    return jsonify({"message": "Profesores cargados correctamente"}), 201
+    success, message = create_profesores_from_json(config.session, data)
+    if not success:
+        return jsonify({"message": message}), HTTPStatus.BAD_REQUEST
+    return jsonify({"message": message}), HTTPStatus.CREATED
 
 @profesor_route_blueprint.route('/desinscribir_profesor/<int:seccion_id>/', methods=['POST'])
 def unregister_profesor(seccion_id):

@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Session
-from flask import flash
 from db.models.seccion import Seccion
 from db.controller.profesor_controller import enroll_profesor_in_seccion
 from db.controller.categoria_controller import create_multiple_categorias_and_evaluaciones
 from db.controller.curso_controller import get_curso_by_id
 from db.controller.common_controller import get_seccion_by_id
 from db.services.curso_service import check_curso_cerrado
+from db.utils.json_validator import validate_json
 
 def create_seccion(db: Session, curso_id: int, nombre: str, seccion_id: int = None):
     curso = get_curso_by_id(db, curso_id)
@@ -31,7 +31,6 @@ def get_all_secciones_by_curso_id(db: Session, curso_id: int):
 def get_all_secciones(db: Session):
     return db.query(Seccion).all()
 
-
 def edit_seccion_by_id(db: Session, seccion_id: int, nombre: str):
     seccion = get_seccion_by_id(db, seccion_id)
     if seccion:
@@ -56,15 +55,18 @@ def curso_from_seccion_id(db: Session, seccion_id: int):
     return False
 
 def create_secciones_from_json(db: Session, data: dict):
-    secciones_json = data.get("secciones", [])
-    if not secciones_json:
-        flash("No se encontraron secciones para cargar en el JSON proporcionado.", "error")
-        return
-    for seccion_data in secciones_json:
+    json_is_valid, message = validate_json(data, 'secciones')
+    if not json_is_valid:
+        return False, message
+
+    secciones = data["secciones"]
+
+    for seccion_data in secciones:
         process_seccion_and_relations(db, seccion_data)
     db.commit()
+    return True, f"{len(secciones)} secciones cargadas correctamente"
 
-def process_seccion_and_relations( db: Session, seccion_data: dict):
+def process_seccion_and_relations(db: Session, seccion_data: dict):
     curso_id = seccion_data.get("instancia_curso")
     check_curso_cerrado(db, curso_id=curso_id)
     seccion = create_seccion(

@@ -1,6 +1,7 @@
 from sqlalchemy import Integer, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from db.config import db
+from db.utils.models_variables import DELETE_CASCADE
 
 class Curso(db.Model):
     __tablename__ = 'cursos'
@@ -12,10 +13,10 @@ class Curso(db.Model):
     cerrado = db.Column(db.Boolean, default=False, nullable=False)
 
     tipo_curso: Mapped["TipoCurso"] = relationship(back_populates="cursos")
-    secciones = db.relationship("Seccion", back_populates="curso", cascade="all, delete-orphan")
+    secciones = db.relationship("Seccion", back_populates="curso", cascade=DELETE_CASCADE)
     notas_finales = db.relationship("NotasFinales",
                                     back_populates="curso",
-                                    cascade="all, delete-orphan")
+                                    cascade=DELETE_CASCADE)
 
     def __repr__(self):
         return f"<Curso(id={self.id}, codigo='{self.tipo_curso.codigo}')>"

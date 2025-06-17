@@ -1,7 +1,8 @@
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy import DateTime
-from  db.config import db
+from db.config import db
+from db.utils.models_variables import DELETE_CASCADE
 
 class Alumno(db.Model):
     __tablename__ = "alumnos"
@@ -21,7 +22,7 @@ class Alumno(db.Model):
     alumnos_seccion: Mapped[list["AlumnoSeccion"]] = relationship(
         "AlumnoSeccion",
         back_populates="alumno",
-        cascade="all, delete-orphan"
+        cascade=DELETE_CASCADE
     )
     def __repr__(self):
         return f"<Alumno(id={self.id}, nombre='{self.nombre}')>"

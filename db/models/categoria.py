@@ -1,6 +1,7 @@
 from sqlalchemy import Integer, String, ForeignKey, Float, Boolean
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from db.config import db
+from db.utils.models_variables import DELETE_CASCADE
 
 class Categoria(db.Model):
     __tablename__ = "categoria"
@@ -14,7 +15,7 @@ class Categoria(db.Model):
     seccion: Mapped["Seccion"] = relationship("Seccion", back_populates="categorias")
     evaluaciones: Mapped[list["Evaluacion"]] = relationship("Evaluacion",
                                                             back_populates="categoria",
-                                                            cascade="all, delete-orphan")
+                                                            cascade=DELETE_CASCADE)
 
     def __repr__(self):
         return (f"<Categoria (id={self.id}, tipo_categoria='{self.tipo_categoria}', "

@@ -1,6 +1,7 @@
 from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from db.config import db
+from db.utils.models_variables import DELETE_CASCADE
 
 class Seccion(db.Model):
     __tablename__ = "secciones"
@@ -21,7 +22,7 @@ class Seccion(db.Model):
     categorias: Mapped[list["Categoria"]] = relationship(
                                                          "Categoria",
                                                          back_populates="seccion",
-                                                         cascade="all, delete-orphan"
+                                                         cascade=DELETE_CASCADE
                                                          )
     alumnos: Mapped[list["Alumno"]] = relationship(
                                                 "Alumno",
@@ -36,6 +37,6 @@ class Seccion(db.Model):
     alumnos_seccion: Mapped[list["AlumnoSeccion"]] = relationship(
         "AlumnoSeccion",
         back_populates="seccion",
-        cascade="all, delete-orphan"
+        cascade=DELETE_CASCADE
     )
     sala: Mapped["Sala"] = relationship("Sala", back_populates="secciones")

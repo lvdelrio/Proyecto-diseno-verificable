@@ -1,10 +1,10 @@
 from flask import abort
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 from db.config import db
 from db.models.categoria import Categoria
 from db.models.seccion import Seccion
 from db.controller.evaluacion_controller import create_evaluacion
-from db.controller.common_controller import get_categorias_by_seccion_id
 from db.utils.prorrotear import prorate_values
 from db.utils.prorrotear import recalculate_seccion_ponderations
 from db.utils.math_methods import percentage_sum_from_seccion_by_id
@@ -58,7 +58,7 @@ def edit_categoria(categoria_id, tipo_categoria=None, seccion_id=None,
             > MAX_PERCENTAGE and categoria.tipo_ponderacion == PERCENTAGE_TYPE):
             recalculate_seccion_ponderations(db.session, categoria.seccion_id)
         return categoria
-    except Exception as e:
+    except SQLAlchemyError as e:
         db.session.rollback()
         abort(BAD_REQUEST, description=f"Error al actualizar la categoría: {str(e)}")
 
@@ -86,7 +86,7 @@ def update_tipo_ponderacion_in_seccion(seccion_id: int, nuevo_tipo: bool):
 
     try:
         db.session.commit()
-    except Exception as e:
+    except SQLAlchemyError as e:
         db.session.rollback()
         abort(BAD_REQUEST, description=
         f"Error al actualizar tipo de ponderación en la sección: {str(e)}")

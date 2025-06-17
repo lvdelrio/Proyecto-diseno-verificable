@@ -38,7 +38,6 @@ app.register_blueprint(nota_route_blueprint, url_prefix="")
 app.register_blueprint(horario_route_blueprint, url_prefix="")
 
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5000"]}})
-
 init_db(app)
 with app.app_context():
     register_events()

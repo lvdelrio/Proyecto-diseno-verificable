@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from db.models.salas import Sala
+from db.utils.json_validator import validate_json
 
 def create_sala(db: Session, nombre: str, capacidad: int):
     sala = Sala(nombre=nombre, capacidad=capacidad)
@@ -33,10 +34,15 @@ def edit_sala_by_id(db: Session, sala_id: int, nombre: str, capacidad: int):
     return None
 
 def load_salas_from_json(db: Session, data: dict):
+    json_is_valid, message = validate_json(data, "salas")
+    if not json_is_valid:
+        return False, message
+
     sala_data = data.get("salas", [])
     for sala in sala_data:
         create_sala(
             db,
-            nombre=sala["nombre"],
-            capacidad=sala["capacidad"]
+            nombre=sala.get("nombre"),
+            capacidad=sala.get("capacidad")
         )
+    return True, f'{len(sala_data)} salas importadas exitosamente.'

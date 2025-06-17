@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, request, redirect, url_for, render_template, abort, flash
 from db.config import db
 from db.controller.categoria_controller import (
@@ -34,7 +35,7 @@ def add_categoria():
         print('Categoría creada exitosamente', 'success')
         return redirect(url_for(SECCIONES_VIEW, seccion_id=seccion_id, tab='evaluaciones'))
 
-    except Exception as e:
+    except (SQLAlchemyError, ValueError) as e:
         db.session.rollback()
         flash(f"Ocurrió un error al crear la categoría: {str(e)}", "error")
         return redirect(url_for(SECCIONES_VIEW, seccion_id=seccion_id, tab='evaluaciones'))
@@ -70,7 +71,7 @@ def edit_categoria_route(categoria_id):
         print('Categoría actualizada exitosamente', 'success')
         return redirect(url_for(SECCIONES_VIEW, seccion_id=seccion_id, tab='evaluaciones'))
 
-    except Exception as e:
+    except (SQLAlchemyError, ValueError) as e:
         db.session.rollback()
         flash(f"Ocurrió un error al editar la categoría: {str(e)}", "error")
         return redirect(url_for(SECCIONES_VIEW, seccion_id=seccion_id, tab='evaluaciones'))
@@ -83,7 +84,7 @@ def delete_categoria_route(categoria_id):
         print('Categoría eliminada exitosamente', 'success')
         return redirect(url_for(SECCIONES_VIEW, seccion_id=seccion_id, tab='evaluaciones'))
 
-    except Exception as e:
+    except SQLAlchemyError as e:
         db.session.rollback()
         flash(f"Ocurrió un error al borrar la categoría: {str(e)}", "error")
         return redirect(url_for(SECCIONES_VIEW, seccion_id=seccion_id, tab='evaluaciones'))

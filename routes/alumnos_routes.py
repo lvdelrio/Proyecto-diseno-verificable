@@ -86,7 +86,9 @@ def unregister_alumno(seccion_id):
 def load_alumnos():
     data = request.json
     if not data:
-        abort(HTTPStatus.BAD_REQUEST, description="No se recibió JSON válido.")
+        return jsonify({"message": "JSON vacío o inválido"}), HTTPStatus.BAD_REQUEST
 
-    create_alumnos_from_json(config.session, data)
-    return jsonify({"message": "Alumnos cargados correctamente"}), 201
+    success, message = create_alumnos_from_json(config.session, data)
+    if not success:
+        return jsonify({"message": message}), HTTPStatus.BAD_REQUEST
+    return jsonify({"message": message}), HTTPStatus.CREATED

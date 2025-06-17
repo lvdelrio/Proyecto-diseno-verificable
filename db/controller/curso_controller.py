@@ -2,6 +2,7 @@ from http import HTTPStatus
 from flask import abort
 from sqlalchemy.orm import Session
 from db.models.curso import Curso
+from db.utils.json_validator import validate_json
 
 def create_curso(db: Session, tipo_curso_id: int, fecha_impartida: int,
                   semestre_impartido: str, curso_id: int = None):
@@ -67,8 +68,9 @@ def open_curso(db: Session, curso_id: int):
     return None
 
 def create_cursos_from_json(db: Session, data: dict):
-    if not data or "instancias" not in data:
-        raise ValueError("No se recibió JSON válido o no contiene 'instancias'.")
+    json_is_valid, message = validate_json(data, "cursos")
+    if not json_is_valid:
+        return False, message
     instancias_json = data.get("instancias", [])
     for instancia in instancias_json:
         create_curso(
@@ -78,3 +80,4 @@ def create_cursos_from_json(db: Session, data: dict):
             fecha_impartida=data.get("año"),
             semestre_impartido=data.get("semestre")
         )
+    return True, f"{len(instancias_json)} instancias de curso cargadas correctamente."

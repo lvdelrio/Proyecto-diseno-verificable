@@ -1,7 +1,10 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 from db.models.notas import Notas
 from db.services.evalaution_service import get_evaluacion_by_instancia
 from db.controller.common_controller import get_evaluaciones_by_categoria_id
+from db.utils.json_validator import validate_json
+
 INDEX = 1
 def create_nota(db: Session, alumno_id: int, evaluacion_id: int, nota: float):
     nota_existente = db.query(Notas).filter(
@@ -47,7 +50,12 @@ def delete_nota(db: Session, nota_id: int):
     return False
 
 def load_notas_from_json(db: Session, data: dict):
+    is_valid, message = validate_json(data, 'notas')
+    if not is_valid:
+        return False, message
+
     notas_data = data.get("notas", [])
+
     for nota_data in notas_data:
         alumno_id = nota_data.get("alumno_id")
         categoria_id = nota_data.get("topico_id")
@@ -57,6 +65,8 @@ def load_notas_from_json(db: Session, data: dict):
         evaluacion = get_evaluacion_by_instancia(evaluaciones, evaluacion_id)
         try:
             create_nota(db, alumno_id, evaluacion.id, float(nota_valor))
-        except Exception:
+        except SQLAlchemyError as e:
             db.rollback()
-    
+            return False, f"Error procesando nota para alumno {alumno_id}: {str(e)}"
+
+    return True, f"{len(notas_data)} notas cargadas correctamente"

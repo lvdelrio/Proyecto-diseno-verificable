@@ -32,6 +32,12 @@
                 </button>
             </form>
         </div>
+        {% if seccion.curso.cerrado %}
+            <a href="{{ url_for('Notas_Finales.generate_seccion_report', seccion_id=seccion.id) }}" 
+                class="bg-gray-200 text-gray-500 px-3 py-1 rounded hover:bg-gray-300 transition duration-300 ease-in-out">
+                Generar reporte
+            </a>
+        {% endif %}
     </header>
 
     <!-- Main Content -->

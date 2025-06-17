@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 from db.models.notas import Notas
 from db.services.evalaution_service import get_evaluacion_by_instancia
 from db.controller.common_controller import get_evaluaciones_by_categoria_id
@@ -64,7 +65,7 @@ def load_notas_from_json(db: Session, data: dict):
         evaluacion = get_evaluacion_by_instancia(evaluaciones, evaluacion_id)
         try:
             create_nota(db, alumno_id, evaluacion.id, float(nota_valor))
-        except Exception as e:
+        except SQLAlchemyError as e:
             db.rollback()
             return False, f"Error procesando nota para alumno {alumno_id}: {str(e)}"
 

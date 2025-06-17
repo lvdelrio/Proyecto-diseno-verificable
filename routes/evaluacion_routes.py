@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, request, render_template, redirect, url_for, jsonify, abort
 from db.config import db
 from db.controller.evaluacion_controller import (
@@ -32,7 +33,7 @@ def add_evaluacion():
         )
         return redirect_to_seccion_view(form_data['seccion_id'])
 
-    except Exception:
+    except (SQLAlchemyError, ValueError):
         db.session.rollback()
         return redirect_to_seccion_view(request.form.get('seccion_id'))
 
@@ -82,7 +83,7 @@ def delete_evaluacion_route(evaluacion_id):
 
         return redirect(url_for(SECCIONES_VIEW, seccion_id=seccion_id, tab='evaluaciones'))
 
-    except Exception as e:
+    except (SQLAlchemyError, ValueError) as e:
         db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
 

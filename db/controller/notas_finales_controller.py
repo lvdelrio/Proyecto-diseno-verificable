@@ -1,5 +1,6 @@
 from http import HTTPStatus
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 from flask import abort
 from db.controller.alumno_controller import get_alumno_by_id
 from db.models.notas_finales import NotasFinales
@@ -26,7 +27,7 @@ def create_nota_final(db: Session, alumno_id: int, nota_final: float, curso_id: 
         db.refresh(nueva_nota)
         print(f"Nota final creada: {nueva_nota.nota_final} para el alumno: {alumno.nombre}")
         return nueva_nota
-    except Exception as e:
+    except SQLAlchemyError as e:
         db.rollback()
         abort(HTTPStatus.BAD_REQUEST, description=f"Error al guardar la nota final: {str(e)}")
 

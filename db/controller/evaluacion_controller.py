@@ -1,5 +1,6 @@
 from http import HTTPStatus
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 from flask import abort
 from db.models.evaluacion import Evaluacion
 from db.controller.common_controller import (
@@ -82,7 +83,7 @@ def edit_evaluacion(db: Session, evaluacion_id, nombre=None,
            evaluacion.tipo_ponderacion == PERCENTAGE_TYPE):
             recalculate_categoria_ponderations(db, evaluacion.categoria_id)
         return evaluacion
-    except Exception as e:
+    except SQLAlchemyError as e:
         db.rollback()
         abort(HTTPStatus.BAD_REQUEST, description=f"Error al actualizar la evaluación: {str(e)}")
 
@@ -120,7 +121,7 @@ def update_tipo_ponderacion_in_categoria(db: Session, categoria_id: int, nuevo_t
         evaluacion.tipo_ponderacion = nuevo_tipo
     try:
         db.commit()
-    except Exception as e:
+    except SQLAlchemyError as e:
         db.rollback()
         abort(HTTPStatus.BAD_REQUEST,
               description=f"Error al actualizar tipo de ponderación en evaluaciones: {str(e)}")

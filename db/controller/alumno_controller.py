@@ -1,5 +1,4 @@
 from datetime import datetime
-from flask import flash
 from sqlalchemy.orm import Session
 from db.models.alumno import Alumno
 from db.controller.common_controller import get_seccion_by_id
@@ -83,7 +82,7 @@ def create_alumno_seccion_from_json(db, data):
     if not json_is_valid:
         return False, message
     alumnos_seccion = data.get("alumnos_seccion", [])
-    
+
     for alumno_seccion in alumnos_seccion:
         alumno_id = alumno_seccion["alumno_id"]
         seccion_id = alumno_seccion["seccion_id"]

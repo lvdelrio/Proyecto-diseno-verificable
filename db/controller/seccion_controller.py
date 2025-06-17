@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 from db.models.seccion import Seccion
 from db.controller.profesor_controller import enroll_profesor_in_seccion
 from db.controller.categoria_controller import create_multiple_categorias_and_evaluaciones
@@ -20,7 +21,7 @@ def create_seccion(db: Session, curso_id: int, nombre: str, seccion_id: int = No
         db.commit()
         db.refresh(new_seccion)
         return new_seccion
-    except Exception as e:
+    except SQLAlchemyError as e:
         db.rollback()
         print(f"Error creating seccion: {e}")
         return None

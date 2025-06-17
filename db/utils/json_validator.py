@@ -1,11 +1,13 @@
 from db.utils.json_schemas import SCHEMAS
+MAX_ERRORS_TO_DISPLAY = 3
+INDEX_STARTING = 1
 
 def create_error_message(errors, json_type):
     error_text = f"Errores en {json_type}: "
-    for i, error in enumerate(errors[:3]):
+    for i, error in enumerate(errors[:MAX_ERRORS_TO_DISPLAY]):
         error_text += f"{i+1}. {error} "
-    if len(errors) > 3:
-        error_text += f"y {len(errors) - 3} errores más"
+    if len(errors) > MAX_ERRORS_TO_DISPLAY:
+        error_text += f"y {len(errors) - MAX_ERRORS_TO_DISPLAY} errores más"
     error_text += "\nSe detuvo la subida."
     return error_text.strip()
 
@@ -41,7 +43,7 @@ def validate_all_items_content(items, json_type):
     errors = []
 
     for i, item in enumerate(items):
-        item_errors = validate_item(item, schema_type, i + 1)
+        item_errors = validate_item(item, schema_type, i + INDEX_STARTING)
         errors.extend(item_errors)
     if errors:
         return False, create_error_message(errors, json_type)

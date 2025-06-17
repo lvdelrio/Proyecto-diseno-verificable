@@ -1,6 +1,6 @@
 from datetime import datetime
 from faker import Faker
-from random import sample, choice, randint
+from random import sample, choice, randint, uniform
 
 from db.config import db as config
 from db.controller.profesor_controller import create_profesor, enroll_profesor_in_seccion
@@ -9,6 +9,11 @@ from db.controller.alumno_controller import create_alumno, enroll_alumno_in_secc
 from db.controller.seccion_controller import create_seccion, get_all_secciones_by_curso_id
 from db.controller.tipo_curso_controller import create_tipo_curso, enroll_tipo_curso_in_tipo_cursos
 from db.controller.sala_controller import create_sala
+from db.controller.categoria_controller import create_categoria
+from db.controller.evaluacion_controller import create_evaluacion
+from db.controller.notas_controller import create_nota
+from db.controller.common_controller import get_all_alumno__by_categoria_id
+from db.utils.prorrotear import prorate_values
 
 def seed_database():
     faker = Faker()
@@ -24,7 +29,7 @@ def seed_database():
             config.session,
             tipo_curso_code=f"TC{i:03}",
             description=faker.bs().capitalize(),
-            credits=randint(1, 4)
+            tipo_curso_credits=randint(1, 4)
         )
         tipo_cursos.append(tipo)
 
@@ -64,7 +69,6 @@ def seed_database():
     for alumno in alumnos:
         for curso in sample(cursos, 3):
             seccion = sample(get_all_secciones_by_curso_id(config.session, curso.id), 1)
-            print(seccion)
             enroll_alumno_in_seccion(config.session, alumno_id=alumno.id, seccion_id=seccion[0].id)
 
     # Crear profesores
@@ -82,4 +86,49 @@ def seed_database():
         for seccion in sample(secciones, 30):
             enroll_profesor_in_seccion(config.session, profesor_id=profesor.id, seccion_id=seccion.id)
 
+    # Crear categorías, evaluaciones y notas vacías por sección
+    for seccion in secciones:
+        num_categorias = randint(1, 2)
+        for i in range(num_categorias):
+            tipo_cat = choice(["Controles", "Tareas", "Examen", "Proyecto", "Prácticas"])
+            ponderacion_categoria = randint(20, 50)
+            tipo_ponderacion = True  # tipo porcentaje
+
+            categoria = create_categoria(
+                tipo_categoria=tipo_cat,
+                seccion=seccion,
+                ponderacion=ponderacion_categoria,
+                tipo_ponderacion=tipo_ponderacion
+            )
+
+            if not categoria:
+                continue
+
+            num_evaluaciones = randint(1, 3)
+            pesos = prorate_values([randint(1, 10) for _ in range(num_evaluaciones)])
+
+            for j in range(num_evaluaciones):
+                evaluacion = create_evaluacion(
+                    db=config.session,
+                    nombre=f"{tipo_cat} {j + 1}",
+                    ponderacion=pesos[j],
+                    opcional=choice([True, False]),
+                    categoria_id=categoria.id,
+                    tipo_ponderacion=tipo_ponderacion
+                )
+
+                if not evaluacion:
+                    continue
+
+                # Obtener alumnos en la sección y crear notas vacías
+                alumnos_en_seccion = get_all_alumno__by_categoria_id(config.session, categoria.id)
+                for alumno in alumnos_en_seccion:
+                    create_nota(
+                        db=config.session,
+                        alumno_id=alumno.id,
+                        evaluacion_id=evaluacion.id,
+                        nota=round(uniform(3.0, 7.0), 1)
+                    )
+
     print("[+] Base de datos sembrada exitosamente con datos amplios para pruebas de horario.")
+

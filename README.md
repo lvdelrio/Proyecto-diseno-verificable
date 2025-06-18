@@ -41,6 +41,26 @@ http://127.0.0.1:5000/crear_horario
 Esto crea un archivo `.csv` en la carpeta `exports`, ubicada en paralelo a las demás carpetas del proyecto. El archivo tendrá como nombre la fecha de creación.
 En caso de que algunas secciones no se puedan ubicar en el horario debido a las restricciones definidas en el enunciado, estas se desplegarán por consola.
 
+## Generacion de reportes
+La generacion de reportes esta disponible en cada vista correspondiente a cada reporte, es decir (para acceder a los reportes hay que abrir la carpeta reports dentro del proyecto y el nombre del csv corresponde al tipo de reporte):
+### Reporte Notas de una instancia de topico:
+```
+http://127.0.0.1:5000/evaluaciones/<id_evaluacion>/edit?seccion_id=<id_seccion>
+```
+A esto se llega ingresando a Gestion de cursos, editar curso, pestaña secciones, editar seccion, pestaña evaluaciones, opciones de evaluaciones, editar evaluacion.
+
+### Reporte Notas finales de una Sección:
+```
+http://127.0.0.1:5000/seccion/<id_seccion>
+```
+A esto se llega ingresando a Gestion de cursos, editar curso, pestaña secciones, editar seccion.
+
+### Reporte Notas finales de Cursos de un Alumno:
+```
+http://127.0.0.1:5000/alumno/<id_alumno>
+```
+A esto se llega ingresando a Gestion de alumnos, editar alumno.
+
 # Carga de Datos vía JSON
 
 Este sistema permite cargar datos en la base de datos a través de archivos JSON, utilizando botones habilitados en la interfaz web.

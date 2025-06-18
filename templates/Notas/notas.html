@@ -9,6 +9,7 @@
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/components/slide_panel.css') }}" rel="stylesheet">
     <script src="{{ url_for('static', filename='js/components/slide_panel.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/notas_script.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/components/json_upload.js') }}"></script>
     
 </head>
@@ -44,9 +45,10 @@
         <div class="bg-white shadow rounded-lg overflow-hidden">
             <div class="grid grid-cols-12 bg-gray-100 p-4 font-semibold text-gray-700">
                 <div class="col-span-1 text-center">#</div>
-                <div class="col-span-3">Alumno</div>
-                <div class="col-span-3">Evaluación</div>
+                <div class="col-span-2">Alumno</div>
+                <div class="col-span-2">Evaluación</div>
                 <div class="col-span-2">Categoría</div>
+                <div class="col-span-2">Sección</div>
                 <div class="col-span-1 text-center">Nota</div>
                 <div class="col-span-2 text-center">Acciones</div>
             </div>
@@ -54,14 +56,14 @@
             {% for nota in notas %}
             <div class="grid grid-cols-12 p-4 border-b hover:bg-gray-50 items-center">
                 <div class="col-span-1 text-center font-medium text-gray-500">{{ nota.id }}</div>
-                <div class="col-span-3 font-medium text-gray-800">
+                <div class="col-span-2 font-medium text-gray-800">
                     {% if nota.alumno %}
-                        {{ nota.alumno.nombre }}
+                        {{ nota.alumno.email }}
                     {% else %}
                         <span class="text-gray-400">Sin alumno asignado</span>
                     {% endif %}
                 </div>
-                <div class="col-span-3 text-gray-600">
+                <div class="col-span-2 text-gray-600">
                     {% if nota.evaluacion %}
                         {{ nota.evaluacion.nombre }}
                     {% else %}
@@ -73,6 +75,13 @@
                         {{ nota.evaluacion.categoria.tipo_categoria }}
                     {% else %}
                         <span class="text-gray-400">Sin categoría</span>
+                    {% endif %}
+                </div>
+                <div class="col-span-2 text-gray-600">
+                    {% if nota.evaluacion and nota.evaluacion.categoria and nota.evaluacion.categoria.seccion %}
+                        {{ nota.evaluacion.categoria.seccion.nombre }}
+                    {% else %}
+                    <span class="text-gray-400">Sin sección</span>
                     {% endif %}
                 </div>
                 <div class="col-span-1 text-center font-medium {% if nota.nota >= 4.0 %}text-green-600{% else %}text-red-600{% endif %}">
@@ -115,23 +124,27 @@
         <form action="{{ url_for('Notas.add_nota') }}" method="POST">
             <div class="mb-4">
                 <label for="alumno_id" class="block text-sm font-medium text-gray-700 mb-1">Alumno*</label>
-                <select id="alumno_id" name="alumno_id" required
-                       class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <select id="alumno_id" name="alumno_id" required class="...">
                     <option value="">Seleccione un alumno</option>
                     {% for alumno in alumnos %}
-                        <option value="{{ alumno.id }}">{{ alumno.nombre }}</option>
+                    <option value="{{ alumno.id }}">{{ alumno.nombre }} ({{ alumno.email }})</option>
                     {% endfor %}
                 </select>
             </div>
-            
+
+            <!-- Sección (filtered dynamically) -->
+            <div class="mb-4">
+                <label for="seccion_id" class="block text-sm font-medium text-gray-700 mb-1">Sección*</label>
+                <select id="seccion_id" name="seccion_id" required class="...">
+                    <option value="">Seleccione una sección</option>
+                </select>
+            </div>
+
+            <!-- Evaluación (filtered dynamically) -->
             <div class="mb-4">
                 <label for="evaluacion_id" class="block text-sm font-medium text-gray-700 mb-1">Evaluación*</label>
-                <select id="evaluacion_id" name="evaluacion_id" required
-                       class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <select id="evaluacion_id" name="evaluacion_id" required class="...">
                     <option value="">Seleccione una evaluación</option>
-                    {% for evaluacion in evaluaciones %}
-                        <option value="{{ evaluacion.id }}">{{ evaluacion.nombre }} ({{ evaluacion.categoria.tipo_categoria if evaluacion.categoria else 'Sin categoría' }})</option>
-                    {% endfor %}
                 </select>
             </div>
             

@@ -3,7 +3,8 @@ from flask import abort
 from sqlalchemy.orm import Session
 from db.controller.curso_controller import get_all_cursos
 from db.controller.seccion_controller import get_all_secciones_by_curso_id
-from db.controller.alumno_controller import get_alumno_by_id, enroll_alumno_in_seccion
+from db.controller.alumno_controller import enroll_alumno_in_seccion
+from db.controller.common_controller import get_alumno_by_id
 
 
 def get_available_cursos_con_secciones(db: Session, alumno_id):

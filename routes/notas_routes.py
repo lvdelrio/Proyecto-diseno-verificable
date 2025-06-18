@@ -7,6 +7,9 @@ from db.controller.notas_controller import (
     )
 from db.controller.alumno_controller import get_all_alumnos
 from db.controller.evaluacion_controller import get_all_evaluaciones
+from db.controller.seccion_controller import get_seccion_by_id
+from db.controller.alumno_controller import get_alumno_by_id
+
 
 nota_route_blueprint = Blueprint("Notas", __name__)
 GET_NOTAS = "Notas.get_notas"
@@ -66,3 +69,27 @@ def check_nota_exists(nota):
     if not nota:
         return False
     return True
+
+@nota_route_blueprint.route('/api/secciones_por_alumno/<int:alumno_id>')
+def get_secciones_per_alumno(alumno_id):
+    alumno = get_alumno_by_id(config.session, alumno_id)
+    if not alumno:
+        return jsonify([])
+    return jsonify([{"id": s.id, "nombre": s.nombre} for s in alumno.secciones])
+
+@nota_route_blueprint.route('/api/evaluaciones_por_seccion/<int:seccion_id>')
+def get_evaluaciones_per_seccion(seccion_id):
+    seccion = get_seccion_by_id(config.session, seccion_id)
+    if not seccion:
+        return jsonify([])
+
+    evaluaciones = []
+    for cat in seccion.categorias:
+        for eval in cat.evaluaciones:
+            evaluaciones.append({
+                "id": eval.id,
+                "nombre": eval.nombre,
+                "tipo_categoria": cat.tipo_categoria
+            })
+
+    return jsonify(evaluaciones)

@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy.orm import Session
 from db.models.alumno import Alumno
-from db.controller.common_controller import get_seccion_by_id
+from db.controller.common_controller import get_seccion_by_id, get_alumno_by_id
 from db.services.curso_service import check_curso_cerrado
 from db.utils.json_validator import validate_json
 
@@ -16,9 +16,6 @@ def create_alumno(db: Session, name: str, email: str,
     db.commit()
     db.refresh(new_user)
     return new_user
-
-def get_alumno_by_id(db: Session, user_id: int):
-    return db.query(Alumno).filter(Alumno.id == user_id).first()
 
 def get_all_alumnos(db: Session):
     return db.query(Alumno).all()

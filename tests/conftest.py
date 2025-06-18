@@ -32,3 +32,18 @@ def sample_profesor():
     profesor.email = "juan@test.com"
     profesor.secciones = []
     return profesor
+
+@pytest.fixture
+def sample_tipo_curso():
+    from db.models.tipo_curso import TipoCurso
+    tipo_curso = TipoCurso(id=1, codigo="ICC1000", descripcion="Programación", creditos=6)
+    tipo_curso.requisitos = []
+    return tipo_curso
+
+@pytest.fixture
+def sample_alumno():
+    from db.models.alumno import Alumno
+    from datetime import datetime
+    alumno = Alumno(id=1, nombre="Juan Estudiante", email="juan@estudiante.com", fecha_ingreso=datetime(2024, 1, 1))
+    alumno.secciones = []
+    return alumno

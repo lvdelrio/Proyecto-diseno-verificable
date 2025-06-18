@@ -19,7 +19,13 @@ Las evaluaciones de una sección se deben visualizar dentro de la seccion a la q
 
 El borrado funciona en cascada, lo que implica que eliminar un Tipo de Curso borrará todas las instancias de curso, secciones, evaluaciones y vínculos con profesores y estudiantes relacionados en cadena.
 
-## Testing
+## Testing (Entrega 3)
+Para ejecuntar los unit tests se debe tener el proyecto corriendo utilizando el comando especificado arriba y en una segunda consola se debe ejecutar:
+```
+docker-compose exec app pytest tests/ -v
+```
+
+## Testing (No para parte de la entrega 3)
 El testing implementado no es para producción e incluye los archivos `test.py` y `seeds.py`, que tienen rutas respectivas en `app.py`.
 
 En caso de querer hacer un *seed* de las tablas `Tipo_curso`, `Curso`, `Seccion`, `Profesor`, `Alumno`, `ProfesorSeccion`, `AlumnoSeccion`, puedes ejecutar la siguiente ruta:

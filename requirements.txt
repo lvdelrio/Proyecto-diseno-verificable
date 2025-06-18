@@ -7,3 +7,6 @@ cryptography == 44.0.2
 flask-cors==5.0.1
 pandas==2.2.3
 Faker==37.1.0
+pytest==8.4.0
+pytest-cov==6.0.0
+pytest-flask>=1.2.0

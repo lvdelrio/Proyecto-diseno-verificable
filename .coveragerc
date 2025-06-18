@@ -1,0 +1,5 @@
+[run]
+omit =
+    db/test.py
+    db/__init__.py
+    db/seeds.py

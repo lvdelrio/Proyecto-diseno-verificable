@@ -328,7 +328,7 @@ def test_add_alumno_route(client):
             'email': 'test@email.com',
             'fecha_ingreso': '2024-01-01'
         })
-        assert response.status_code == 302  
+        assert response.status_code == 302  # Redirect
 
 def test_edit_alumno_route(client):
     with patch("routes.alumnos_routes.edit_alumno_by_id") as mock_edit:
@@ -337,22 +337,22 @@ def test_edit_alumno_route(client):
             'email': 'editado@email.com',
             'fecha_ingreso': '2024-06-01'
         })
-        assert response.status_code == 302  
+        assert response.status_code == 302  # Redirect
         mock_edit.assert_called_once()
 
 def test_delete_alumno_route(client):
     with patch("routes.alumnos_routes.delete_alumno_by_id") as mock_delete:
         response = client.post('/borrar_alumno/1')
-        assert response.status_code == 302  
+        assert response.status_code == 302  # Redirect
         mock_delete.assert_called_once_with(unittest.mock.ANY, 1)
 
 def test_register_alumno_route(client):
     with patch("routes.alumnos_routes.register_alumno_in_secciones") as mock_register:
-        mock_register.return_value = MagicMock() 
+        mock_register.return_value = MagicMock()  # Return alumno object
         response = client.post('/inscribir_alumno/1/', data={
             'seccion_id_1': '10'
         })
-        assert response.status_code == 302  
+        assert response.status_code == 302  # Redirect
         mock_register.assert_called_once()
 
 def test_register_alumno_route_not_found(client):
@@ -366,11 +366,12 @@ def test_unregister_alumno_route(client):
         response = client.post('/desinscribir_alumno/1/', data={
             'alumno_id': '1'
         })
-        assert response.status_code == 302  
+        assert response.status_code == 302  # Redirect
         mock_unregister.assert_called_once()
 
-def test_load_alumnos_route(client):
+def test_load_alumnos_route_success(client):
     with patch("routes.alumnos_routes.create_alumnos_from_json") as mock_create:
+        mock_create.return_value = (True, "Alumnos cargados correctamente")
         data = {
             "alumnos": [
                 {"id": 1, "nombre": "Test", "correo": "test@email.com", "anio_ingreso": 2024}
@@ -382,7 +383,15 @@ def test_load_alumnos_route(client):
         assert response.status_code == 201
         mock_create.assert_called_once()
 
-# Model tests
+def test_load_alumnos_route_failure(client):
+    with patch("routes.alumnos_routes.create_alumnos_from_json") as mock_create:
+        mock_create.return_value = (False, "Error al cargar alumnos")
+        data = {"alumnos": []}
+        response = client.post('/importar_alumnos',
+                             json=data,
+                             content_type='application/json')
+        assert response.status_code == 400
+
 def test_alumno_model_creation():
     from db.models.alumno import Alumno
     

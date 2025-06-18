@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 from http import HTTPStatus
 from flask import Flask
 
+# Service tests
 @patch("db.services.profesor_service.get_profesor_by_id")
 @patch("db.services.profesor_service.get_all_cursos")
 @patch("db.services.profesor_service.get_all_secciones_by_curso_id")
@@ -71,7 +72,7 @@ def test_create_profesor():
             with patch.object(mock_db, 'commit') as mock_commit:
                 with patch.object(mock_db, 'refresh') as mock_refresh:
                     
-                    create_profesor(mock_db, "Test Profesor", "test@email.com")
+                    result = create_profesor(mock_db, "Test Profesor", "test@email.com")
                     
                     mock_init.assert_called_with(nombre="Test Profesor", email="test@email.com")
                     mock_add.assert_called_once()
@@ -80,32 +81,27 @@ def test_create_profesor():
 
 def test_create_profesor_with_id():
     from db.controller.profesor_controller import create_profesor
+    from db.models.profesor import Profesor
     
     mock_db = MagicMock()
-    mock_profesor = MagicMock()
     
-    with patch("db.controller.profesor_controller.Profesor") as mock_profesor_class:
-        mock_profesor_class.return_value = mock_profesor
-        
-        result = create_profesor(mock_db, "Test", "test@email.com", profesor_id=123)
-        
-        mock_profesor_class.assert_called_with(id=123, nombre="Test", email="test@email.com")
-        assert result == mock_profesor
+    with patch.object(Profesor, '__init__', return_value=None) as mock_init:
+        create_profesor(mock_db, "Test", "test@email.com", profesor_id=123)
+        mock_init.assert_called_with(id=123, nombre="Test", email="test@email.com")
 
 @patch("db.controller.profesor_controller.get_profesor_by_id")
-def test_edit_profesor_by_id_success(mock_get_profesor):
+def test_edit_profesor_by_id_success(mock_get_profesor, sample_profesor):
     from db.controller.profesor_controller import edit_profesor_by_id
     
-    mock_profesor = MagicMock()
-    mock_get_profesor.return_value = mock_profesor
+    mock_get_profesor.return_value = sample_profesor
     mock_db = MagicMock()
     
     result = edit_profesor_by_id(mock_db, 1, "Nuevo Nombre", "nuevo@email.com")
     
-    assert mock_profesor.nombre == "Nuevo Nombre"
-    assert mock_profesor.email == "nuevo@email.com"
+    assert sample_profesor.nombre == "Nuevo Nombre"
+    assert sample_profesor.email == "nuevo@email.com"
     mock_db.commit.assert_called_once()
-    assert result == mock_profesor
+    assert result == sample_profesor
 
 @patch("db.controller.profesor_controller.get_profesor_by_id")
 def test_edit_profesor_by_id_not_found(mock_get_profesor):
@@ -160,14 +156,11 @@ def test_get_paginated_profesores():
 
 @patch("db.controller.profesor_controller.get_profesor_by_id")
 @patch("db.controller.profesor_controller.get_seccion_by_id")
-def test_enroll_profesor_in_seccion_success(mock_get_seccion, mock_get_profesor):
+def test_enroll_profesor_in_seccion_success(mock_get_seccion, mock_get_profesor, sample_profesor):
     from db.controller.profesor_controller import enroll_profesor_in_seccion
     
-    mock_profesor = MagicMock()
-    mock_profesor.secciones = []
     mock_seccion = MagicMock()
-    
-    mock_get_profesor.return_value = mock_profesor
+    mock_get_profesor.return_value = sample_profesor
     mock_get_seccion.return_value = mock_seccion
     
     mock_db = MagicMock()
@@ -176,7 +169,7 @@ def test_enroll_profesor_in_seccion_success(mock_get_seccion, mock_get_profesor)
     
     assert success is True
     assert "exitosamente" in message
-    assert mock_seccion in mock_profesor.secciones
+    assert mock_seccion in sample_profesor.secciones
 
 @patch("db.controller.profesor_controller.get_profesor_by_id")
 def test_enroll_profesor_in_seccion_profesor_not_found(mock_get_profesor):
@@ -194,12 +187,13 @@ def test_enroll_profesor_in_seccion_profesor_not_found(mock_get_profesor):
 @patch("db.controller.profesor_controller.get_seccion_by_id")
 def test_enroll_profesor_in_seccion_already_enrolled(mock_get_seccion, mock_get_profesor):
     from db.controller.profesor_controller import enroll_profesor_in_seccion
+    from db.models.profesor import Profesor
     
     mock_seccion = MagicMock()
-    mock_profesor = MagicMock()
-    mock_profesor.secciones = [mock_seccion]
+    profesor = Profesor(id=1, nombre="Test", email="test@email.com")
+    profesor.secciones = [mock_seccion]
     
-    mock_get_profesor.return_value = mock_profesor
+    mock_get_profesor.return_value = profesor
     mock_get_seccion.return_value = mock_seccion
     
     mock_db = MagicMock()
@@ -224,6 +218,7 @@ def test_create_profesores_from_json():
         create_profesores_from_json(mock_db, data)
         assert mock_create.call_count == 2
 
+# Routes tests
 def test_get_profesores_route(client):
     with patch("routes.profesores_routes.get_paginated_profesores") as mock_paginated:
         mock_result = MagicMock()
@@ -262,11 +257,39 @@ def test_delete_profesor_route(client):
         assert response.status_code == 302  # Redirect
         mock_delete.assert_called_once_with(unittest.mock.ANY, 1)
 
-def test_load_profesores_route(client):
+def test_load_profesores_route_success(client):
     with patch("routes.profesores_routes.create_profesores_from_json") as mock_create:
+        mock_create.return_value = (True, "Profesores cargados correctamente")
         data = {"profesores": [{"id": 1, "nombre": "Test", "correo": "test@email.com"}]}
         response = client.post('/importar_profesores',
                              json=data,
                              content_type='application/json')
         assert response.status_code == 201
         mock_create.assert_called_once()
+
+def test_load_profesores_route_failure(client):
+    with patch("routes.profesores_routes.create_profesores_from_json") as mock_create:
+        mock_create.return_value = (False, "Error al cargar profesores")
+        data = {"profesores": []}
+        response = client.post('/importar_profesores',
+                             json=data,
+                             content_type='application/json')
+        assert response.status_code == 400
+
+# Model tests
+def test_profesor_model_creation():
+    from db.models.profesor import Profesor
+    
+    profesor = Profesor(nombre="Test Profesor", email="test@email.com")
+    assert profesor.nombre == "Test Profesor"
+    assert profesor.email == "test@email.com"
+    assert profesor.secciones == []
+
+def test_profesor_model_repr():
+    from db.models.profesor import Profesor
+    
+    profesor = Profesor(id=1, nombre="Test Profesor", email="test@email.com")
+    repr_str = repr(profesor)
+    assert "Profesor" in repr_str
+    assert "1" in repr_str
+    assert "Test Profesor" in repr_str

@@ -305,8 +305,9 @@ def test_register_tipo_curso_route(client):
         assert response.status_code == 302  # Redirect
         mock_register.assert_called_once()
 
-def test_load_tipo_cursos_route(client):
+def test_load_tipo_cursos_route_success(client):
     with patch("routes.tipo_cursos_routes.create_tipo_cursos_from_json") as mock_create:
+        mock_create.return_value = (True, "Tipos de cursos cargados correctamente")
         data = {
             "cursos": [
                 {"id": 1, "codigo": "ICC1000", "descripcion": "Test", "creditos": 6, "requisitos": []}
@@ -317,6 +318,15 @@ def test_load_tipo_cursos_route(client):
                              content_type='application/json')
         assert response.status_code == 201
         mock_create.assert_called_once()
+
+def test_load_tipo_cursos_route_failure(client):
+    with patch("routes.tipo_cursos_routes.create_tipo_cursos_from_json") as mock_create:
+        mock_create.return_value = (False, "Error al cargar tipos de cursos")
+        data = {"cursos": []}
+        response = client.post('/importar_tipo_cursos',
+                             json=data,
+                             content_type='application/json')
+        assert response.status_code == 400
 
 # Model tests
 def test_tipo_curso_model_creation():
